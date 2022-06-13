@@ -1,0 +1,8 @@
+pandoc: '2.18'
+pkgdown: 2.0.4
+pkgdown_sha: ~
+articles:
+  creer-des-cartes: creer-des-cartes.html
+  export-excel: export-excel.html
+last_built: 2022-06-13T14:25Z
+

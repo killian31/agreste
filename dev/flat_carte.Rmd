@@ -1,0 +1,657 @@
+---
+title: "flat_carte.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(magrittr)
+library(dplyr)
+library(sf)
+library(purrr)
+library(assertthat)
+library(glue)
+library(stringr)
+library(ggplot2)
+library(ggtext)
+```
+
+
+# Creer données de fond de carte
+
+```{r function_donnees_fond_carte}
+#' Créer un tableau avec les données géographiques de fond de carte
+#'
+#' @return Dataframe avec les données géographiques des zones de la carte
+#' @param zone_geographique CHAR indiquant la zone retenue pour la carte : "france", "ue" ou "monde"
+#' @param niveau_representation CHAR indiquant le niveau de représentation : "pays", "region_metro" ou "departement_metro"
+#' @export
+#' @importFrom assertthat assert_that
+#' @importFrom sf st_read
+#' @importFrom sf st_centroid
+#' @importFrom magrittr %>% 
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr filter
+#' @importFrom dplyr recode
+#' @importFrom glue glue
+#' @importFrom glue glue_collapse
+#' @importFrom stringr str_c
+#' 
+#' @examples
+donnees_fond_carte <- function(zone_geographique = "france",
+                               niveau_representation = "region_metro") {
+  
+### vérification des paramètres d'entrée
+  liste_zone_geographique <- c("france", "ue" , "monde")
+  liste_niveau_representation <- c("pays", "region_metro", "departement_metro")
+
+  assertthat::assert_that(zone_geographique %in% liste_zone_geographique, 
+                          msg = glue("La zone geographique doit etre dans la liste des choix possibles : {glue_collapse(liste_zone_geographique, sep=', ')}."))
+  assertthat::assert_that(niveau_representation %in% liste_niveau_representation, 
+                          msg = glue("Le niveau de representation geographique doit etre dans la liste des choix possibles : {glue_collapse(liste_niveau_representation, sep=', ')}."))
+
+  
+#### récupération de la carte vide 
+  data_geo <- agreste::data_geo
+
+#### restriction à la zone géographique
+code_zone_geographique <- switch (zone_geographique,
+  "france" = "FR",
+  "ue" = "",
+  "monde" = ""
+)
+  
+data_geo <- data_geo %>% 
+  filter(CNTR_CODE == code_zone_geographique)
+
+#### limitation au niveau de représentation 
+code_niveau_representation <- switch (niveau_representation,
+  "pays" = 0 ,
+  "region_metro" = 1,
+  "departement_metro" = 3
+)
+# FRY : Code NUTS des DOM
+exclusion_formes <- switch (niveau_representation,
+  "pays" = "",
+  "region_metro" = c("FR", "FRY", "FRY1", "FRY2", "FRY3", "FRY4", "FRY5", "FRY10", "FRY20", "FRY30", "FRY40", "FRY50"),
+  "departement_metro" = c("FRY10", "FRY20", "FRY30", "FRY40", "FRY50")
+)
+
+data_geo <- data_geo %>% 
+  filter(LEVL_CODE == code_niveau_representation & 
+           !NUTS_ID %in% exclusion_formes )
+
+##### affectation n° de région et n° de département
+codes_regions <- c("FRI" = "75",
+                   "FRJ" = "76",
+                   "FRK" = "84",
+                   "FRL" = "93",
+                   "FRM" = "94",
+                   "FR1" = "11",
+                   "FRB" = "24",
+                   "FRC" = "27",
+                   "FRD" = "28",
+                   "FRE" = "32",
+                   "FRF" = "44",
+                   "FRG" = "52",
+                   "FRH" = "53"
+)
+
+codes_departements <- c("FRK21" = "01",
+                        "FRE21" = "02",
+                        "FRK11" = "03",
+                        "FRL01" = "04",
+                        "FRL03" = "06",
+                        "FRK22" = "07",
+                        "FRF21" = "08",
+                        "FRJ21" = "09",
+                        "FRF22" = "10",
+                        "FRJ11" = "11",
+                        "FRJ22" = "12",
+                        "FRF11" = "67",
+                        "FRL04" = "13",
+                        "FRD11" = "14",
+                        "FRK12" = "15",
+                        "FRI31" = "16",
+                        "FRI32" = "17",
+                        "FRB01" = "18",
+                        "FRI21" = "19",
+                        "FRM01" = "2A",
+                        "FRC11" = "21",
+                        "FRH01" = "22",
+                        "FRI22" = "23",
+                        "FRI33" = "79",
+                        "FRI11" = "24",
+                        "FRC21" = "25",
+                        "FRK23" = "26",
+                        "FR104" = "91",
+                        "FRD21" = "27",
+                        "FRB02" = "28",
+                        "FRH02" = "29",
+                        "FRJ12" = "30",
+                        "FRJ24" = "32",
+                        "FRI12" = "33",
+                        "FRF12" = "68",
+                        "FRM02" = "2B",
+                        "FRJ23" = "31",
+                        "FRK13" = "43",
+                        "FRF24" = "52",
+                        "FRC23" = "70",
+                        "FRK28" = "74",
+                        "FRI23" = "87",
+                        "FRL02" = "05",
+                        "FRJ26" = "65",
+                        "FR105" = "92",
+                        "FRJ13" = "34",
+                        "FRH03" = "35",
+                        "FRB03" = "36",
+                        "FRB04" = "37",
+                        "FRK24" = "38",
+                        "FRC22" = "39",
+                        "FRI13" = "40",
+                        "FRB05" = "41",
+                        "FRK25" = "42",
+                        "FRG01" = "44",
+                        "FRB06" = "45",
+                        "FRJ25" = "46",
+                        "FRI14" = "47",
+                        "FRJ14" = "48",
+                        "FRG02" = "49",
+                        "FRD12" = "50",
+                        "FRF23" = "51",
+                        "FRG03" = "53",
+                        "FRF31" = "54",
+                        "FRF32" = "55",
+                        "FRH04" = "56",
+                        "FRF33" = "57",
+                        "FRC12" = "58",
+                        "FRE11" = "59",
+                        "FRE22" = "60",
+                        "FRD13" = "61",
+                        "FR101" = "75",
+                        "FRE12" = "62",
+                        "FRK14" = "63",
+                        "FRI15" = "64",
+                        "FRJ15" = "66",
+                        "FRK26" = "69",
+                        "FRC13" = "71",
+                        "FRG04" = "72",
+                        "FRK27" = "73",
+                        "FR102" = "77",
+                        "FRD22" = "76",
+                        "FR106" = "93",
+                        "FRE23" = "80",
+                        "FRJ27" = "81",
+                        "FRJ28" = "82",
+                        "FRC24" = "90",
+                        "FR108" = "95",
+                        "FR107" = "94",
+                        "FRL05" = "83",
+                        "FRL06" = "84",
+                        "FRG05" = "85",
+                        "FRI34" = "86",
+                        "FRF34" = "88",
+                        "FRC14" = "89",
+                        "FR103" = "78"
+                        )
+
+data_geo <- data_geo %>% 
+  mutate(code_region = recode(NUTS_ID, !!!codes_regions))
+
+data_geo <- data_geo %>% 
+  mutate(code_dep = recode(NUTS_ID, !!!codes_departements))
+### calcul des centroids
+
+data_geo <- data_geo %>% 
+  mutate(centre=st_centroid(geometry)) 
+  
+### renvoie le dataframe
+return(data_geo)
+  
+}
+```
+
+```{r examples-donnees_fond_carte}
+data_geo_france_region_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "region_metro")
+data_geo_france_dep_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "departement_metro")
+```
+
+```{r tests-donnees_fond_carte}
+test_that("donnees_fond_carte works", {
+  
+  #########################################
+  ## test sur le message renvoyé en cas d'erreur de paramètres
+  expect_error(
+    donnees_fond_carte(
+      zone_geographique = "BLABLA",
+      niveau_representation = "region_metro"
+    ),
+    "La zone geographique doit etre dans la liste des choix possibles : france, ue, monde."
+  )
+  
+  expect_error(
+    donnees_fond_carte(
+      zone_geographique = "france",
+      niveau_representation = "BLABLA"
+    ),
+    "Le niveau de representation geographique doit etre dans la liste des choix possibles : pays, region_metro, departement_metro."
+  )
+  
+  #########################################
+  ### test sur France métro et région
+  data_region_france <-
+    donnees_fond_carte(zone_geographique = "france",
+                       niveau_representation = "region_metro")
+  ### nb region == 3
+  expect_equal(nrow(data_region_france), 13)
+  
+  ### classes des colonnes du dataframe de sortie
+  expect_equal(
+    data_region_france %>% 
+      purrr::map(class),
+    list(
+      NUTS_ID = "character",
+      LEVL_CODE = "integer",
+      CNTR_CODE = "character",
+      NAME_LATN = "character",
+      NUTS_NAME = "character",
+      MOUNT_TYPE = "integer",
+      URBN_TYPE = "integer",
+      COAST_TYPE = "integer",
+      FID = "character",
+      geometry = c("sfc_MULTIPOLYGON", "sfc"),
+      code_region = "character",
+      code_dep = "character",
+      centre = c("sfc_POINT", "sfc")
+    )
+  )
+})
+
+```
+
+
+# Carte symbole proportionnel
+
+```{r function-carte-rond-proportionnel}
+#' Créer une carte représentant les volumes en ronds proportionnels
+#'
+#' @return une carte de type ggplot 2
+#' @export
+#' @importFrom magrittr %>% 
+#' @importFrom dplyr left_join
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_sf
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_void
+#' @importFrom ggplot2 scale_size_area
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 guides
+#' @importFrom ggplot2 guide_legend
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 margin
+#' @importFrom ggplot2 guide_none
+#' @importFrom ggtext element_markdown
+#' @importFrom ggtext element_textbox_simple
+#' @importFrom ggplot2 ggsave
+#' @importFrom assertthat assert_that 
+#' @param df dataframe avec les données à afficher sur la carte
+#' @param colonne_code_zone_geo nom de la colonne contenant les id de la zone géo : code région, n° de département...
+#' @param colonne_volume nom de la colonne contenant les données de volume
+#' @param titre_carte CHAR Titre à afficher en haut de la carte
+#' @param sous_titre_carte CHAR Sous-titre à afficher en haut de la carte, en dessous du titre
+#' @param titre_legende_volume CHAR Titre à afficher en haut de la légende
+#' @param note_sous_carte CHAR Note à afficher sous la carte
+#' @param legend.position CHAR choit de la position de la carte "right", "left", "bottom", "top"
+#' @param zone_geographique CHAR indiquant la zone retenue pour la carte : "france", "ue" ou "monde"
+#' @param niveau_representation CHAR indiquant le niveau de représentation : "pays", "region_metro" ou "departement_metro"
+#' @param couleur_fond_carte CHAR couleur de fond la carte "nom_couleur" ou "#code_couleur_html"
+#' @param couleur_limite_zone CHAR couleur des lignes de séparation de zone géographique "nom_couleur" ou "#code_couleur_html"
+#' @param taille_limite_zone NUM épaisseur des lignes de séparation de zone géographique
+#' @param couleur_fond_rond CHAR couleur de remplissage des ronds affichés "nom_couleur" ou "#code_couleur_html"
+#' @param couleur_contour_rond CHAR couleur de contour des ronds "nom_couleur" ou "#code_couleur_html"
+#' @param taille_max_rond NUM taille du rond correspondant au plus grand volume
+#' @param hauteur_cm NUM hauteur de la carte en cm
+#' @param largeur_cm NUM largeur de la carte en cm
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param path_carte CHAR chemin vers l'image à sauvegarder
+#' 
+#' @examples
+carte_rond_proportionnel <- function(df,
+           colonne_code_zone_geo,
+           colonne_volume,
+           titre_carte = "Carte 1",
+           sous_titre_carte = "sous titre de la carte",
+           titre_legende_volume = "titre de la legende",
+           note_sous_carte = "Lecture : bla bla bla <br> <br> Source : Agreste",
+           legend.position = "right",
+           zone_geographique = "france",
+           niveau_representation = "region_metro",
+           couleur_fond_carte = "white",
+           couleur_limite_zone = "black",
+           taille_limite_zone = 0.3,
+           couleur_fond_rond = "#E66A64",
+           couleur_contour_rond = "darkgray",
+           taille_max_rond = 9,
+           hauteur_cm = 8,
+           largeur_cm = 8,
+           save_carte = FALSE,
+           path_carte = "carte.png"
+  ) {
+  
+  data_geo <- donnees_fond_carte(zone_geographique = zone_geographique , niveau_representation = niveau_representation)
+  
+  if (niveau_representation == "region_metro") {
+    df <- df %>% 
+      mutate(code_region = as.character({{colonne_code_zone_geo}}))
+  } else if (niveau_representation == "departement_metro") {
+    df <- df %>% 
+      mutate(code_dep = as.character({{colonne_code_zone_geo}}))
+  }
+  
+  if (niveau_representation == "region_metro") {
+    
+    carte <- data_geo %>% 
+      left_join(df, by= "code_region") %>% 
+      ggplot() + 
+
+            geom_sf(fill = couleur_fond_carte, 
+              color = couleur_limite_zone, 
+              size = taille_limite_zone) + 
+
+            geom_point(
+              aes(size = {{colonne_volume}},
+                     geometry = centre,
+                     fill = couleur_fond_rond),
+              color = couleur_contour_rond,
+              stat = "sf_coordinates",
+              shape = 21) +
+
+      theme_void() +
+      scale_size_area(name = titre_legende_volume, max_size = taille_max_rond, labels = function(x) format(x, big.mark = " ")) +
+
+      labs(title = glue("<b>{titre_carte}</b>"),
+           subtitle = glue("<b>{sous_titre_carte}</b>"),
+                      caption = note_sous_carte)+
+      theme(axis.ticks.y = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks.x = element_blank(),
+            axis.text.x = element_blank(),
+            plot.title = element_textbox_simple(),
+            legend.title = element_markdown(size = hauteur_cm*0.8),
+            legend.text = element_markdown(size = hauteur_cm*0.7),
+            plot.title.position= 'plot',
+            plot.subtitle = element_markdown(size = hauteur_cm*0.8),
+            plot.caption = element_markdown(size = hauteur_cm*0.6),
+            plot.margin = margin(2,2,1,2),
+            legend.position = legend.position)+
+      guides(size= guide_legend(order = 1), fill = guide_none())
+    
+  } else if (niveau_representation == "departement_metro") {
+    
+    carte <- data_geo %>% 
+      left_join(df, by= "code_dep") %>% 
+      ggplot() + 
+
+            geom_sf(fill = couleur_fond_carte, 
+              color = couleur_limite_zone, 
+              size = taille_limite_zone) + 
+
+      geom_point(aes(size = {{colonne_volume}},
+                     geometry = centre,
+                     fill = couleur_fond_rond,
+                     
+                     ),
+        color = couleur_contour_rond,
+        stat = "sf_coordinates",
+        shape = 21)+
+
+      theme_void() +
+      scale_size_area(name = titre_legende_volume, max_size = taille_max_rond, labels = function(x) format(x, big.mark = " ")) +
+
+      labs(title = glue("<b>{titre_carte}</b>"),
+           subtitle = glue("<b>{sous_titre_carte}</b>"),
+                      caption = note_sous_carte)+
+      theme(axis.ticks.y = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks.x = element_blank(),
+            axis.text.x = element_blank(),
+            plot.title = element_textbox_simple(),
+            legend.title = element_markdown(size = hauteur_cm*0.8),
+            legend.text = element_markdown(size = hauteur_cm*0.7),
+            plot.title.position= 'plot',
+            plot.subtitle = element_markdown(size = hauteur_cm*0.8),
+            plot.caption = element_markdown(size = hauteur_cm*0.6),
+            plot.margin = margin(2,2,1,2),
+            legend.position = legend.position)+
+      guides(size= guide_legend(order = 1), fill = guide_none())
+  }
+
+  
+  if(isTRUE(save_carte)){
+    
+    ggsave(filename = path_carte,
+           plot = carte, 
+           width = largeur_cm, 
+           height = hauteur_cm, 
+           units = "cm" )
+    
+  }
+
+
+  return(carte)
+  
+}
+```
+
+```{r examples-carte-rond-proportionnel}
+library(agreste)
+library(dplyr)
+### récupération des données de permis de construire de SITADEL 
+permis_construire_region_2020 <- agreste::permis_construire_region %>% 
+  filter(annee_autorisation == 2020)
+
+### création de la carte et sauvegarde du fichier carte
+carte_pc_2020 <- carte_rond_proportionnel(df = permis_construire_region_2020, colonne_code_zone_geo = REG, colonne_volume = PC, titre_carte = "Carte 1", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région", titre_legende_volume = "Nombre de permis de construire", save_carte = TRUE, path_carte = "carteReg.png")
+
+### ouverture de la carte
+browseURL("carteReg.png")
+
+# Pour faire par département :
+permis_construire_dep_2020 <- agreste::permis_construire_dep %>%
+  filter(annee_autorisation == 2020)
+
+carte_pc_2020 <- carte_rond_proportionnel(df = permis_construire_dep_2020, colonne_code_zone_geo = DEP, colonne_volume = PC, niveau_representation = "departement_metro", titre_carte = "Carte 2", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par département", titre_legende_volume = "Nombre de permis de construire", save_carte = TRUE, path_carte = "carteDEP.png", taille_max_rond = 3)
+
+browseURL("carteDEP.png")
+
+```
+
+```{r tests-carte-rond-proportionnel}
+test_that("carte_rond_proportionnel works", {
+  permis_construire_region_2020 <- agreste::permis_construire_region %>% 
+  filter(annee_autorisation == 2020)
+
+  ### création de la carte et sauvegarde du fichier carte
+  carte_pc_2020 <-
+    carte_rond_proportionnel(
+      df = permis_construire_region_2020,
+      colonne_code_zone_geo = REG,
+      colonne_volume = PC,
+      titre_carte = "Carte 1",
+      sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
+      titre_legende_volume = "Nombre de permis de construire",
+      save_carte = TRUE,
+      path_carte = "carte.png"
+    )
+  
+  expect_equal(class(carte_pc_2020), c("gg", "ggplot"))
+  
+  expect_error(
+    carte_rond_proportionnel(
+      df = permis_construire_region_2020,
+      colonne_code_zone_geo = REG,
+      colonne_volume = PC,
+      titre_carte = "Carte 1",
+      sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
+      titre_legende_volume = "Nombre de permis de construire",
+      save_carte = TRUE,
+      path_carte = "carte.png",
+      zone_geographique = "BLABLA",
+      niveau_representation = "region_metro"
+    ),
+    "La zone geographique doit etre dans la liste des choix possibles : france, ue, monde."
+  )
+  
+  expect_error(
+    carte_rond_proportionnel(
+      df = permis_construire_region_2020,
+      colonne_code_zone_geo = REG,
+      colonne_volume = PC,
+      titre_carte = "Carte 1",
+      sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
+      titre_legende_volume = "Nombre de permis de construire",
+      save_carte = TRUE,
+      path_carte = "carte.png",
+      niveau_representation = "BLABLA"
+    ),
+    "Le niveau de representation geographique doit etre dans la liste des choix possibles : pays, region_metro, departement_metro."
+  )
+  
+})
+```
+
+# Carte aplat de couleurs
+
+```{r function-carte_aplat}
+#' Créer une carte représentant les volumes en aplat de couleurs
+#'
+#' @return une carte de type ggplot 2
+#' @export
+#' @importFrom magrittr %>% 
+#' @importFrom dplyr left_join
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_sf
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_void
+#' @importFrom ggplot2 scale_size_area
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 guides
+#' @importFrom ggplot2 guide_legend
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 margin
+#' @importFrom ggplot2 guide_none
+#' @importFrom ggtext element_markdown
+#' @importFrom ggtext element_textbox_simple
+#' @importFrom ggplot2 ggsave
+#' @importFrom assertthat assert_that 
+#' @param df dataframe avec les données à afficher sur la carte
+#' @param colonne_code_zone_geo nom de la colonne contenant les id de la zone géo : code région, n° de département...
+#' @param colonne_volume nom de la colonne contenant les données de volume
+#' @param titre_carte CHAR Titre à afficher en haut de la carte
+#' @param sous_titre_carte CHAR Sous-titre à afficher en haut de la carte, en dessous du titre
+#' @param titre_legende_volume CHAR Titre à afficher en haut de la légende
+#' @param note_sous_carte CHAR Note à afficher sous la carte
+#' @param legend.position CHAR choit de la position de la carte "right", "left", "bottom", "top"
+#' @param zone_geographique CHAR indiquant la zone retenue pour la carte : "france", "ue" ou "monde"
+#' @param niveau_representation CHAR indiquant le niveau de représentation : "pays", "region_metro" ou "departement_metro"
+#' @param couleur_fond_carte CHAR couleur de fond la carte "nom_couleur" ou "#code_couleur_html"
+#' @param couleur_limite_zone CHAR couleur des lignes de séparation de zone géographique "nom_couleur" ou "#code_couleur_html"
+#' @param taille_limite_zone NUM épaisseur des lignes de séparation de zone géographique
+#' @param couleur_max CHAR couleur à utiliser pour la plus haute valeur de nuance de l'aplat "nom_couleur" ou "#code_couleur_html"
+#' @param couleur_min CHAR couleur à utiliser pour la plus basse valeur de nuance de l'aplat "nom_couleur" ou "#code_couleur_html"
+#' @param hauteur_cm NUM hauteur de la carte en cm
+#' @param largeur_cm NUM largeur de la carte en cm
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param path_carte CHAR chemin vers l'image à sauvegarder
+#' 
+#' @examples
+carte_aplat <- function(df,
+           colonne_code_zone_geo,
+           colonne_volume,
+           titre_carte = "Carte 1",
+           sous_titre_carte = "sous titre de la carte",
+           titre_legende_volume = "titre de la legende",
+           note_sous_carte = "Source : Agreste",
+           legend.position = "right",
+           zone_geographique = "france",
+           niveau_representation = "region_metro",
+           couleur_fond_carte = "white",
+           couleur_limite_zone = "black",
+           taille_limite_zone = 0.3,
+           couleur_max = "#E66A64",
+           couleur_min = "white",
+           hauteur_cm = 8,
+           largeur_cm = 8,
+           save_carte = FALSE,
+           path_carte = "carte.png") {
+  
+  data_geo <- donnees_fond_carte(zone_geographique = zone_geographique , niveau_representation = niveau_representation)
+  
+  if (niveau_representation == "region_metro") {
+    df <- df %>% 
+      mutate(code_region = as.character({{colonne_code_zone_geo}}))
+  } else if (niveau_representation == "departement_metro") {
+    df <- df %>% 
+      mutate(code_dep = as.character({{colonne_code_zone_geo}}))
+  }
+  
+  if (niveau_representation == "region_metro") {
+    
+    carte <- data_geo %>% 
+      left_join(df, by= "code_region") %>% 
+      ggplot() + 
+
+            geom_sf(fill = couleur_fond_carte, 
+              color = couleur_limite_zone, 
+              size = taille_limite_zone) +
+
+            geom_sf(aes(fill = {{colonne_volume}})) +
+      scale_fill_gradient(name = titre_legende_volume,
+                          low = couleur_min,
+                          high = couleur_max) +
+      
+      labs(title = titre_carte,
+           subtitle = sous_titre_carte,
+           caption = note_sous_carte) +
+      theme_void() 
+      
+    
+  } else if (niveau_representation == "departement_metro") {
+  
+    carte <- data_geo %>% 
+      left_join(df, by= "code_dep") %>% 
+      ggplot() + 
+
+            geom_sf(fill = couleur_fond_carte, 
+              color = couleur_limite_zone, 
+              size = taille_limite_zone) +
+
+            geom_sf(aes(fill = {{colonne_volume}})) +
+      scale_fill_gradient(name = titre_legende_volume,
+                            low = couleur_min,
+                            high = couleur_max) +
+      
+      labs(title = titre_carte,
+           subtitle = sous_titre_carte,
+           caption = note_sous_carte) +
+      
+      theme_void() 
+  }
+  
+  return(carte)
+}
+```
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_carte.Rmd", vignette_name = "Creer des cartes", overwrite = "yes", check=F)
+```
+

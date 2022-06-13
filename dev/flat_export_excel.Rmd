@@ -1,0 +1,1355 @@
+---
+title: "flat_export_excel.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(openxlsx)
+library(assertthat)
+```
+
+
+
+# Créer les styles des cellules excel
+
+```{r function_creer_liste_style_excel}
+
+#' Parametrer le tableur excel
+#' 
+#' Cette fonction permet de créer une liste avec tous les styles utiles aux publications Agreste xlsx
+#' @param format le format choisi : "chiffres_et_donnees" ou "primeur"
+#'
+#' @return une liste avec tous les styles disponibles (objets openxls)
+#' @export
+#' 
+#' @importFrom openxlsx createStyle
+#' @importFrom assertthat assert_that
+#'
+#' @examples
+creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
+  
+  assert_that((format %in% c("chiffres_et_donnees", "primeur")), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  
+  #### global option
+  options("openxlsx.borderStyle" = "thin")
+  options("openxlsx.borderColour" = "black")
+  options("openxlsx.dateFormat" = "mm/dd/yyyy")
+  options("openxlsx.paperSize" = 9) ## A4
+  options("openxlsx.orientation" = "portrait") ## page orientation
+
+  #### styles
+  titleStyle <- createStyle(
+    fontSize = 11, fontColour = "black",
+    halign = "left", valign = "center",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  
+  liste_style <- list(titre = titleStyle)
+
+  subtitleStyle <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "right", valign = "center",
+    textDecoration = "italic", wrapText = TRUE
+  )
+  
+  liste_style <- append(liste_style, values= c( sous_titre = subtitleStyle))
+  
+  headerStyle <- switch(
+    format,
+    "chiffres_et_donnees" = createStyle(
+      fontSize = 10,
+      fontColour = "black",
+      halign = "center",
+      valign = "center",
+      fgFill = "#FF8D7E",
+      border = "TopBottomLeftRight",
+      borderColour = "black",
+      textDecoration = "bold",
+      wrapText = TRUE
+  ),
+  "primeur" = createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "center", valign = "center", fgFill = "#548235",
+    border = "TopBottomLeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  )
+
+
+  liste_style <- append(liste_style, values= c( ligne_titre = headerStyle))
+
+  # headerUniteStyle <- createStyle(
+  #   fontSize = 10, fontColour = "black",
+  #   halign = "center", valign = "center", textDecoration = "italic",
+  #   border = "LeftRight", borderColour = "black", wrapText = TRUE
+  # )
+
+   
+  dataStyleText <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "left",
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE
+  )
+    
+  liste_style <- append(liste_style, values= c( texte = dataStyleText))
+
+  
+  dataStyleNum <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    numFmt = "#,##0"
+  )
+  
+  liste_style <- append(liste_style, values= c( numerique = dataStyleNum))
+
+  dataStyleNumDecimal <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    numFmt = "#,##0.0"
+  )
+  
+    liste_style <- append(liste_style, values= c( decimal = dataStyleNumDecimal))
+
+
+  dataItalicStyleText <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "left",
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    indent = 1
+  )
+  
+      liste_style <- append(liste_style, values= c( texte_italique = dataItalicStyleText))
+
+  
+  dataItalicStyleColonne1Text <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "left",
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    indent = 1
+  )
+  
+        liste_style <- append(liste_style, values= c( texte_colonne1 = dataItalicStyleColonne1Text))
+
+  dataItalicStyleNum <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    numFmt = "#,##0"
+  )
+  
+        liste_style <- append(liste_style, values= c( numerique_italique = dataItalicStyleNum))
+
+  
+  dataItalicStyleNumUneDecimal <- createStyle(
+    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
+    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    numFmt = "#,##0.0"
+  )
+  
+          liste_style <- append(liste_style, values= c( decimal_italique = dataItalicStyleNumUneDecimal))
+
+
+  dataTotalStyleText <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "left", valign = "center", fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  
+            liste_style <- append(liste_style, values= c( texte_total = dataTotalStyleText))
+
+  
+  dataTotalStyleNum <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "right", valign = "center", fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE,
+    numFmt = "#,##0", indent = 1
+  )
+  
+              liste_style <- append(liste_style, values= c( numerique_total = dataTotalStyleNum))
+
+  
+  dataTotalStyleNumDecimal <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "right", valign = "center", fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE,
+    numFmt = "#,##0", indent = 1
+  )
+  
+                liste_style <- append(liste_style, values= c(decimal_total = dataTotalStyleNumDecimal))
+
+
+  dataSubTotalStyleText <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "left", valign = "center",
+    border = "LeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+              liste_style <- append(liste_style, values= c( texte_sous_total = dataSubTotalStyleText))
+
+  
+  
+  dataSubTotalStyleNum <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "right", valign = "center",
+    border = "LeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE,
+    numFmt = "#,##0", indent = 1
+  )
+  
+                liste_style <- append(liste_style, values= c( numerique_sous_total = dataSubTotalStyleNum))
+
+  
+  dataSubTotalStyleNumDecimal <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "right", valign = "center",
+    border = "LeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE,
+    numFmt = "#,##0.0", indent = 1
+  )
+                  liste_style <- append(liste_style, values= c( decimal_sous_total = dataSubTotalStyleNumDecimal))
+
+
+
+  dataSectionStyleText <- createStyle(
+    fontSize = 10, fontColour = "black",
+    halign = "center", valign = "center", fgFill = "white",
+    border = "TopBottomLeftRight", borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  
+                    liste_style <- append(liste_style, values= c( texte_section = dataSectionStyleText))
+
+  
+  # dataSectionStyleNum <- createStyle(
+  #   fontSize = 10, fontColour = "black",
+  #   halign = "center", valign = "center", fgFill = "white",
+  #   border = "TopBottomLeftRight", borderColour = "black",
+  #   textDecoration = "bold", wrapText = TRUE,
+  #   numFmt = "#,##0", indent = 1
+  # )
+  # 
+  #                     liste_style <- append(liste_style, numerique_section = dataSectionStyleNum)
+  # 
+  # dataSectionStyleNumDecimal <- createStyle(
+  #   fontSize = 10, fontColour = "black",
+  #   halign = "center", valign = "center", fgFill = "white",
+  #   border = "TopBottomLeftRight", borderColour = "black",
+  #   textDecoration = "bold", wrapText = TRUE,
+  #   numFmt = "#,##0.0", indent = 1
+  # )
+  # 
+  #                     liste_style <- append(liste_style, decimal_section = dataSectionStyleNumDecimal)
+
+  noteStyle <- createStyle(
+    fontSize = 9, fontColour = "black",
+    borderColour = "black", textDecoration = "italic",
+    valign = "center", wrapText = TRUE
+  )
+  
+  liste_style <- append(liste_style, values= c( note = noteStyle))
+
+  sourceStyle <- createStyle(
+    fontSize = 9, fontColour = "black", textDecoration = "italic",
+    valign = "center", wrapText = TRUE
+  )
+  
+    liste_style <- append(liste_style, values= c( source = sourceStyle))
+
+
+  sourceStyleSansNote <- createStyle(
+    fontSize = 9, fontColour = "black", textDecoration = "italic",
+    border = "Top", borderColour = "black",
+    valign = "center", wrapText = TRUE
+  )
+  
+      liste_style <- append(liste_style, values= c( source_sans_note_avant = sourceStyleSansNote))
+
+  champStyle <- createStyle(
+      fontSize = 9, fontColour = "black", textDecoration = "italic",
+      valign = "center", wrapText = TRUE
+    )
+    
+      liste_style <- append(liste_style, values= c( champ = champStyle))
+      
+  sommaireSectionStyle <- createStyle(
+    fontSize = 11, fontColour = "black",
+    halign = "left", valign = "center", fgFill = "#FF8D7E",
+    borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  
+        liste_style <- append(liste_style, values= c( sommaire_section = sommaireSectionStyle))
+
+  
+  sommaireSection2Style <- createStyle(
+    fontSize = 10, fontColour = "black", indent = 1,
+    halign = "left", valign = "center", fgFill = "#FFE2DB",
+    borderColour = "black",
+    textDecoration = "bold", wrapText = TRUE
+  )
+  
+          liste_style <- append(liste_style, values= c( sommaire_section2 = sommaireSection2Style))
+
+  
+  sommaireSheetStyle <- createStyle(
+    fontSize = 10, fontColour = "black", indent = 3,
+    halign = "left", valign = "center",
+    wrapText = TRUE
+  )
+  
+  liste_style <- append(liste_style, values= c( sommaire_lien = sommaireSheetStyle))
+
+  retourSommaireSheetStyle <- createStyle(
+    fontSize = 11, fontColour = "black",
+    halign = "center", valign = "center", fgFill = "#FF8D7E",
+    wrapText = TRUE
+  )
+    liste_style <- append(liste_style, values= c( bouton_retour_sommaire = retourSommaireSheetStyle))
+
+  return(liste_style)
+  
+}
+
+```
+
+```{r examples_creer_liste_style_excel}
+library(agreste)
+mes_styles <- creer_liste_style_excel()
+
+#exemples
+mes_styles$titre
+mes_styles$numerique_total
+
+```
+
+```{r tests_creer_liste_style_excel}
+test_that('Les styles définis sont bien de type "Style"', {
+  mes_styles <- creer_liste_style_excel()
+  for (st in mes_styles) {
+    expect_true(class(st) == "Style")
+  }
+})
+```
+
+
+# Ajouter un tableau Excel
+
+```{r function_ajouter_tableau_excel}
+#' Ajouter un tableau dans une feuille excel
+#'
+#' Cette fonction crée une nouvelle feuille dans le classeur passé en paramètre et y insère un tableau mis en forme.
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param tableau dataframe ou tibble à insérer dans une nouvelle feuille
+#' @param nom_feuille nom de la nouvelle feuille
+#' @param ligne_debut la ligne à laquelle démarre le tableau
+#' @param col_debut la colonne à laquelle démarre le tableau
+#' 
+#' @return Rien n'est renvoyé mais l'objet classeur a une nouvelle feuille
+#' 
+#' @importFrom openxlsx addWorksheet
+#' @importFrom openxlsx writeData
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+ajouter_tableau_excel <- function(classeur, tableau, nom_feuille, ligne_debut = 3, col_debut = 2) {
+  # Vérification des paramètres d'entrée
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.data.frame(tableau), msg = "Le tableau doit \u00eatre un dataframe ou un tibble.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+
+  addWorksheet(wb = classeur,
+                         sheetName = nom_feuille)
+  writeData(wb = classeur,
+                      sheet = nom_feuille,
+                      x = tableau,
+                      startCol = col_debut,
+                      startRow = ligne_debut)
+}
+```
+
+```{r examples_ajouter_tableau_excel}
+
+# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# Sauvegarde du classeur
+# Ouverture du classeur
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel()
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(airquality)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests_ajouter_tableau_excel}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  
+  # expect_true(ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "tab_iris") == 0)
+  expect_error(ajouter_tableau_excel(classeur = nom_page, tableau = iris, nom_feuille = "tab_iris"),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur, tableau = "tab_iris", nom_feuille = "tab_iris"),"Le tableau doit \u00eatre un dataframe ou un tibble.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = iris),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+
+})
+
+```
+
+# Ajouter un titre
+
+```{r function_ajouter_titre_tableau}
+#' Ajouter le titre du tableau dans la première cellule d'une feuille
+#'
+#' Cette fonction permet d'ajouter un titre dans la cellule A1 d'une feuille
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param nom_feuille nom de la feuille
+#' @param titre le titre à ajouter
+#' @param col_debut la colonne de départ (2eme par défaut)
+#' @param style le style à appliquer (style "titre" par défaut)
+#' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#'
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
+#' 
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx mergeCells
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+ajouter_titre_tableau <- function(classeur,
+                                  nom_feuille,
+                                  titre,
+                                  col_debut = 2,
+                                  style = agreste::creer_liste_style_excel()$titre,
+                                  fusion = TRUE) {
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(titre), msg = "Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(style)=="Style", msg = "Le style doit \u00eatre un objet de type Style. Voir fonction crer_liste_style_excel pour la cr\u00e9ation de styles.")
+  
+  nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
+  
+  if (isTRUE(fusion)) {
+    mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = 1 )
+  }
+  writeData(classeur, nom_feuille, titre, startCol = col_debut, startRow = 1)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = 1, cols = col_debut)
+}
+
+
+```
+
+```{r examples_ajouter_titre_tableau}
+
+# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# Ajout d'un titre
+# Sauvegarde du classeur
+# Ouverture du classeur
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel()
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+
+ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = "Données fleurs iris", col_debut = 2)
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(airquality)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+
+ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "airquality", titre = "Données qualité de l'air", col_debut = 2)
+
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests_ajouter_titre_tableau}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  titre = "Données iris"
+  
+  expect_error(ajouter_titre_tableau(classeur = nom_page, nom_feuille = "iris", titre = titre),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "tab_iris", titre = iris),"Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = iris, titre = titre),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = titre, col_debut = "2"),"La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = titre, col_debut = 2, style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+
+})
+
+```
+
+# Ajouter une note de lecture
+
+```{r function_ajouter_note_lecture}
+#' Ajouter une note de lecture sous un tableau dans une feuille d'un fichier xlsx
+#'
+#' Cette fonction permet d'ajouter une note de lecture sous un tableau dans une feuille Excel
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param nom_feuille nom de la feuille
+#' @param note la note à écrire
+#' @param col_debut la colonne de départ (2eme par défaut)
+#' @param style le style à appliquer (style "note" par défaut)
+#' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#'
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
+#' 
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx mergeCells
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+ajouter_note_lecture <- function(classeur,
+                                 nom_feuille,
+                                 note,
+                                 col_debut = 2,
+                                 style = agreste::creer_liste_style_excel()$note,
+                                 fusion = TRUE) {
+  
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(note), msg = "La note doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(style)=="Style", msg = "Le style doit \u00eatre un objet de type Style. Voir fonction crer_liste_style_excel pour la cr\u00e9ation de styles.")
+  
+  last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
+  row_note = last_row + 2
+  nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
+  
+  if (isTRUE(fusion)) {
+    mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = row_note)
+  }
+  writeData(classeur, nom_feuille, paste("Note de lecture :",note), startCol = col_debut, startRow = row_note)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = row_note, cols = col_debut)
+}
+```
+
+```{r examples_ajouter_note_lecture}
+
+# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# Ajout d'une note de lecture
+# Sauvegarde du classeur
+# Ouverture du classeur
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel()
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+
+ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "iris", note = "Ceci est une note de lecture", col_debut = 2)
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(airquality)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+
+ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "Ceci est une autre note de lecture", col_debut = 2)
+
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests_ajouter_note_lecture}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  note = "Une note quelconque"
+  
+  expect_error(ajouter_note_lecture(classeur = nom_page, nom_feuille = "iris", note = note),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "tab_iris", note = iris),"La note doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur, nom_feuille = iris, note = note),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "iris", note = note, col_debut = "2"),"La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "iris", note = note, col_debut = 2, style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+
+})
+
+```
+
+# Ajouter la source
+
+```{r function_ajouter_source}
+#' Ajouter la source sous un tableau dans une feuille d'un fichier xlsx
+#'
+#' Cette fonction permet d'ajouter une source sous un tableau dans une feuille Excel
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param nom_feuille nom de la feuille
+#' @param source la source à ajouter
+#' @param col_debut la colonne de départ (2eme par défaut)
+#' @param style le style à appliquer (style "source" par défaut)
+#' @param avec_note si une note de lecture est présente ou pas, par défaut TRUE
+#' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#'
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
+#' 
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx mergeCells
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+ajouter_source <- function(classeur,
+                           nom_feuille,
+                           source,
+                           col_debut = 2,
+                           style = agreste::creer_liste_style_excel()$source,
+                           avec_note = TRUE,
+                           fusion = TRUE) {
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(source), msg = "La source doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(style)=="Style", msg = "Le style doit \u00eatre un objet de type Style. Voir fonction crer_liste_style_excel pour la cr\u00e9ation de styles.")
+  assert_that(class(avec_note)=="logical", msg = "La condition de note doit \u00eatre un bool\u00e9en, TRUE ou FALSE.")
+  
+  last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
+  if (isTRUE(avec_note)) {
+    row_source = last_row + 1
+  } else {
+    row_source = last_row + 2 
+  }
+  nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
+  
+  if (isTRUE(fusion)) {
+    mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = row_source)
+  }
+  writeData(classeur, nom_feuille, paste("Source :",source), startCol = col_debut, startRow = row_source)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = row_source, cols = col_debut)
+}
+```
+
+```{r examples_ajouter_source}
+
+# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# Ajout de la source
+# Sauvegarde du classeur
+# Ouverture du classeur
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel()
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+
+ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = "Ceci est une source quelconque", col_debut = start_col, avec_note = FALSE)
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(airquality)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+
+ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "blablabla", col_debut = start_col)
+ajouter_source(classeur = mon_classeur, nom_feuille = "airquality", source = "Eurostat", col_debut = start_col, avec_note = TRUE)
+
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests_ajouter_source}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  source = "Une source quelconque"
+  
+  expect_error(ajouter_source(classeur = nom_page, nom_feuille = "iris", source = source),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_source(classeur = mon_classeur, nom_feuille = "tab_iris", source = iris),"La source doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_source(classeur = mon_classeur, nom_feuille = iris, source = source),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = source, col_debut = "2"),"La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = source, col_debut = 2, style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+  expect_error(ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = source, col_debut = 2, avec_note = 1), "La condition de note doit \u00eatre un bool\u00e9en, TRUE ou FALSE.")
+})
+
+```
+
+# Ajouter le champ
+
+```{r function_ajouter_champ}
+#' Ajouter le champ sous un tableau dans une feuille d'un fichier xlsx
+#'
+#' Cette fonction permet d'ajouter un champ sous un tableau dans une feuille Excel
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param nom_feuille nom de la feuille
+#' @param champ le champ à ajouter
+#' @param col_debut la colonne de départ (2eme par défaut)
+#' @param style le style à appliquer (style "champ" par défaut)
+#' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#'
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
+#' 
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx mergeCells
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+ajouter_champ <- function(classeur,
+                          nom_feuille,
+                          champ,
+                          col_debut = 2,
+                          style = agreste::creer_liste_style_excel()$champ,
+                          fusion = TRUE) {
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(champ), msg = "Le champ doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(style)=="Style", msg = "Le style doit \u00eatre un objet de type Style. Voir fonction crer_liste_style_excel pour la cr\u00e9ation de styles.")
+
+  last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
+  row_champ = last_row + 1
+  nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
+  
+  if (isTRUE(fusion)) {
+    mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = row_champ)
+  }
+  writeData(classeur, nom_feuille, paste("Champ :",champ), startCol = col_debut, startRow = row_champ)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = row_champ, cols = col_debut)
+}
+```
+
+```{r examples_ajouter_champ}
+
+# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# Ajout du champ
+# Sauvegarde du classeur
+# Ouverture du classeur
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+
+ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = "Fleurs", col_debut = start_col)
+ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = "Ceci est une source quelconque", col_debut = start_col, avec_note = FALSE)
+ajouter_champ(classeur = mon_classeur, nom_feuille = "iris", champ = "France métropolitaine", col_debut = start_col)
+
+start_ligne = 3
+start_col = 2
+nb_col = ncol(airquality)
+
+ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
+addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+
+ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "airquality", titre = "Qualité de l'air", col_debut = start_col)
+ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "blablabla", col_debut = start_col)
+ajouter_source(classeur = mon_classeur, nom_feuille = "airquality", source = "Eurostat", col_debut = start_col, avec_note = TRUE)
+ajouter_champ(classeur = mon_classeur, nom_feuille = "airquality", champ = "Daily air quality measurements in New York, May to September 1973.", col_debut = start_col)
+
+
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests_ajouter_champ}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  champ = "Données quelconque"
+  
+  expect_error(ajouter_champ(classeur = nom_page, nom_feuille = "iris", champ = champ),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_champ(classeur = mon_classeur, nom_feuille = "tab_iris", champ = iris),"Le champ doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_champ(classeur = mon_classeur, nom_feuille = iris, champ = champ),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_champ(classeur = mon_classeur, nom_feuille = "iris", champ = champ, col_debut = "2"),"La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_champ(classeur = mon_classeur, nom_feuille = "iris", champ = champ, col_debut = 2, style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+})
+
+```
+
+# Geler des lignes ou colonnes
+
+```{r function-geler}
+#' Geler une(des) ligne(s) et/ou une(des) colonne(s) 
+#'
+#' Cette fonction permet de geler une ou plusieurs lignes ainsi qu'une ou plusieurs colonnes d'une feuille de classeur
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param nom_feuille nom de la feuille
+#' @param ligne la ligne à geler (0 si pas de ligne à geler)
+#' @param col la colonne à geler (0 si pas de colonne à geler)
+#'
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
+#' 
+#' @importFrom openxlsx freezePane
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+geler <- function(classeur,
+                  nom_feuille,
+                  ligne = 0,
+                  col = 0) {
+  
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(ligne), msg = "La ligne \u00e0 geler doit \u00eatre un entier positif.")
+  assert_that(is.numeric(col), msg = "La colonne \u00e0 geler doit \u00eatre un entier positif.")
+  
+  ligne <- ligne + 1
+  col <- col + 1
+  
+  
+  if (ligne != 0 & col != 0) {
+    freezePane(classeur, nom_feuille, firstActiveRow = ligne, firstActiveCol = col)
+  } else if (ligne != 0 & col == 0) {
+    freezePane(classeur, nom_feuille, firstActiveRow = ligne)
+  } else if (ligne == 0 & col != 0) {
+    freezePane(classeur, nom_feuille, firstActiveCol = col)
+  }
+}
+```
+
+```{r examples-geler}
+
+library(openxlsx)
+library(agreste)
+
+# Création d'un classeur avec une feuille contenant iris 
+mon_classeur <- createWorkbook()
+ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris", ligne_debut = 3, col_debut = 2)
+
+# gel 
+geler(mon_classeur, "iris", ligne = 3, col = 1)
+
+# Sauver le classeur
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+# ouverture
+browseURL("tableau.xlsx")
+```
+
+```{r tests-geler}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+
+  expect_error(geler(classeur = nom_page, nom_feuille = "iris"),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = iris),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = "iris", ligne = "1"),"La ligne \u00e0 geler doit \u00eatre un entier positif.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = "iris", ligne = 1, col = "2"),"La colonne \u00e0 geler doit \u00eatre un entier positif.")
+})
+```
+
+# Formater un workbook automatiquement
+
+```{r function-formater_auto}
+#' Formater un classeur entier
+#'
+#' Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi
+#'
+#' @param classeur workbook créé avec openXLSX
+#' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
+#' @param liste_feuilles_avec_note vecteur contenant le nom de chaque feuille avec une note de lecture
+#' @param col_debut NUM la colonne à laquelle les tableaux démarrent
+#' @param liste_type_donnees LIST liste de vecteurs contenant les types de données de chaque colonne
+#'
+#' @return Rien n'est renvoyé mais le classeur est modifié
+#' 
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx createStyle
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' 
+#' @export
+#'
+#' @examples
+
+formater_auto <- function(classeur,
+                          format,
+                          liste_feuilles_avec_note,
+                          liste_type_donnees,
+                          col_debut = 2) {
+  
+  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(liste_type_donnees) == "list", msg = "La liste des types de donn\u00e9es doit \u00eatre de type list.")
+  assert_that(class(liste_feuilles_avec_note) == "character", msg = "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
+  
+  mes_styles <- creer_liste_style_excel(format = format)
+  
+  formater <- function(classeur, start_row_tabs, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut) {
+    i <- 0
+    for (feuille in names(classeur)) {
+      i <- i + 1
+      nb_col <- ncol(readWorkbook(classeur, sheet = feuille))
+      last_row <- nrow(readWorkbook(classeur, sheet = feuille, skipEmptyRows = FALSE, colNames = FALSE))
+      if (feuille %in% liste_feuilles_avec_note) {
+        eff_last_row <- last_row - 4
+      } else {
+        eff_last_row <- last_row - 3
+      }
+      
+      addStyle(wb = classeur,
+               sheet = feuille,
+               style = mes_styles$ligne_titre,
+               rows = start_row_tabs,
+               cols = col_debut:(nb_col + col_debut - 1))
+      
+      for (num_col in col_debut:(nb_col + col_debut - 1)) {
+        j <- num_col - col_debut + 1
+        style <- switch (liste_type_donnees[[i]][j],
+          "texte" = mes_styles$texte,
+          "numerique" = mes_styles$numerique,
+          "decimal" = mes_styles$decimal
+        )
+        addStyle(wb = classeur,
+                 sheet = feuille,
+                 style = style,
+                 rows = (start_row_tabs + 1):eff_last_row,
+                 cols = num_col)
+        
+      }
+      addStyle(wb = classeur,
+               sheet = feuille,
+               style = createStyle(border = "bottom",
+                                   borderColour = "black"),
+               rows = eff_last_row,
+               cols = col_debut:(nb_col + col_debut - 1),
+               stack = TRUE) # stack = TRUE pour juste ajouter l'élément de style sans effacer les autres
+      
+    }
+  }
+  
+  if (format == "chiffres_et_donnees") {
+    formater(classeur, 3, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut)
+  } else if (format == "primeur") {
+    formater(classeur, 5, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut) # changer le style
+  }
+  
+}
+```
+
+```{r examples-formater_auto}
+library(openxlsx)
+library(agreste)
+
+## Création d'un classeur avec deux feuilles et deux tableaux
+mon_classeur <- createWorkbook()
+
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      col_debut = 2)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Données fleurs iris",
+                      col_debut = 2)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "iris",
+               source = "Ceci est une source quelconque",
+               col_debut = 2,
+               avec_note = FALSE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "iris",
+              champ = "France métropolitaine",
+              col_debut = 2)
+
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality",
+                      col_debut = 2)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2)
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "blablabla",
+                     col_debut = 2)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "airquality",
+               source = "Eurostat",
+               col_debut = 2,
+               avec_note = TRUE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "airquality",
+              champ = "Daily air quality measurements in New York, May to September 1973.",
+              col_debut = 2)
+
+## Formater comme un Chiffres et Données
+formater_auto(mon_classeur,
+              format = "chiffres_et_donnees",
+              liste_feuilles_avec_note = c("airquality"),
+              liste_type_donnees = list(c("decimal",
+                                          "decimal",
+                                          "decimal",
+                                          "decimal",
+                                          "texte"),
+                                        c("numerique",
+                                          "numerique",
+                                          "decimal",
+                                          "numerique",
+                                          "numerique",
+                                          "numerique")),
+              col_debut = 2)
+
+## Sauver
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+## Ouvrir
+browseURL("tableau.xlsx")
+
+```
+
+```{r tests-formater_auto}
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      col_debut = 2)
+
+  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données fleurs iris",
+                        col_debut = 2)
+  agreste::ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = "Ceci est une source quelconque",
+                 col_debut = 2,
+                 avec_note = FALSE)
+  agreste::ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "iris",
+                champ = "France métropolitaine",
+                col_debut = 2)
+
+  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = airquality,
+                        nom_feuille = "airquality",
+                        col_debut = 2)
+
+  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "airquality",
+                        titre = "Données qualité de l'air",
+                        col_debut = 2)
+  agreste::ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "airquality",
+                       note = "blablabla",
+                       col_debut = 2)
+  agreste::ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "airquality",
+                 source = "Eurostat",
+                 col_debut = 2,
+                 avec_note = TRUE)
+  agreste::ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "airquality",
+                champ = "Daily air quality measurements in New York, May to September 1973.",
+                col_debut = 2)
+
+
+  expect_error(formater_auto(classeur = "workbook",
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("iris"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"))),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = 2,
+                             liste_feuilles_avec_note = c("iris"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"))),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c(1,2,3),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"))),
+               "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("iris"),
+                             liste_type_donnees = c("decimal",
+                                                    "decimal",
+                                                    "decimal",
+                                                    "decimal",
+                                                    "texte")),
+               "La liste des types de donn\u00e9es doit \u00eatre de type list.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("iris"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte")),
+                             col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+
+})
+```
+
+# Créer un tableau excel formaté depuis un plan
+
+```{r function-creer_excel_depuis_plan}
+#' Crée un classeur et le formate
+#'
+#' Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan
+#'
+#' @param fichier fichier .xlsx contenant les détails pour chaque tableau 
+#' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
+#' @param col_debut NUM la colonne à laquelle les tableaux démarrent
+#' @param save LGL TRUE si export du classeur au format xlsx
+#' @param path CHAR chemin vers le tableau à sauvegarder
+#'
+#' @return un objet de type workbook formaté
+#' 
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.string
+#' @importFrom openxlsx read.xlsx
+#' @importFrom openxlsx createWorkbook
+#' @importFrom openxlsx saveWorkbook
+#' 
+#' @export
+#'
+#' @examples
+creer_excel_depuis_plan <- function(fichier,
+                                    format,
+                                    col_debut,
+                                    save = TRUE,
+                                    path = "tableau1.xlsx") {
+  assert_that(class(fichier)=="character",msg = "Le nom de fichier doit \u00eatre une cha\u00eene de caract\u00e8res.")
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(save) == "logical", msg = "save doit \u00eatre TRUE ou FALSE")
+  assert_that(class(path) == "character", msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
+  
+  
+  plan = read.xlsx(fichier)
+  nb_tab = nrow(plan)
+  ligne_debut = switch (format,
+    "chiffres_et_donnees" = 3,
+    "primeur" = 5
+  )
+  liste_feuilles_note = c()
+  liste_data_types = list()
+  
+  wb = createWorkbook()
+  
+  for (tab in 1:nb_tab) {
+    filename <- paste(plan$Nom_fichier[tab], plan$Type[tab], sep = ".")
+    data <- read.csv(filename, header = TRUE, check.names = FALSE)
+    feuille <- plan$Nom_feuille[tab]
+    titre <- plan$Titre[tab]
+    avec_note <- plan$Avec_note[tab]
+    source <- plan$Source[tab]
+    champ <- plan$Champ[tab]
+    liste_data_types <- append(liste_data_types, strsplit(plan$Liste_unites[tab], split = ", "))
+    
+    agreste::ajouter_tableau_excel(classeur = wb,
+                                   tableau = data,
+                                   nom_feuille = feuille,
+                                   ligne_debut = ligne_debut,
+                                   col_debut = col_debut)
+    agreste::ajouter_titre_tableau(classeur = wb,
+                                   nom_feuille = feuille,
+                                   titre = titre,
+                                   col_debut = col_debut)
+    if (avec_note == "Oui") {
+      liste_feuilles_note <- append(liste_feuilles_note, feuille)
+      agreste::ajouter_note_lecture(classeur = wb,
+                                    nom_feuille = feuille,
+                                    note = plan$Note_de_lecture[tab],
+                                    col_debut = col_debut)
+      agreste::ajouter_source(classeur = wb,
+                              nom_feuille = feuille,
+                              source = source,
+                              col_debut = col_debut,
+                              avec_note = TRUE)
+    } else {
+      agreste::ajouter_source(classeur = wb,
+                              nom_feuille = feuille,
+                              source = source,
+                              col_debut = col_debut,
+                              avec_note = FALSE)
+    }
+    agreste::ajouter_champ(classeur = wb,
+                           nom_feuille = feuille,
+                           champ = champ,
+                           col_debut = col_debut)
+  }
+  agreste::formater_auto(wb,
+                         format = format,
+                         liste_feuilles_avec_note = liste_feuilles_note,
+                         liste_type_donnees = liste_data_types,
+                         col_debut = col_debut)
+  if (isTRUE(save)) {
+    saveWorkbook(wb, file = path, overwrite = TRUE)
+  }
+  
+  return(wb)
+}
+
+
+```
+
+```{r examples-creer_excel_depuis_plan}
+## Exemple
+
+```
+
+```{r tests-creer_excel_depuis_plan}
+##
+```
+
+```{r development-inflate, eval=FALSE}
+fusen::inflate(flat_file = "dev/flat_export_excel.Rmd", vignette_name = "Export excel", check=F)
+```

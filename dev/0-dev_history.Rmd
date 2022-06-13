@@ -1,0 +1,114 @@
+---
+title: "Development actions history"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+All commands that you use to use when developing packages...
+
+# First time just after creating the project
+
+- Fill the following chunk to create the DESCRIPTION of your package
+
+```{r description, eval=FALSE}
+# Describe your package
+fusen::fill_description(
+  pkg = here::here(),
+  fields = list(
+    Title = "Aide à la publication sur Agreste",
+    Description = "Aide à la création des documents qui, après PAO, pourront être publiés sur Agreste. Facilite la cration de tableaux, graphiques, cartes. Automatise la création des chiffres et données.",
+    `Authors@R` = c(
+      person("Anaël", "Delorme", email = "anael.delorme@agriculture.gouv.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1122-9076")),
+      person("Killian", "Steunou", email = "killian.steunou@agriculture.gouv.fr", role="aut"),
+      person(given = "MinAgri-SSP", role = "cph")
+    )
+  ),
+  overwrite = TRUE
+)
+# Define License with use_*_license()
+usethis::use_mit_license("Agreste")
+```
+
+# Start using git
+
+```{r, eval=FALSE}
+usethis::use_git()
+# Deal with classical files to ignore
+usethis::git_vaccinate()
+```
+
+# Set extra sources of documentation
+
+```{r, eval=FALSE}
+# README
+usethis::use_readme_rmd()
+# Code of Conduct
+# usethis::use_code_of_conduct("contact@fake.com")
+# NEWS
+usethis::use_news_md()
+```
+
+**From now, you will need to "inflate" your package at least once to be able to use the following commands. Let's go to your flat template, and come back here later if/when needed.**
+
+
+# Package development tools
+## Use once
+
+```{r, eval=FALSE}
+# Pipe
+usethis::use_pipe()
+
+# package-level documentation
+usethis::use_package_doc()
+
+# Set CI
+# _GitHub
+usethis::use_github_action_check_standard()
+usethis::use_github_action("pkgdown")
+usethis::use_github_action("test-coverage")
+# _GitLab
+gitlabr::use_gitlab_ci(type = "check-coverage-pkgdown")
+
+# Add new flat template
+fusen::add_flat_template("add")
+```
+
+## Use everytime needed
+
+```{r}
+# Simulate package installation
+pkgload::load_all()
+
+# Generate documentation and deal with dependencies
+attachment::att_amend_desc()
+
+# Check the package
+devtools::check()
+```
+
+# Share the package
+
+```{r}
+# set and try pkgdown documentation website
+usethis::use_pkgdown()
+
+options(rmarkdown.html_vignette.check_title = FALSE)
+options(pkgdown.internet = FALSE)
+
+pkgdown::build_site(examples = FALSE,
+                    lazy = TRUE,
+                    preview = TRUE,
+                    new_process = TRUE)
+
+# build the tar.gz to share with others
+devtools::build()
+```
+
+
+# Import data
+```{r}
+# !!! NE PAS EXECUTER !!! (efface le fichier de data preparation)
+usethis::use_data_raw(name = "data")
+```
+
