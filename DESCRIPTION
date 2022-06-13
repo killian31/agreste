@@ -1,0 +1,36 @@
+Package: agreste
+Title: Aide À La Publication Sur Agreste
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Anaël", "Delorme", , "anael.delorme@agriculture.gouv.fr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1122-9076")),
+    person("Killian", "Steunou", , "killian.steunou@agriculture.gouv.fr", role = "aut"),
+    person("MinAgri-SSP", role = "cph")
+  )
+Description: Aide à la création des documents qui, après PAO, pourront
+    être publiés sur Agreste. Facilite la cration de tableaux, graphiques,
+    cartes. Automatise la création des chiffres et données.
+License: MIT + file LICENSE
+Depends: 
+    R (>= 2.10)
+Imports: 
+    assertthat,
+    dplyr,
+    ggplot2,
+    ggtext,
+    glue,
+    magrittr,
+    openxlsx,
+    sf,
+    stringr
+Suggests: 
+    knitr,
+    purrr,
+    rmarkdown,
+    testthat
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
