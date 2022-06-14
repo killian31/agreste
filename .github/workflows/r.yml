@@ -25,6 +25,13 @@ jobs:
         r-version: ['4.1.1']
 
     steps:
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - uses: actions/checkout@v3
       - name: Pandoc with Latex
         uses: Ender-events/pandoc@v1
