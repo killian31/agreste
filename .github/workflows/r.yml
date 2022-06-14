@@ -45,5 +45,7 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+        run: |
+          install.packages("rcmdcheck")
+          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
