@@ -10,7 +10,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
   expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "tab_iris", titre = iris),"Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
   expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = iris, titre = titre),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
   expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = titre, col_debut = "2"),"La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = titre, col_debut = 2, style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = titre, col_debut = 2, format = 2),"Le format doit \u00eatre une cha\u00eene de caract\u00e8re.")
 
 })
 

@@ -24,11 +24,11 @@ library(agreste)
 
 ```{r examples_creer_liste_style_excel}
 library(agreste)
-mes_styles <- creer_liste_style_excel()
+mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
 
 #exemples
-mes_styles$titre
-mes_styles$numerique_total
+mes_styles$ligne_titre
+mes_styles$numerique
 
 ```
 
@@ -80,46 +80,118 @@ browseURL("tableau.xlsx")
 
 ```{r examples_ajouter_titre_tableau}
 
-# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
-# Ajout d'un titre
-# Sauvegarde du classeur
-# Ouverture du classeur
 library(openxlsx)
 library(agreste)
+
+## Création d'un classeur
+
 mon_classeur <- createWorkbook()
 
-mes_styles <- creer_liste_style_excel()
+mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(iris)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris")
 
-ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = "Données fleurs iris", col_debut = 2)
+## Formatage
+
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal_italique,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
+
+## Ajout du titre 
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Données fleurs iris",
+                      col_debut = 2,
+                      format = "chiffres_et_donnees")
+
+## Deuxième feuille
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(airquality)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality")
 
-ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "airquality", titre = "Données qualité de l'air", col_debut = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 6)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 7)
 
-saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2)
+
+saveWorkbook(wb = mon_classeur,
+             file = "tableau.xlsx",
+             overwrite = TRUE)
 
 browseURL("tableau.xlsx")
 
@@ -143,30 +215,104 @@ start_ligne = 3
 start_col = 2
 nb_col = ncol(iris)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris")
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur, 
+        sheet = "iris",
+        style = mes_styles$decimal_italique,
+        rows = (start_ligne+1):(nrow(iris)+start_ligne),
+        cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
 
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "iris", note = "Ceci est une note de lecture", col_debut = 2)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Iris",
+                      col_debut = start_col,
+                      format = "chiffres_et_donnees")
+
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "iris",
+                     note = "Ceci est une note de lecture",
+                     col_debut = 2)
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(airquality)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality")
 
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "Ceci est une autre note de lecture", col_debut = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 6)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 7)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2)
+
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "Ceci est une autre note de lecture",
+                     col_debut = 2)
 
 saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
 
@@ -192,33 +338,114 @@ start_ligne = 3
 start_col = 2
 nb_col = ncol(iris)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris")
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur, 
+        sheet = "iris",
+        style = mes_styles$decimal_italique,
+        rows = (start_ligne+1):(nrow(iris)+start_ligne),
+        cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Iris",
+                      col_debut = start_col,
+                      format = "chiffres_et_donnees")
 
-ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = "Ceci est une source quelconque", col_debut = start_col, avec_note = FALSE)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "iris",
+               source = "Ceci est une source quelconque",
+               format = "chiffres_et_donnees",
+               col_debut = start_col,
+               avec_note = FALSE)
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(airquality)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality")
 
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "blablabla", col_debut = start_col)
-ajouter_source(classeur = mon_classeur, nom_feuille = "airquality", source = "Eurostat", col_debut = start_col, avec_note = TRUE)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 6)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 7)
 
-saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2)
+
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "blablabla",
+                     col_debut = start_col)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "airquality",
+               source = "Eurostat",
+               col_debut = start_col,
+               avec_note = TRUE)
+
+saveWorkbook(wb = mon_classeur,
+             file = "tableau.xlsx",
+             overwrite = TRUE)
 
 browseURL("tableau.xlsx")
 
@@ -242,38 +469,121 @@ start_ligne = 3
 start_col = 2
 nb_col = ncol(iris)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris")
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur, 
+        sheet = "iris",
+        style = mes_styles$decimal_italique,
+        rows = (start_ligne+1):(nrow(iris)+start_ligne),
+        cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Iris",
+                      col_debut = start_col,
+                      format = "chiffres_et_donnees")
 
-ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "iris", titre = "Fleurs", col_debut = start_col)
-ajouter_source(classeur = mon_classeur, nom_feuille = "iris", source = "Ceci est une source quelconque", col_debut = start_col, avec_note = FALSE)
-ajouter_champ(classeur = mon_classeur, nom_feuille = "iris", champ = "France métropolitaine", col_debut = start_col)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "iris",
+               source = "Ceci est une source quelconque",
+               col_debut = start_col,
+               avec_note = FALSE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "iris",
+              champ = "France métropolitaine",
+              col_debut = start_col)
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(airquality)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality")
 
-ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "airquality", titre = "Qualité de l'air", col_debut = start_col)
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "blablabla", col_debut = start_col)
-ajouter_source(classeur = mon_classeur, nom_feuille = "airquality", source = "Eurostat", col_debut = start_col, avec_note = TRUE)
-ajouter_champ(classeur = mon_classeur, nom_feuille = "airquality", champ = "Daily air quality measurements in New York, May to September 1973.", col_debut = start_col)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 6)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 7)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Qualité de l'air",
+                      col_debut = start_col)
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "blablabla",
+                     col_debut = start_col)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "airquality",
+               source = "Eurostat",
+               col_debut = start_col,
+               avec_note = TRUE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "airquality",
+              champ = "Daily air quality measurements in New York, May to September 1973.",
+              col_debut = start_col)
 
 
-saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+saveWorkbook(wb = mon_classeur,
+             file = "tableau.xlsx",
+             overwrite = TRUE)
 
 browseURL("tableau.xlsx")
 
@@ -311,48 +621,57 @@ mon_classeur <- createWorkbook()
 ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = iris,
                       nom_feuille = "iris",
+                      ligne_debut = 5,
                       col_debut = 2)
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "iris",
                       titre = "Données fleurs iris",
-                      col_debut = 2)
+                      col_debut = 2,
+                      format = "primeur")
 ajouter_source(classeur = mon_classeur,
                nom_feuille = "iris",
                source = "Ceci est une source quelconque",
+               format = "primeur",
                col_debut = 2,
                avec_note = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "iris",
               champ = "France métropolitaine",
+              format = "primeur",
               col_debut = 2)
 
 ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = airquality,
                       nom_feuille = "airquality",
+                      ligne_debut = 5,
                       col_debut = 2)
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
                       titre = "Données qualité de l'air",
-                      col_debut = 2)
+                      col_debut = 2,
+                      format = "primeur")
 ajouter_note_lecture(classeur = mon_classeur,
                      nom_feuille = "airquality",
                      note = "blablabla",
+                     format = "primeur",
                      col_debut = 2)
 ajouter_source(classeur = mon_classeur,
                nom_feuille = "airquality",
                source = "Eurostat",
+               format = "primeur",
                col_debut = 2,
                avec_note = TRUE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "airquality",
               champ = "Daily air quality measurements in New York, May to September 1973.",
+              format = "primeur",
               col_debut = 2)
 
 ## Formater comme un Chiffres et Données
 formater_auto(mon_classeur,
-              format = "chiffres_et_donnees",
+              format = "primeur",
               liste_feuilles_avec_note = c("airquality"),
               liste_type_donnees = list(c("decimal",
                                           "decimal",
@@ -377,8 +696,27 @@ browseURL("tableau.xlsx")
 
 # Créer un tableau excel formaté depuis un plan
 
-```{r examples-creer_excel_depuis_plan}
-## Exemple
+```{r examples-creer_excel_depuis_plan, echo = FALSE}
+library(agreste)
+library(dplyr)
+### Import du fichier de plan
+plan = agreste::modele_plan
+
+### Création des csv 
+agreste::resultat_1 %>%
+  write.csv(file = "resultat_1.csv", row.names = FALSE)
+agreste::resultat_2 %>%
+  write.csv(file = "resultat_2.csv", row.names = FALSE)
+agreste::resultat_3 %>%
+  write.csv(file = "resultat_3.csv", row.names = FALSE)
+write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+### Formatage
+workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
+                                    format = "chiffres_et_donnees",
+                                    col_debut = 2,
+                                    save = TRUE,
+                                    path = "cd_a_envoyer.xlsx")
+browseURL("cd_a_envoyer.xlsx")
 
 ```
 
