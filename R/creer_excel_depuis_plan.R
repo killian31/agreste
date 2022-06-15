@@ -2,10 +2,11 @@
 
 #' Crée un classeur et le formate
 #'
-#' Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan
+#' Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan. Les fichiers indiqués dans le plan doivent être dans le répertoire de travail.
 #'
-#' @param fichier fichier .xlsx contenant les détails pour chaque tableau 
+#' @param plan fichier .xlsx ou data frame contenant les détails pour chaque tableau 
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
+#' @param type_virgule CHAR le type de séparation décimale utilisée : "." ou ","
 #' @param col_debut NUM la colonne à laquelle les tableaux démarrent
 #' @param save LGL TRUE si export du classeur au format xlsx
 #' @param path CHAR chemin vers le tableau à sauvegarder
@@ -21,41 +22,70 @@
 #' @export
 #'
 #' @examples
-#' ## Exemple
+#' library(agreste)
+#' library(dplyr)
+#' ### Import du fichier de plan
+#' plan = agreste::modele_plan
 #' 
-creer_excel_depuis_plan <- function(fichier,
+#' ### Création des csv 
+#' agreste::resultat_1 %>%
+#'   write.csv(file = "resultat_1.csv", row.names = FALSE)
+#' agreste::resultat_2 %>%
+#'   write.csv(file = "resultat_2.csv", row.names = FALSE)
+#' agreste::resultat_3 %>%
+#'   write.csv(file = "resultat_3.csv", row.names = FALSE)
+#' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+#' ### Formatage
+#' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
+#'                                     format = "chiffres_et_donnees",
+#'                                     col_debut = 2,
+#'                                     save = TRUE,
+#'                                     path = "cd_a_envoyer.xlsx")
+#' browseURL("cd_a_envoyer.xlsx")
+#' 
+creer_excel_depuis_plan <- function(plan,
                                     format,
+                                    type_virgule = ",",
                                     col_debut,
                                     save = TRUE,
                                     path = "tableau1.xlsx") {
-  assert_that(class(fichier)=="character",msg = "Le nom de fichier doit \u00eatre une cha\u00eene de caract\u00e8res.")
+  assert_that(class(plan) %in% c("character", "data.frame"),msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
   assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(type_virgule %in% c(",", "."), msg = 'Le type de virgule doit \u00eatre "." ou ","')
   assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(class(save) == "logical", msg = "save doit \u00eatre TRUE ou FALSE")
   assert_that(class(path) == "character", msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
   
+  if (class(plan) == "character") {
+    plan = read.xlsx(plan)
+  }
   
-  plan = read.xlsx(fichier)
   nb_tab = nrow(plan)
   ligne_debut = switch (format,
     "chiffres_et_donnees" = 3,
     "primeur" = 5
   )
-  liste_feuilles_note = c()
-  liste_data_types = list()
+  liste_feuilles_note <- c()
+  liste_data_types <- list()
   
   wb = createWorkbook()
   
   for (tab in 1:nb_tab) {
-    filename <- paste(plan$Nom_fichier[tab], plan$Type[tab], sep = ".")
-    data <- read.csv(filename, header = TRUE, check.names = FALSE)
+    filename <- paste(plan$Nom_fichier[tab],
+                      plan$Type[tab],
+                      sep = ".")
+    data <- read.csv(filename,
+                     header = TRUE,
+                     check.names = FALSE, dec = type_virgule)
     feuille <- plan$Nom_feuille[tab]
     titre <- plan$Titre[tab]
     avec_note <- plan$Avec_note[tab]
     source <- plan$Source[tab]
     champ <- plan$Champ[tab]
-    liste_data_types <- append(liste_data_types, strsplit(plan$Liste_unites[tab], split = ", "))
-    
+    liste_data_types <- append(liste_data_types,
+                               strsplit(plan$Liste_unites[tab],
+                                        split = ", "))
+
     agreste::ajouter_tableau_excel(classeur = wb,
                                    tableau = data,
                                    nom_feuille = feuille,
@@ -64,30 +94,36 @@ creer_excel_depuis_plan <- function(fichier,
     agreste::ajouter_titre_tableau(classeur = wb,
                                    nom_feuille = feuille,
                                    titre = titre,
-                                   col_debut = col_debut)
+                                   col_debut = col_debut,
+                                   format = format)
     if (avec_note == "Oui") {
       liste_feuilles_note <- append(liste_feuilles_note, feuille)
       agreste::ajouter_note_lecture(classeur = wb,
                                     nom_feuille = feuille,
                                     note = plan$Note_de_lecture[tab],
-                                    col_debut = col_debut)
+                                    col_debut = col_debut,
+                                    format = format)
       agreste::ajouter_source(classeur = wb,
                               nom_feuille = feuille,
                               source = source,
                               col_debut = col_debut,
-                              avec_note = TRUE)
+                              avec_note = TRUE,
+                              format = format)
     } else {
       agreste::ajouter_source(classeur = wb,
                               nom_feuille = feuille,
                               source = source,
                               col_debut = col_debut,
-                              avec_note = FALSE)
+                              avec_note = FALSE,
+                              format = format)
     }
     agreste::ajouter_champ(classeur = wb,
                            nom_feuille = feuille,
                            champ = champ,
-                           col_debut = col_debut)
+                           col_debut = col_debut,
+                           format = format)
   }
+
   agreste::formater_auto(wb,
                          format = format,
                          liste_feuilles_avec_note = liste_feuilles_note,

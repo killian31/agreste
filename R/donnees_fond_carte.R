@@ -16,7 +16,6 @@
 #' @importFrom dplyr recode
 #' @importFrom glue glue
 #' @importFrom glue glue_collapse
-#' @importFrom stringr str_c
 #' 
 #' @examples
 #' data_geo_france_region_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "region_metro")

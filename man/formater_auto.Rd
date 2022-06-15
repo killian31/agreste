@@ -39,48 +39,57 @@ mon_classeur <- createWorkbook()
 ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = iris,
                       nom_feuille = "iris",
+                      ligne_debut = 5,
                       col_debut = 2)
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "iris",
                       titre = "Données fleurs iris",
-                      col_debut = 2)
+                      col_debut = 2,
+                      format = "primeur")
 ajouter_source(classeur = mon_classeur,
                nom_feuille = "iris",
                source = "Ceci est une source quelconque",
+               format = "primeur",
                col_debut = 2,
                avec_note = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "iris",
               champ = "France métropolitaine",
+              format = "primeur",
               col_debut = 2)
 
 ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = airquality,
                       nom_feuille = "airquality",
+                      ligne_debut = 5,
                       col_debut = 2)
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
                       titre = "Données qualité de l'air",
-                      col_debut = 2)
+                      col_debut = 2,
+                      format = "primeur")
 ajouter_note_lecture(classeur = mon_classeur,
                      nom_feuille = "airquality",
                      note = "blablabla",
+                     format = "primeur",
                      col_debut = 2)
 ajouter_source(classeur = mon_classeur,
                nom_feuille = "airquality",
                source = "Eurostat",
+               format = "primeur",
                col_debut = 2,
                avec_note = TRUE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "airquality",
               champ = "Daily air quality measurements in New York, May to September 1973.",
+              format = "primeur",
               col_debut = 2)
 
 ## Formater comme un Chiffres et Données
 formater_auto(mon_classeur,
-              format = "chiffres_et_donnees",
+              format = "primeur",
               liste_feuilles_avec_note = c("airquality"),
               liste_type_donnees = list(c("decimal",
                                           "decimal",

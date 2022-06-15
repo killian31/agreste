@@ -38,7 +38,6 @@ library(ggtext)
 #' @importFrom dplyr recode
 #' @importFrom glue glue
 #' @importFrom glue glue_collapse
-#' @importFrom stringr str_c
 #' 
 #' @examples
 donnees_fond_carte <- function(zone_geographique = "france",

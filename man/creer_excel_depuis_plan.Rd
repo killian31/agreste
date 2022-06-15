@@ -5,17 +5,20 @@
 \title{Crée un classeur et le formate}
 \usage{
 creer_excel_depuis_plan(
-  fichier,
+  plan,
   format,
+  type_virgule = ",",
   col_debut,
   save = TRUE,
   path = "tableau1.xlsx"
 )
 }
 \arguments{
-\item{fichier}{fichier .xlsx contenant les détails pour chaque tableau}
+\item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque tableau}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
+
+\item{type_virgule}{CHAR le type de séparation décimale utilisée : "." ou ","}
 
 \item{col_debut}{NUM la colonne à laquelle les tableaux démarrent}
 
@@ -27,9 +30,28 @@ creer_excel_depuis_plan(
 un objet de type workbook formaté
 }
 \description{
-Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan
+Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan. Les fichiers indiqués dans le plan doivent être dans le répertoire de travail.
 }
 \examples{
-## Exemple
+library(agreste)
+library(dplyr)
+### Import du fichier de plan
+plan = agreste::modele_plan
+
+### Création des csv 
+agreste::resultat_1 \%>\%
+  write.csv(file = "resultat_1.csv", row.names = FALSE)
+agreste::resultat_2 \%>\%
+  write.csv(file = "resultat_2.csv", row.names = FALSE)
+agreste::resultat_3 \%>\%
+  write.csv(file = "resultat_3.csv", row.names = FALSE)
+write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+### Formatage
+workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
+                                    format = "chiffres_et_donnees",
+                                    col_debut = 2,
+                                    save = TRUE,
+                                    path = "cd_a_envoyer.xlsx")
+browseURL("cd_a_envoyer.xlsx")
 
 }

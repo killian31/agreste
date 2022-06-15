@@ -21,13 +21,14 @@ index_current_sheet <- 0
 
 shinyApp(
   ui = dashboardPage(
-    # freshTheme = theme,
+    skin = "light",
     title = "Mise en forme de tableaux",
     
-    header = dashboardHeader(title = "Mise en forme de tableaux",
-                             skin = "red"),
+    header = dashboardHeader(title = "Mise en forme de tableaux"),
     
     sidebar = dashboardSidebar(
+      skin = "light",
+      
       fileInput(
         inputId = "file1",
         label = "Choisir un fichier CSV",
@@ -73,6 +74,11 @@ shinyApp(
     # controlbar = dashboardControlbar(),
     footer = dashboardFooter(),
     body = dashboardBody(
+      prettyRadioButtons(inputId = "format",
+                         label = "Format",
+                         choices = c("Chiffres et données" = "chiffres_et_donnees",
+                                     Primeur = "primeur"),
+                         selected = "chiffres_et_donnees"),
       textInput("feuille", "Nom de la feuille :"),
       textInput("title", "Titre du tableau :"),
       # Output: Data file ----
@@ -231,7 +237,7 @@ shinyApp(
       # formatting
       if (input$source != "" & input$champ != "") {
         formater_auto(classeur = wb,
-                      format = "chiffres_et_donnees",
+                      format = input$format,
                       liste_feuilles_avec_note = list_sheets_with_note,
                       liste_type_donnees = list_col_data_types)
         # save

@@ -17,10 +17,10 @@ Cette fonction permet de créer une liste avec tous les styles utiles aux public
 }
 \examples{
 library(agreste)
-mes_styles <- creer_liste_style_excel()
+mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
 
 #exemples
-mes_styles$titre
-mes_styles$numerique_total
+mes_styles$ligne_titre
+mes_styles$numerique
 
 }

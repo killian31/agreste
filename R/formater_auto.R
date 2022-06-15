@@ -31,48 +31,57 @@
 #' ajouter_tableau_excel(classeur = mon_classeur,
 #'                       tableau = iris,
 #'                       nom_feuille = "iris",
+#'                       ligne_debut = 5,
 #'                       col_debut = 2)
 #' 
 #' ajouter_titre_tableau(classeur = mon_classeur,
 #'                       nom_feuille = "iris",
 #'                       titre = "Données fleurs iris",
-#'                       col_debut = 2)
+#'                       col_debut = 2,
+#'                       format = "primeur")
 #' ajouter_source(classeur = mon_classeur,
 #'                nom_feuille = "iris",
 #'                source = "Ceci est une source quelconque",
+#'                format = "primeur",
 #'                col_debut = 2,
 #'                avec_note = FALSE)
 #' ajouter_champ(classeur = mon_classeur,
 #'               nom_feuille = "iris",
 #'               champ = "France métropolitaine",
+#'               format = "primeur",
 #'               col_debut = 2)
 #' 
 #' ajouter_tableau_excel(classeur = mon_classeur,
 #'                       tableau = airquality,
 #'                       nom_feuille = "airquality",
+#'                       ligne_debut = 5,
 #'                       col_debut = 2)
 #' 
 #' ajouter_titre_tableau(classeur = mon_classeur,
 #'                       nom_feuille = "airquality",
 #'                       titre = "Données qualité de l'air",
-#'                       col_debut = 2)
+#'                       col_debut = 2,
+#'                       format = "primeur")
 #' ajouter_note_lecture(classeur = mon_classeur,
 #'                      nom_feuille = "airquality",
 #'                      note = "blablabla",
+#'                      format = "primeur",
 #'                      col_debut = 2)
 #' ajouter_source(classeur = mon_classeur,
 #'                nom_feuille = "airquality",
 #'                source = "Eurostat",
+#'                format = "primeur",
 #'                col_debut = 2,
 #'                avec_note = TRUE)
 #' ajouter_champ(classeur = mon_classeur,
 #'               nom_feuille = "airquality",
 #'               champ = "Daily air quality measurements in New York, May to September 1973.",
+#'               format = "primeur",
 #'               col_debut = 2)
 #' 
 #' ## Formater comme un Chiffres et Données
 #' formater_auto(mon_classeur,
-#'               format = "chiffres_et_donnees",
+#'               format = "primeur",
 #'               liste_feuilles_avec_note = c("airquality"),
 #'               liste_type_donnees = list(c("decimal",
 #'                                           "decimal",
@@ -107,16 +116,22 @@ formater_auto <- function(classeur,
   
   mes_styles <- creer_liste_style_excel(format = format)
   
+  nb_row_to_add <- switch (format,
+    "chiffres_et_donnees" = 0,
+    "primeur" = 2
+  )
+  
   formater <- function(classeur, start_row_tabs, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut) {
+    
     i <- 0
     for (feuille in names(classeur)) {
       i <- i + 1
       nb_col <- ncol(readWorkbook(classeur, sheet = feuille))
       last_row <- nrow(readWorkbook(classeur, sheet = feuille, skipEmptyRows = FALSE, colNames = FALSE))
       if (feuille %in% liste_feuilles_avec_note) {
-        eff_last_row <- last_row - 4
+        eff_last_row <- last_row - 4 + nb_row_to_add
       } else {
-        eff_last_row <- last_row - 3
+        eff_last_row <- last_row - 3 + nb_row_to_add
       }
       
       addStyle(wb = classeur,
@@ -124,14 +139,20 @@ formater_auto <- function(classeur,
                style = mes_styles$ligne_titre,
                rows = start_row_tabs,
                cols = col_debut:(nb_col + col_debut - 1))
-      
+      print(nb_col)
+      print(col_debut)
       for (num_col in col_debut:(nb_col + col_debut - 1)) {
         j <- num_col - col_debut + 1
+
+        assert_that(liste_type_donnees[[i]][j] %in% c("texte", "numerique", "decimal"),
+                    msg = paste("Format de donn\u00e9es", liste_type_donnees[[i]][j], "non valide."))
+
         style <- switch (liste_type_donnees[[i]][j],
           "texte" = mes_styles$texte,
           "numerique" = mes_styles$numerique,
           "decimal" = mes_styles$decimal
         )
+        
         addStyle(wb = classeur,
                  sheet = feuille,
                  style = style,
@@ -145,15 +166,14 @@ formater_auto <- function(classeur,
                                    borderColour = "black"),
                rows = eff_last_row,
                cols = col_debut:(nb_col + col_debut - 1),
-               stack = TRUE) # stack = TRUE pour juste ajouter l'élément de style sans effacer les autres
-      
+               stack = TRUE)
     }
   }
   
   if (format == "chiffres_et_donnees") {
     formater(classeur, 3, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut)
   } else if (format == "primeur") {
-    formater(classeur, 5, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut) # changer le style
+    formater(classeur, 5, liste_feuilles_avec_note, liste_type_donnees, mes_styles, col_debut)
   }
   
 }

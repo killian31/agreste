@@ -8,6 +8,7 @@ ajouter_note_lecture(
   classeur,
   nom_feuille,
   note,
+  format = "chiffres_et_donnees",
   col_debut = 2,
   style = agreste::creer_liste_style_excel()$note,
   fusion = TRUE
@@ -19,6 +20,8 @@ ajouter_note_lecture(
 \item{nom_feuille}{nom de la feuille}
 
 \item{note}{la note à écrire}
+
+\item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
 \item{col_debut}{la colonne de départ (2eme par défaut)}
 
@@ -48,30 +51,104 @@ start_ligne = 3
 start_col = 2
 nb_col = ncol(iris)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris")
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$decimal_italique, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "iris", style = mes_styles$texte, rows = (start_ligne+1):(nrow(iris)+start_ligne), cols = 6)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris")
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur, 
+        sheet = "iris",
+        style = mes_styles$decimal_italique,
+        rows = (start_ligne+1):(nrow(iris)+start_ligne),
+        cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
 
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "iris", note = "Ceci est une note de lecture", col_debut = 2)
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Iris",
+                      col_debut = start_col,
+                      format = "chiffres_et_donnees")
+
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "iris",
+                     note = "Ceci est une note de lecture",
+                     col_debut = 2)
 
 start_ligne = 3
 start_col = 2
 nb_col = ncol(airquality)
 
-ajouter_tableau_excel(classeur = mon_classeur, tableau = airquality, nom_feuille = "airquality")
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$ligne_titre, rows = start_ligne, cols = start_col:(nb_col+start_col-1))
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 2)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 3)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$decimal, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 4)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 5)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 6)
-addStyle(wb = mon_classeur, sheet = "airquality", style = mes_styles$numerique, rows = (start_ligne+1):(nrow(airquality)+start_ligne), cols = 7)
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality")
 
-ajouter_note_lecture(classeur = mon_classeur, nom_feuille = "airquality", note = "Ceci est une autre note de lecture", col_debut = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 6)
+addStyle(wb = mon_classeur,
+         sheet = "airquality",
+         style = mes_styles$numerique,
+         rows = (start_ligne+1):(nrow(airquality)+start_ligne),
+         cols = 7)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2)
+
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "Ceci est une autre note de lecture",
+                     col_debut = 2)
 
 saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
 

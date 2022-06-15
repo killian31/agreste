@@ -14,11 +14,11 @@
 #'
 #' @examples
 #' library(agreste)
-#' mes_styles <- creer_liste_style_excel()
+#' mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
 #' 
 #' #exemples
-#' mes_styles$titre
-#' mes_styles$numerique_total
+#' mes_styles$ligne_titre
+#' mes_styles$numerique
 #' 
 creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
   
@@ -62,10 +62,15 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       wrapText = TRUE
   ),
   "primeur" = createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "center", valign = "center", fgFill = "#548235",
-    border = "TopBottomLeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
+    fontSize = 10,
+    fontColour = "white",
+    halign = "center",
+    valign = "center",
+    fgFill = "#548235",
+    border = "TopBottomLeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE
   )
   )
 
