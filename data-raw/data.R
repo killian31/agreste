@@ -2,6 +2,7 @@ library(data.table)
 library(lubridate)
 library(tidyverse)
 library(usethis)
+library(dplyr)
 
 #' Données géographiques
 #' Données des contours des pays, régions, départements
@@ -17,7 +18,13 @@ usethis::use_data(data_geo,  overwrite = TRUE, internal = FALSE)
 #' @source \url{https://www.data.gouv.fr/fr/datasets/base-des-permis-de-construire-et-autres-autorisations-durbanisme-sitadel/}
 "permis_contruire_region"
 dpt_france <- fread(input = "data-raw/carto/departement2021.csv")
-permis_construire_region <- fread(input = "data-raw/carto/PC_DP_creant_locaux_2017_2021.csv") %>%
+temp <- tempfile(fileext = ".zip")
+temp_csv_dir <- tempfile()
+download.file(url = "https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2022-06/pc_dp_creant_locaux_2017_2022.zip", 
+              destfile = temp)
+unzip(zipfile = temp, exdir = temp_csv_dir)
+
+permis_construire_region <- fread(file.path(temp_csv_dir, "PC_DP_creant_locaux_2017_2022.csv")) %>%
   mutate(annee_autorisation = year(ymd(DATE_REELLE_AUTORISATION))) %>%
   select(-REG) %>%
   left_join(dpt_france %>% select(DEP, REG), by="DEP") %>%
@@ -25,7 +32,8 @@ permis_construire_region <- fread(input = "data-raw/carto/PC_DP_creant_locaux_20
   count() %>%
   ungroup() %>%
   pivot_wider(names_from = Type_DAU, values_from = n)
-
+unlink(temp)
+unlink(temp_csv)
 usethis::use_data(permis_construire_region, overwrite = TRUE, internal = FALSE)
 
 #' Permis de construire au niveau départemental
