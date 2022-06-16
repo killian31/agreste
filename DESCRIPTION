@@ -26,7 +26,8 @@ Suggests:
     knitr,
     purrr,
     rmarkdown,
-    testthat
+    testthat,
+    xlsx
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
