@@ -2,7 +2,7 @@
 % Please edit documentation in R/creer_excel_depuis_plan.R
 \name{creer_excel_depuis_plan}
 \alias{creer_excel_depuis_plan}
-\title{Crée un classeur et le formate}
+\title{CrÃ©e un classeur et le formate}
 \usage{
 creer_excel_depuis_plan(
   plan,
@@ -14,31 +14,32 @@ creer_excel_depuis_plan(
 )
 }
 \arguments{
-\item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque tableau}
+\item{plan}{fichier .xlsx ou data frame contenant les dÃ©tails pour chaque tableau}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
-\item{type_virgule}{CHAR le type de séparation décimale utilisée : "." ou ","}
+\item{type_virgule}{CHAR le type de sÃ©paration dÃ©cimale utilisÃ©e : "." ou ","}
 
-\item{col_debut}{NUM la colonne à laquelle les tableaux démarrent}
+\item{col_debut}{NUM la colonne Ã  laquelle les tableaux dÃ©marrent}
 
 \item{save}{LGL TRUE si export du classeur au format xlsx}
 
-\item{path}{CHAR chemin vers le tableau à sauvegarder}
+\item{path}{CHAR chemin vers le tableau Ã  sauvegarder}
 }
 \value{
-un objet de type workbook formaté
+un objet de type workbook formatÃ©
 }
 \description{
-Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan. Les fichiers indiqués dans le plan doivent être dans le répertoire de travail.
+Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement Ã  partir d'un plan. Les fichiers indiquÃ©s dans le plan doivent Ãªtre dans le rÃ©pertoire de travail.
 }
 \examples{
 library(agreste)
 library(dplyr)
+library(xlsx)
 ### Import du fichier de plan
 plan = agreste::modele_plan
 
-### Création des csv 
+### CrÃ©ation des csv 
 agreste::resultat_1 \%>\%
   write.csv(file = "resultat_1.csv", row.names = FALSE)
 agreste::resultat_2 \%>\%

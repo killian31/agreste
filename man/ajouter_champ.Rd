@@ -15,29 +15,29 @@ ajouter_champ(
 )
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
 \item{nom_feuille}{nom de la feuille}
 
-\item{champ}{le champ à ajouter}
+\item{champ}{le champ Ã  ajouter}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
-\item{col_debut}{la colonne de départ (2eme par défaut)}
+\item{col_debut}{la colonne de dÃ©part (2eme par dÃ©faut)}
 
-\item{style}{le style à appliquer (style "champ" par défaut)}
+\item{style}{le style Ã  appliquer (style "champ" par dÃ©faut)}
 
-\item{fusion}{LGL si les cellules sont à fusionner ou pas (TRUE par défaut)}
+\item{fusion}{LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)}
 }
 \value{
-Rien n'est renvoyé mais la feuille du classeur est modifiée
+Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
 }
 \description{
 Cette fonction permet d'ajouter un champ sous un tableau dans une feuille Excel
 }
 \examples{
 
-# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Ajout du champ
 # Sauvegarde du classeur
 # Ouverture du classeur
@@ -97,7 +97,7 @@ ajouter_source(classeur = mon_classeur,
                avec_note = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "iris",
-              champ = "France métropolitaine",
+              champ = "France mÃ©tropolitaine",
               col_debut = start_col)
 
 start_ligne = 3
@@ -146,7 +146,7 @@ addStyle(wb = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
-                      titre = "Qualité de l'air",
+                      titre = "QualitÃ© de l'air",
                       col_debut = start_col)
 ajouter_note_lecture(classeur = mon_classeur,
                      nom_feuille = "airquality",

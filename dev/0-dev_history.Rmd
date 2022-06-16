@@ -110,6 +110,6 @@ devtools::build()
 # Import data
 ```{r}
 # !!! NE PAS EXECUTER !!! (efface le fichier de data preparation)
-usethis::use_data_raw(name = "data")
+# usethis::use_data_raw(name = "data")
 ```
 

@@ -4,7 +4,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
   mon_classeur <- openxlsx::createWorkbook()
   nom_page <- "nom_onglet"
   openxlsx::addWorksheet(mon_classeur, "iris")
-  champ = "Données quelconque"
+  champ = "DonnÃ©es quelconque"
   
   expect_error(ajouter_champ(classeur = nom_page, nom_feuille = "iris", champ = champ),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   expect_error(ajouter_champ(classeur = mon_classeur, nom_feuille = "tab_iris", champ = iris),"Le champ doit \u00eatre une cha\u00eene de caract\u00e8re.")

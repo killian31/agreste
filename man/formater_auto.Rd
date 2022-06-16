@@ -13,18 +13,18 @@ formater_auto(
 )
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
 \item{liste_feuilles_avec_note}{vecteur contenant le nom de chaque feuille avec une note de lecture}
 
-\item{liste_type_donnees}{LIST liste de vecteurs contenant les types de données de chaque colonne}
+\item{liste_type_donnees}{LIST liste de vecteurs contenant les types de donnÃ©es de chaque colonne}
 
-\item{col_debut}{NUM la colonne à laquelle les tableaux démarrent}
+\item{col_debut}{NUM la colonne Ã  laquelle les tableaux dÃ©marrent}
 }
 \value{
-Rien n'est renvoyé mais le classeur est modifié
+Rien n'est renvoyÃ© mais le classeur est modifiÃ©
 }
 \description{
 Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi
@@ -33,7 +33,7 @@ Cette fonction permet de formater tous les tableaux d'un classeur selon le type 
 library(openxlsx)
 library(agreste)
 
-## Création d'un classeur avec deux feuilles et deux tableaux
+## CrÃ©ation d'un classeur avec deux feuilles et deux tableaux
 mon_classeur <- createWorkbook()
 
 ajouter_tableau_excel(classeur = mon_classeur,
@@ -44,7 +44,7 @@ ajouter_tableau_excel(classeur = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "iris",
-                      titre = "Données fleurs iris",
+                      titre = "DonnÃ©es fleurs iris",
                       col_debut = 2,
                       format = "primeur")
 ajouter_source(classeur = mon_classeur,
@@ -55,7 +55,7 @@ ajouter_source(classeur = mon_classeur,
                avec_note = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "iris",
-              champ = "France métropolitaine",
+              champ = "France mÃ©tropolitaine",
               format = "primeur",
               col_debut = 2)
 
@@ -67,7 +67,7 @@ ajouter_tableau_excel(classeur = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
-                      titre = "Données qualité de l'air",
+                      titre = "DonnÃ©es qualitÃ© de l'air",
                       col_debut = 2,
                       format = "primeur")
 ajouter_note_lecture(classeur = mon_classeur,
@@ -87,7 +87,7 @@ ajouter_champ(classeur = mon_classeur,
               format = "primeur",
               col_debut = 2)
 
-## Formater comme un Chiffres et Données
+## Formater comme un Chiffres et DonnÃ©es
 formater_auto(mon_classeur,
               format = "primeur",
               liste_feuilles_avec_note = c("airquality"),

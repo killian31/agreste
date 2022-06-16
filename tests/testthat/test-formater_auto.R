@@ -10,7 +10,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
 
   agreste::ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "iris",
-                        titre = "Données fleurs iris",
+                        titre = "DonnÃ©es fleurs iris",
                         col_debut = 2)
   agreste::ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
@@ -19,7 +19,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
                  avec_note = FALSE)
   agreste::ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "iris",
-                champ = "France métropolitaine",
+                champ = "France mÃ©tropolitaine",
                 col_debut = 2)
 
   agreste::ajouter_tableau_excel(classeur = mon_classeur,
@@ -29,7 +29,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
 
   agreste::ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "airquality",
-                        titre = "Données qualité de l'air",
+                        titre = "DonnÃ©es qualitÃ© de l'air",
                         col_debut = 2)
   agreste::ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "airquality",

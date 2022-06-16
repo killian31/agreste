@@ -13,25 +13,25 @@ ajouter_tableau_excel(
 )
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
-\item{tableau}{dataframe ou tibble à insérer dans une nouvelle feuille}
+\item{tableau}{dataframe ou tibble Ã  insÃ©rer dans une nouvelle feuille}
 
 \item{nom_feuille}{nom de la nouvelle feuille}
 
-\item{ligne_debut}{la ligne à laquelle démarre le tableau}
+\item{ligne_debut}{la ligne Ã  laquelle dÃ©marre le tableau}
 
-\item{col_debut}{la colonne à laquelle démarre le tableau}
+\item{col_debut}{la colonne Ã  laquelle dÃ©marre le tableau}
 }
 \value{
-Rien n'est renvoyé mais l'objet classeur a une nouvelle feuille
+Rien n'est renvoyÃ© mais l'objet classeur a une nouvelle feuille
 }
 \description{
-Cette fonction crée une nouvelle feuille dans le classeur passé en paramètre et y insère un tableau mis en forme.
+Cette fonction crÃ©e une nouvelle feuille dans le classeur passÃ© en paramÃ¨tre et y insÃ¨re un tableau mis en forme.
 }
 \examples{
 
-# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Sauvegarde du classeur
 # Ouverture du classeur
 library(openxlsx)

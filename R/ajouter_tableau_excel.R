@@ -2,15 +2,15 @@
 
 #' Ajouter un tableau dans une feuille excel
 #'
-#' Cette fonction crée une nouvelle feuille dans le classeur passé en paramètre et y insère un tableau mis en forme.
+#' Cette fonction crÃ©e une nouvelle feuille dans le classeur passÃ© en paramÃ¨tre et y insÃ¨re un tableau mis en forme.
 #'
-#' @param classeur workbook créé avec openXLSX
-#' @param tableau dataframe ou tibble à insérer dans une nouvelle feuille
+#' @param classeur workbook crÃ©Ã© avec openXLSX
+#' @param tableau dataframe ou tibble Ã  insÃ©rer dans une nouvelle feuille
 #' @param nom_feuille nom de la nouvelle feuille
-#' @param ligne_debut la ligne à laquelle démarre le tableau
-#' @param col_debut la colonne à laquelle démarre le tableau
+#' @param ligne_debut la ligne Ã  laquelle dÃ©marre le tableau
+#' @param col_debut la colonne Ã  laquelle dÃ©marre le tableau
 #' 
-#' @return Rien n'est renvoyé mais l'objet classeur a une nouvelle feuille
+#' @return Rien n'est renvoyÃ© mais l'objet classeur a une nouvelle feuille
 #' 
 #' @importFrom openxlsx addWorksheet
 #' @importFrom openxlsx writeData
@@ -21,7 +21,7 @@
 #'
 #' @examples
 #' 
-#' # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+#' # CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 #' # Sauvegarde du classeur
 #' # Ouverture du classeur
 #' library(openxlsx)
@@ -60,7 +60,7 @@
 #' browseURL("tableau.xlsx")
 #' 
 ajouter_tableau_excel <- function(classeur, tableau, nom_feuille, ligne_debut = 3, col_debut = 2) {
-  # Vérification des paramètres d'entrée
+  # VÃ©rification des paramÃ¨tres d'entrÃ©e
   assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   assert_that(is.data.frame(tableau), msg = "Le tableau doit \u00eatre un dataframe ou un tibble.")
   assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")

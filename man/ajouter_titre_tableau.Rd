@@ -2,7 +2,7 @@
 % Please edit documentation in R/ajouter_titre_tableau.R
 \name{ajouter_titre_tableau}
 \alias{ajouter_titre_tableau}
-\title{Ajouter le titre du tableau dans la première cellule d'une feuille}
+\title{Ajouter le titre du tableau dans la premiÃ¨re cellule d'une feuille}
 \usage{
 ajouter_titre_tableau(
   classeur,
@@ -14,20 +14,20 @@ ajouter_titre_tableau(
 )
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
 \item{nom_feuille}{nom de la feuille}
 
-\item{titre}{le titre à ajouter}
+\item{titre}{le titre Ã  ajouter}
 
-\item{col_debut}{la colonne de départ (2eme par défaut)}
+\item{col_debut}{la colonne de dÃ©part (2eme par dÃ©faut)}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
-\item{fusion}{LGL si les cellules sont à fusionner ou pas (TRUE par défaut)}
+\item{fusion}{LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)}
 }
 \value{
-Rien n'est renvoyé mais la feuille du classeur est modifiée
+Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
 }
 \description{
 Cette fonction permet d'ajouter un titre dans la cellule A1 d'une feuille
@@ -37,7 +37,7 @@ Cette fonction permet d'ajouter un titre dans la cellule A1 d'une feuille
 library(openxlsx)
 library(agreste)
 
-## Création d'un classeur
+## CrÃ©ation d'un classeur
 
 mon_classeur <- createWorkbook()
 
@@ -88,11 +88,11 @@ addStyle(wb = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "iris",
-                      titre = "Données fleurs iris",
+                      titre = "DonnÃ©es fleurs iris",
                       col_debut = 2,
                       format = "chiffres_et_donnees")
 
-## Deuxième feuille
+## DeuxiÃ¨me feuille
 
 start_ligne = 3
 start_col = 2
@@ -140,7 +140,7 @@ addStyle(wb = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
-                      titre = "Données qualité de l'air",
+                      titre = "DonnÃ©es qualitÃ© de l'air",
                       col_debut = 2)
 
 saveWorkbook(wb = mon_classeur,

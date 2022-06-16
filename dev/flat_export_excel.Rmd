@@ -9,6 +9,7 @@ editor_options:
 library(testthat)
 library(openxlsx)
 library(assertthat)
+library(xlsx)
 ```
 
 
@@ -1620,6 +1621,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
 #' @importFrom openxlsx read.xlsx
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx saveWorkbook
+#' @importFrom openxlsx write.xlsx
 #' 
 #' @export
 #'
@@ -1723,6 +1725,7 @@ creer_excel_depuis_plan <- function(plan,
 ```{r examples-creer_excel_depuis_plan, echo=FALSE}
 library(agreste)
 library(dplyr)
+library(xlsx)
 ### Import du fichier de plan
 plan = agreste::modele_plan
 
@@ -1745,7 +1748,7 @@ browseURL("cd_a_envoyer.xlsx")
 ```
 
 ```{r tests-creer_excel_depuis_plan}
-
+library(xlsx)
 test_that("Le formatage se fait correctement et sans erreur", {
   
   plan <- agreste::modele_plan
@@ -1766,7 +1769,7 @@ test_that("Le formatage se fait correctement et sans erreur", {
   plan$Nom_fichier[2] <- file2
   plan$Nom_fichier[3] <- file3
   
-  xlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
+  write.xlsx(plan, file_plan, row.names = FALSE)
   
   # assert_that(class(plan) %in% c("character", "data.frame"),msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
   # assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')

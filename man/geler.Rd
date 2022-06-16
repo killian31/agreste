@@ -7,16 +7,16 @@
 geler(classeur, nom_feuille, ligne = 0, col = 0)
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
 \item{nom_feuille}{nom de la feuille}
 
-\item{ligne}{la ligne à geler (0 si pas de ligne à geler)}
+\item{ligne}{la ligne Ã  geler (0 si pas de ligne Ã  geler)}
 
-\item{col}{la colonne à geler (0 si pas de colonne à geler)}
+\item{col}{la colonne Ã  geler (0 si pas de colonne Ã  geler)}
 }
 \value{
-Rien n'est renvoyé mais la feuille du classeur est modifiée
+Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
 }
 \description{
 Cette fonction permet de geler une ou plusieurs lignes ainsi qu'une ou plusieurs colonnes d'une feuille de classeur
@@ -26,7 +26,7 @@ Cette fonction permet de geler une ou plusieurs lignes ainsi qu'une ou plusieurs
 library(openxlsx)
 library(agreste)
 
-# Création d'un classeur avec une feuille contenant iris 
+# CrÃ©ation d'un classeur avec une feuille contenant iris 
 mon_classeur <- createWorkbook()
 ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris", ligne_debut = 3, col_debut = 2)
 

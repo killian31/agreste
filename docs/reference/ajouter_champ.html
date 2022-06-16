@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">agreste</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>classeur</dt>
-<dd><p>workbook créé avec openXLSX</p></dd>
+<dd><p>workbook crÃ©Ã© avec openXLSX</p></dd>
 
 
 <dt>nom_feuille</dt>
@@ -74,7 +74,7 @@
 
 
 <dt>champ</dt>
-<dd><p>le champ à ajouter</p></dd>
+<dd><p>le champ Ã  ajouter</p></dd>
 
 
 <dt>format</dt>
@@ -82,28 +82,28 @@
 
 
 <dt>col_debut</dt>
-<dd><p>la colonne de départ (2eme par défaut)</p></dd>
+<dd><p>la colonne de dÃ©part (2eme par dÃ©faut)</p></dd>
 
 
 <dt>style</dt>
-<dd><p>le style à appliquer (style "champ" par défaut)</p></dd>
+<dd><p>le style Ã  appliquer (style "champ" par dÃ©faut)</p></dd>
 
 
 <dt>fusion</dt>
-<dd><p>LGL si les cellules sont à fusionner ou pas (TRUE par défaut)</p></dd>
+<dd><p>LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Rien n'est renvoyé mais la feuille du classeur est modifiée</p>
+<p>Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code>
-<span class="co"># Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality</span>
+<span class="co"># CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality</span>
 <span class="co"># Ajout du champ</span>
 <span class="co"># Sauvegarde du classeur</span>
 <span class="co"># Ouverture du classeur</span>
@@ -163,7 +163,7 @@
                avec_note <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="fu">ajouter_champ</span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
               nom_feuille <span class="op">=</span> <span class="st">"iris"</span>,
-              champ <span class="op">=</span> <span class="st">"France métropolitaine"</span>,
+              champ <span class="op">=</span> <span class="st">"France mÃ©tropolitaine"</span>,
               col_debut <span class="op">=</span> <span class="va">start_col</span><span class="op">)</span>
 
 <span class="va">start_ligne</span> <span class="op">=</span> <span class="fl">3</span>
@@ -212,7 +212,7 @@
 
 <span class="fu"><a href="ajouter_titre_tableau.html">ajouter_titre_tableau</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
                       nom_feuille <span class="op">=</span> <span class="st">"airquality"</span>,
-                      titre <span class="op">=</span> <span class="st">"Qualité de l'air"</span>,
+                      titre <span class="op">=</span> <span class="st">"QualitÃ© de l'air"</span>,
                       col_debut <span class="op">=</span> <span class="va">start_col</span><span class="op">)</span>
 <span class="fu"><a href="ajouter_note_lecture.html">ajouter_note_lecture</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
                      nom_feuille <span class="op">=</span> <span class="st">"airquality"</span>,

@@ -16,31 +16,31 @@ ajouter_source(
 )
 }
 \arguments{
-\item{classeur}{workbook créé avec openXLSX}
+\item{classeur}{workbook crÃ©Ã© avec openXLSX}
 
 \item{nom_feuille}{nom de la feuille}
 
-\item{source}{la source à ajouter}
+\item{source}{la source Ã  ajouter}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
 
-\item{col_debut}{la colonne de départ (2eme par défaut)}
+\item{col_debut}{la colonne de dÃ©part (2eme par dÃ©faut)}
 
-\item{style}{le style à appliquer (style "source" par défaut)}
+\item{style}{le style Ã  appliquer (style "source" par dÃ©faut)}
 
-\item{avec_note}{si une note de lecture est présente ou pas, par défaut TRUE}
+\item{avec_note}{si une note de lecture est prÃ©sente ou pas, par dÃ©faut TRUE}
 
-\item{fusion}{LGL si les cellules sont à fusionner ou pas (TRUE par défaut)}
+\item{fusion}{LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)}
 }
 \value{
-Rien n'est renvoyé mais la feuille du classeur est modifiée
+Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
 }
 \description{
 Cette fonction permet d'ajouter une source sous un tableau dans une feuille Excel
 }
 \examples{
 
-# Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+# CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Ajout de la source
 # Sauvegarde du classeur
 # Ouverture du classeur
@@ -146,7 +146,7 @@ addStyle(wb = mon_classeur,
 
 ajouter_titre_tableau(classeur = mon_classeur,
                       nom_feuille = "airquality",
-                      titre = "Données qualité de l'air",
+                      titre = "DonnÃ©es qualitÃ© de l'air",
                       col_debut = 2)
 
 ajouter_note_lecture(classeur = mon_classeur,
