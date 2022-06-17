@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">agreste</a>
 
@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/application-shiny-formatage.html">Application Shiny Formatage</a>
     <a class="dropdown-item" href="../articles/creer-des-cartes.html">Creer des cartes</a>
     <a class="dropdown-item" href="../articles/export-excel.html">Export excel</a>
   </div>
@@ -58,7 +59,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>classeur</dt>
-<dd><p>workbook crÃ©Ã© avec openXLSX</p></dd>
+<dd><p>workbook créé avec openXLSX</p></dd>
 
 
 <dt>nom_feuille</dt>
@@ -66,18 +67,18 @@
 
 
 <dt>ligne</dt>
-<dd><p>la ligne Ã  geler (0 si pas de ligne Ã  geler)</p></dd>
+<dd><p>la ligne à geler (0 si pas de ligne à geler)</p></dd>
 
 
 <dt>col</dt>
-<dd><p>la colonne Ã  geler (0 si pas de colonne Ã  geler)</p></dd>
+<dd><p>la colonne à geler (0 si pas de colonne à geler)</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e</p>
+<p>Rien n'est renvoyé mais la feuille du classeur est modifiée</p>
     </div>
 
     <div class="section level2">
@@ -86,7 +87,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html" class="external-link">openxlsx</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">agreste</span><span class="op">)</span>
 
-<span class="co"># CrÃ©ation d'un classeur avec une feuille contenant iris </span>
+<span class="co"># Création d'un classeur avec une feuille contenant iris </span>
 <span class="va">mon_classeur</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/createWorkbook.html" class="external-link">createWorkbook</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="ajouter_tableau_excel.html">ajouter_tableau_excel</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>, tableau <span class="op">=</span> <span class="va">iris</span>, nom_feuille <span class="op">=</span> <span class="st">"iris"</span>, ligne_debut <span class="op">=</span> <span class="fl">3</span>, col_debut <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 

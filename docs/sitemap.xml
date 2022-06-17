@@ -4,6 +4,9 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/articles/application-shiny-formatage.html</loc>
+  </url>
+  <url>
     <loc>/articles/creer-des-cartes.html</loc>
   </url>
   <url>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>/reference/ajouter_titre_tableau.html</loc>
+  </url>
+  <url>
+    <loc>/reference/app_formatage.html</loc>
   </url>
   <url>
     <loc>/reference/carte_aplat.html</loc>

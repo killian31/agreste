@@ -19,7 +19,7 @@ library(ggtext)
 ```
 
 
-# Creer données de fond de carte
+# Créer données de fond de carte
 
 ```{r function_donnees_fond_carte}
 #' Créer un tableau avec les données géographiques de fond de carte
@@ -213,7 +213,7 @@ return(data_geo)
 }
 ```
 
-```{r examples-donnees_fond_carte}
+```{r examples-donnees_fond_carte, eval=FALSE}
 data_geo_france_region_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "region_metro")
 data_geo_france_dep_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "departement_metro")
 ```
@@ -316,7 +316,7 @@ test_that("donnees_fond_carte works", {
 #' @param taille_max_rond NUM taille du rond correspondant au plus grand volume
 #' @param hauteur_cm NUM hauteur de la carte en cm
 #' @param largeur_cm NUM largeur de la carte en cm
-#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)
 #' @param path_carte CHAR chemin vers l'image à sauvegarder
 #' 
 #' @examples
@@ -438,7 +438,8 @@ carte_rond_proportionnel <- function(df,
            width = largeur_cm, 
            height = hauteur_cm, 
            units = "cm" )
-    
+  } else {
+    plot(carte)
   }
 
 
@@ -447,7 +448,7 @@ carte_rond_proportionnel <- function(df,
 }
 ```
 
-```{r examples-carte-rond-proportionnel}
+```{r examples-carte-rond-proportionnel, eval=FALSE}
 library(agreste)
 library(dplyr)
 ### récupération des données de permis de construire de SITADEL 
@@ -538,7 +539,7 @@ test_that("carte_rond_proportionnel works", {
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 theme_void
-#' @importFrom ggplot2 scale_size_area
+#' @importFrom ggplot2 scale_fill_gradient
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 guides
@@ -567,7 +568,7 @@ test_that("carte_rond_proportionnel works", {
 #' @param couleur_min CHAR couleur à utiliser pour la plus basse valeur de nuance de l'aplat "nom_couleur" ou "#code_couleur_html"
 #' @param hauteur_cm NUM hauteur de la carte en cm
 #' @param largeur_cm NUM largeur de la carte en cm
-#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)
 #' @param path_carte CHAR chemin vers l'image à sauvegarder
 #' 
 #' @examples
@@ -644,9 +645,33 @@ carte_aplat <- function(df,
       theme_void() 
   }
   
+  if(isTRUE(save_carte)){
+    
+    ggsave(filename = path_carte,
+           plot = carte, 
+           width = largeur_cm, 
+           height = hauteur_cm, 
+           units = "cm" )
+  } else {
+    plot(carte)
+  }
+  
   return(carte)
 }
 ```
+
+```{r examples-carte_aplat, eval=FALSE}
+library(agreste)
+library(dplyr)
+### récupération des données de permis de construire de SITADEL 
+permis_construire_region_2020 <- agreste::permis_construire_region %>% 
+  filter(annee_autorisation == 2020)
+
+### création de la carte et plot
+carte_pc_2020 <- carte_aplat(df = permis_construire_region_2020, colonne_code_zone_geo = REG, colonne_volume = PC, titre_carte = "Carte 1", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région", titre_legende_volume = "Nombre de permis de construire", save_carte = FALSE)
+
+```
+
 
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop

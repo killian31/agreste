@@ -13,7 +13,7 @@ creer_liste_style_excel(format = "chiffres_et_donnees")
 une liste avec tous les styles disponibles (objets openxls)
 }
 \description{
-Cette fonction permet de crÃ©er une liste avec tous les styles utiles aux publications Agreste xlsx
+Cette fonction permet de créer une liste avec tous les styles utiles aux publications Agreste xlsx
 }
 \examples{
 library(agreste)

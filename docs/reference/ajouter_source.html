@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">agreste</a>
 
@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/application-shiny-formatage.html">Application Shiny Formatage</a>
     <a class="dropdown-item" href="../articles/creer-des-cartes.html">Creer des cartes</a>
     <a class="dropdown-item" href="../articles/export-excel.html">Export excel</a>
   </div>
@@ -67,7 +68,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>classeur</dt>
-<dd><p>workbook crÃ©Ã© avec openXLSX</p></dd>
+<dd><p>workbook créé avec openXLSX</p></dd>
 
 
 <dt>nom_feuille</dt>
@@ -75,7 +76,7 @@
 
 
 <dt>source</dt>
-<dd><p>la source Ã  ajouter</p></dd>
+<dd><p>la source à ajouter</p></dd>
 
 
 <dt>format</dt>
@@ -83,32 +84,32 @@
 
 
 <dt>col_debut</dt>
-<dd><p>la colonne de dÃ©part (2eme par dÃ©faut)</p></dd>
+<dd><p>la colonne de départ (2eme par défaut)</p></dd>
 
 
 <dt>style</dt>
-<dd><p>le style Ã  appliquer (style "source" par dÃ©faut)</p></dd>
+<dd><p>le style à appliquer (style "source" par défaut)</p></dd>
 
 
 <dt>avec_note</dt>
-<dd><p>si une note de lecture est prÃ©sente ou pas, par dÃ©faut TRUE</p></dd>
+<dd><p>si une note de lecture est présente ou pas, par défaut TRUE</p></dd>
 
 
 <dt>fusion</dt>
-<dd><p>LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)</p></dd>
+<dd><p>LGL si les cellules sont à fusionner ou pas (TRUE par défaut)</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e</p>
+<p>Rien n'est renvoyé mais la feuille du classeur est modifiée</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code>
-<span class="co"># CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality</span>
+<span class="co"># Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality</span>
 <span class="co"># Ajout de la source</span>
 <span class="co"># Sauvegarde du classeur</span>
 <span class="co"># Ouverture du classeur</span>
@@ -214,7 +215,7 @@
 
 <span class="fu"><a href="ajouter_titre_tableau.html">ajouter_titre_tableau</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
                       nom_feuille <span class="op">=</span> <span class="st">"airquality"</span>,
-                      titre <span class="op">=</span> <span class="st">"DonnÃ©es qualitÃ© de l'air"</span>,
+                      titre <span class="op">=</span> <span class="st">"Données qualité de l'air"</span>,
                       col_debut <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="fu"><a href="ajouter_note_lecture.html">ajouter_note_lecture</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,

@@ -26,11 +26,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">agreste</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/application-shiny-formatage.html">Application Shiny Formatage</a>
     <a class="dropdown-item" href="articles/creer-des-cartes.html">Creer des cartes</a>
     <a class="dropdown-item" href="articles/export-excel.html">Export excel</a>
   </div>
@@ -73,9 +74,11 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Vous pouvez installer le package agreste :</p>
+<p>Vous pouvez installer le package agreste à partir du fichier <code>agreste.tar.gz</code> :</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"agreste"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/Users/killian.steunou/Downloads/chemin/agreste.tar.gz"</span>,
+                 repos<span class="op">=</span><span class="cn">NULL</span>,
+                 type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -83,7 +86,11 @@
 <p>Voici un exemple simple d’utilisation du package agreste :</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">agreste</span><span class="op">)</span>
-<span class="co">## basic example code</span></code></pre></div>
+
+<span class="co"># Démarrer l'app Shiny pour mettre en forme les tableaux</span>
+<span class="fu"><a href="reference/app_formatage.html">app_formatage</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Vous pouvez également démarrer l’interface graphique en utilisant l’<em>Addin</em> intégré :</p>
+<p><img src="reference/figures/README-/addins_screen.png" width="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

@@ -13,7 +13,6 @@ library(xlsx)
 ```
 
 
-
 # Créer les styles des cellules excel
 
 ```{r function_creer_liste_style_excel}
@@ -320,7 +319,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
 
 ```
 
-```{r examples_creer_liste_style_excel}
+```{r examples_creer_liste_style_excel, eval=FALSE}
 library(agreste)
 mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
 
@@ -379,7 +378,7 @@ ajouter_tableau_excel <- function(classeur, tableau, nom_feuille, ligne_debut = 
 }
 ```
 
-```{r examples_ajouter_tableau_excel}
+```{r examples_ajouter_tableau_excel, eval=FALSE}
 
 # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Sauvegarde du classeur
@@ -493,7 +492,7 @@ ajouter_titre_tableau <- function(classeur,
 
 ```
 
-```{r examples_ajouter_titre_tableau}
+```{r examples_ajouter_titre_tableau, eval=FALSE}
 
 library(openxlsx)
 library(agreste)
@@ -686,7 +685,7 @@ ajouter_note_lecture <- function(classeur,
 }
 ```
 
-```{r examples_ajouter_note_lecture}
+```{r examples_ajouter_note_lecture, eval=FALSE}
 
 # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Ajout d'une note de lecture
@@ -889,7 +888,7 @@ ajouter_source <- function(classeur,
 }
 ```
 
-```{r examples_ajouter_source}
+```{r examples_ajouter_source, eval=FALSE}
 
 # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Ajout de la source
@@ -1090,7 +1089,7 @@ ajouter_champ <- function(classeur,
 }
 ```
 
-```{r examples_ajouter_champ}
+```{r examples_ajouter_champ, eval=FALSE}
 
 # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 # Ajout du champ
@@ -1287,7 +1286,7 @@ geler <- function(classeur,
 }
 ```
 
-```{r examples-geler}
+```{r examples-geler, eval=FALSE}
 
 library(openxlsx)
 library(agreste)
@@ -1380,8 +1379,7 @@ formater_auto <- function(classeur,
                style = mes_styles$ligne_titre,
                rows = start_row_tabs,
                cols = col_debut:(nb_col + col_debut - 1))
-      print(nb_col)
-      print(col_debut)
+
       for (num_col in col_debut:(nb_col + col_debut - 1)) {
         j <- num_col - col_debut + 1
 
@@ -1420,7 +1418,7 @@ formater_auto <- function(classeur,
 }
 ```
 
-```{r examples-formater_auto}
+```{r examples-formater_auto, eval=FALSE}
 library(openxlsx)
 library(agreste)
 
@@ -1722,7 +1720,7 @@ creer_excel_depuis_plan <- function(plan,
 
 ```
 
-```{r examples-creer_excel_depuis_plan, echo=FALSE}
+```{r examples-creer_excel_depuis_plan, eval=FALSE}
 library(agreste)
 library(dplyr)
 library(xlsx)
@@ -1748,7 +1746,7 @@ browseURL("cd_a_envoyer.xlsx")
 ```
 
 ```{r tests-creer_excel_depuis_plan}
-library(xlsx)
+#library(xlsx)
 test_that("Le formatage se fait correctement et sans erreur", {
   
   plan <- agreste::modele_plan
@@ -1770,12 +1768,6 @@ test_that("Le formatage se fait correctement et sans erreur", {
   plan$Nom_fichier[3] <- file3
   
   write.xlsx(plan, file_plan, row.names = FALSE)
-  
-  # assert_that(class(plan) %in% c("character", "data.frame"),msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
-  # assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
-  # assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  # assert_that(class(save) == "logical", msg = "save doit \u00eatre TRUE ou FALSE")
-  # assert_that(class(path) == "character", msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
   
   expect_error(agreste::creer_excel_depuis_plan(plan = 1,
                                                format = "primeur",

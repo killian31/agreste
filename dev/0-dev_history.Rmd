@@ -84,7 +84,7 @@ pkgload::load_all()
 attachment::att_amend_desc()
 
 # Check the package
-devtools::check()
+devtools::check(error_on = "error", args = "--no-exemples")
 ```
 
 # Share the package
@@ -92,6 +92,8 @@ devtools::check()
 ```{r}
 # set and try pkgdown documentation website
 usethis::use_pkgdown()
+
+detach("package:agreste", unload = TRUE)
 
 options(rmarkdown.html_vignette.check_title = FALSE)
 options(pkgdown.internet = FALSE)

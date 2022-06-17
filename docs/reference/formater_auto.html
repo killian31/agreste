@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">agreste</a>
 
@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/application-shiny-formatage.html">Application Shiny Formatage</a>
     <a class="dropdown-item" href="../articles/creer-des-cartes.html">Creer des cartes</a>
     <a class="dropdown-item" href="../articles/export-excel.html">Export excel</a>
   </div>
@@ -64,7 +65,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>classeur</dt>
-<dd><p>workbook crÃ©Ã© avec openXLSX</p></dd>
+<dd><p>workbook créé avec openXLSX</p></dd>
 
 
 <dt>format</dt>
@@ -76,18 +77,18 @@
 
 
 <dt>liste_type_donnees</dt>
-<dd><p>LIST liste de vecteurs contenant les types de donnÃ©es de chaque colonne</p></dd>
+<dd><p>LIST liste de vecteurs contenant les types de données de chaque colonne</p></dd>
 
 
 <dt>col_debut</dt>
-<dd><p>NUM la colonne Ã  laquelle les tableaux dÃ©marrent</p></dd>
+<dd><p>NUM la colonne à laquelle les tableaux démarrent</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Rien n'est renvoyÃ© mais le classeur est modifiÃ©</p>
+<p>Rien n'est renvoyé mais le classeur est modifié</p>
     </div>
 
     <div class="section level2">
@@ -95,7 +96,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html" class="external-link">openxlsx</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">agreste</span><span class="op">)</span>
 
-<span class="co">## CrÃ©ation d'un classeur avec deux feuilles et deux tableaux</span>
+<span class="co">## Création d'un classeur avec deux feuilles et deux tableaux</span>
 <span class="va">mon_classeur</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/createWorkbook.html" class="external-link">createWorkbook</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="fu"><a href="ajouter_tableau_excel.html">ajouter_tableau_excel</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
@@ -106,7 +107,7 @@
 
 <span class="fu"><a href="ajouter_titre_tableau.html">ajouter_titre_tableau</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
                       nom_feuille <span class="op">=</span> <span class="st">"iris"</span>,
-                      titre <span class="op">=</span> <span class="st">"DonnÃ©es fleurs iris"</span>,
+                      titre <span class="op">=</span> <span class="st">"Données fleurs iris"</span>,
                       col_debut <span class="op">=</span> <span class="fl">2</span>,
                       format <span class="op">=</span> <span class="st">"primeur"</span><span class="op">)</span>
 <span class="fu"><a href="ajouter_source.html">ajouter_source</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
@@ -117,7 +118,7 @@
                avec_note <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="fu"><a href="ajouter_champ.html">ajouter_champ</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
               nom_feuille <span class="op">=</span> <span class="st">"iris"</span>,
-              champ <span class="op">=</span> <span class="st">"France mÃ©tropolitaine"</span>,
+              champ <span class="op">=</span> <span class="st">"France métropolitaine"</span>,
               format <span class="op">=</span> <span class="st">"primeur"</span>,
               col_debut <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
@@ -129,7 +130,7 @@
 
 <span class="fu"><a href="ajouter_titre_tableau.html">ajouter_titre_tableau</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
                       nom_feuille <span class="op">=</span> <span class="st">"airquality"</span>,
-                      titre <span class="op">=</span> <span class="st">"DonnÃ©es qualitÃ© de l'air"</span>,
+                      titre <span class="op">=</span> <span class="st">"Données qualité de l'air"</span>,
                       col_debut <span class="op">=</span> <span class="fl">2</span>,
                       format <span class="op">=</span> <span class="st">"primeur"</span><span class="op">)</span>
 <span class="fu"><a href="ajouter_note_lecture.html">ajouter_note_lecture</a></span><span class="op">(</span>classeur <span class="op">=</span> <span class="va">mon_classeur</span>,
@@ -149,7 +150,7 @@
               format <span class="op">=</span> <span class="st">"primeur"</span>,
               col_debut <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
-<span class="co">## Formater comme un Chiffres et DonnÃ©es</span>
+<span class="co">## Formater comme un Chiffres et Données</span>
 <span class="fu">formater_auto</span><span class="op">(</span><span class="va">mon_classeur</span>,
               format <span class="op">=</span> <span class="st">"primeur"</span>,
               liste_feuilles_avec_note <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span>,

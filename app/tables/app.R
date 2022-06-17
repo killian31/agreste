@@ -1,14 +1,11 @@
-library(shinythemes)
 library(shiny)
 library(agreste)
 library(openxlsx)
 library(shinycssloaders)
 library(shinyalert)
-library(bslib)
 library(shinyWidgets)
 library(bs4Dash)
-library(shinylogs)
-library(fresh)
+library(magrittr)
 
 # library(DT) # for selecting rows in a shiny table
 
@@ -18,6 +15,7 @@ list_sheets_with_note <- c(" ")
 list_col_data_types <- list()
 index_current_sheet <- 0
 
+wd <- getwd()
 
 shinyApp(
   ui = dashboardPage(
@@ -169,15 +167,6 @@ shinyApp(
         vec_data_types <- append(vec_data_types, id)
       }
       
-      # vector_col_types <- lapply(vec_data_types, function(x) {
-      #   switch (
-      #     x,
-      #     "texte" = "character",
-      #     "numerique" = "numeric",
-      #     "decimal" = "double"
-      #   ) %>% 
-      #     return()
-      # })
       
       df <- read.csv(input$file1$datapath,
                      header = input$header,
@@ -195,29 +184,34 @@ shinyApp(
         } else {
           new_sheet <- TRUE
         }
-        # add sheet and table
-        ajouter_tableau_excel(wb, df, input$feuille)
+        start_line <- switch (input$format,
+          "chiffres_et_donnees" = 3,
+          "primeur" = 5
+        )
+        ajouter_tableau_excel(wb, df, input$feuille, ligne_debut = start_line)
         
-        # remove merge before remerging
         removeCellMerge(wb, input$feuille, 2:(ncol(df)+2-1), 1)
-        ajouter_titre_tableau(wb, input$feuille, input$title, fusion = TRUE)
+        ajouter_titre_tableau(wb,
+                              input$feuille,
+                              input$title,
+                              fusion = TRUE,
+                              format = input$format)
         
         if (input$note != "") {
           list_sheets_with_note <<- append(list_sheets_with_note, input$feuille)
-          ajouter_note_lecture(wb, input$feuille, input$note)
-          ajouter_source(wb, input$feuille, input$source, avec_note = TRUE)
+          ajouter_note_lecture(wb, input$feuille, input$note, format = input$format)
+          ajouter_source(wb, input$feuille, input$source, avec_note = TRUE, format =input$format)
         } else if (input$source != "") {
-          ajouter_source(wb, input$feuille, input$source, avec_note = FALSE)
+          ajouter_source(wb, input$feuille, input$source, avec_note = FALSE, format = input$format)
         }
         if (input$champ != "") {
-          ajouter_champ(wb, input$feuille, input$champ)
+          ajouter_champ(wb, input$feuille, input$champ, format = input$format)
         }
         
         
         if (isTRUE(new_sheet)) {
           index_current_sheet <<- index_current_sheet + 1
         }
-        # list_col_data_types <- append(list_col_data_types, list(vec_data_types))
         list_col_data_types[[index_current_sheet]] <<- vec_data_types
         
         # removeModal()
@@ -241,8 +235,9 @@ shinyApp(
                       liste_feuilles_avec_note = list_sheets_with_note,
                       liste_type_donnees = list_col_data_types)
         # save
-        saveWorkbook(wb, file = input$output_file, overwrite = TRUE)
+        saveWorkbook(wb, file = paste(wd, input$output_file, sep = "/"), overwrite = TRUE)
         # removeModal()
+        shinyalert(title = "Enregistrement réussi", type = "success")
         print("Enregistrement réussi.")
       # } else if (input$.shinylogs_input[(length(input$.shinylogs_input) - 1)]$name != "validate") {
       #   shinyalert("Veuillez valider vos modifications avant d'enregistrer", type = "warning")

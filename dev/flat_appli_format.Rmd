@@ -1,0 +1,67 @@
+---
+title: "flat_appli_format.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(shiny)
+```
+
+# Ouvrir l'interface graphique du package
+
+```{r function-app_formatage}
+#' Ouvrir l'application Shiny d'édition du tableur
+#' 
+#' Cette fonction permet d'ouvrir l'interface graphique s'appuyant 
+#' sur les fonctions de formatage du package pour éditer des tableaux plus rapidement
+#' 
+#' @return Rien n'est renvoyé, l'appli s'ouvre.
+#' 
+#' @importFrom shiny runApp
+#' @importFrom shiny shinyAppDir
+#' @importFrom shiny fileInput
+#' @importFrom shiny tags
+#' @importFrom shiny checkboxInput
+#' @importFrom shiny radioButtons
+#' @importFrom shiny textInput
+#' @importFrom shiny tableOutput
+#' @importFrom shiny uiOutput
+#' @importFrom shiny actionButton
+#' @importFrom shiny req
+#' @importFrom shiny renderUI
+#' @importFrom shiny selectInput
+#' @importFrom shiny observeEvent
+#' @importFrom shiny showModal
+#' @importFrom shiny removeModal
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom shinyalert shinyalert
+#' @importFrom shinyWidgets prettyRadioButtons
+#' @importFrom bs4Dash dashboardPage
+#' @importFrom bs4Dash dashboardHeader
+#' @importFrom bs4Dash dashboardSidebar
+#' @importFrom bs4Dash dashboardFooter
+#' @importFrom bs4Dash dashboardBody
+#' @importFrom magrittr %>%
+#' @importFrom openxlsx createWorkbook
+#' @importFrom openxlsx saveWorkbook
+#' 
+#' @export
+#' 
+#' @examples
+app_formatage <- function() {
+  Rdir <- getSrcDirectory(function(x) {x})
+  script_dir <- substring(Rdir, first = 1, last = nchar(Rdir) - 2)
+  runApp(shinyAppDir(paste(script_dir, "app/tables/app", sep = "/")))
+}
+```
+
+```{r examples-app_formatage, eval=FALSE}
+library(agreste)
+app_formatage()
+```
+
+```{r development-inflate, eval=FALSE}
+fusen::inflate(flat_file = "dev/flat_appli_format.Rmd", vignette_name = "Application Shiny Formatage", check=F, overwrite = "yes")
+```
