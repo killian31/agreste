@@ -14,10 +14,13 @@ par la PAO (docx, xlsx). Il apporte des modèles de Rmarkdown.
 
 ## Installation
 
-Vous pouvez installer le package agreste :
+Vous pouvez installer le package agreste à partir du fichier
+`agreste.tar.gz` :
 
 ``` r
-install.packages("agreste")
+install.packages("C:/Users/killian.steunou/Downloads/chemin/agreste.tar.gz",
+                 repos=NULL,
+                 type = "source")
 ```
 
 ## Example
@@ -26,5 +29,12 @@ Voici un exemple simple d’utilisation du package agreste :
 
 ``` r
 library(agreste)
-## basic example code
+
+# Démarrer l'app Shiny pour mettre en forme les tableaux
+app_formatage()
 ```
+
+Vous pouvez également démarrer l’interface graphique en utilisant
+l’*Addin* intégré :
+
+<img src="man/figures/README-/addins_screen.png" width="100%" />

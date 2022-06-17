@@ -1,6 +1,6 @@
 Package: agreste
 Title: Aide À La Publication Sur Agreste
-Version: 0.11
+Version: 0.2
 Authors@R: c(
     person("Anaël", "Delorme", , "anael.delorme@agriculture.gouv.fr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1122-9076")),
@@ -15,19 +15,23 @@ Depends:
     R (>= 2.10)
 Imports: 
     assertthat,
+    bs4Dash,
     dplyr,
     ggplot2,
     ggtext,
     glue,
     magrittr,
     openxlsx,
-    sf
+    sf,
+    shiny,
+    shinyalert,
+    shinycssloaders,
+    shinyWidgets
 Suggests: 
     knitr,
     purrr,
     rmarkdown,
-    testthat,
-    xlsx
+    testthat
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

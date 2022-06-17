@@ -22,17 +22,27 @@ Le but du package agreste est de fournir à l’ensemble des agents du SSP des o
 
 ## Installation
 
-Vous pouvez installer le package agreste :
+Vous pouvez installer le package agreste à partir du fichier `agreste.tar.gz` :
 
 ``` r
-install.packages("agreste")
+install.packages("C:/Users/killian.steunou/Downloads/chemin/agreste.tar.gz",
+                 repos=NULL,
+                 type = "source")
 ```
 
 ## Example
 
 Voici un exemple simple d’utilisation du package agreste :
 
-```{r example}
+```{r example, eval=FALSE}
 library(agreste)
-## basic example code
+
+# Démarrer l'app Shiny pour mettre en forme les tableaux
+app_formatage()
+```
+
+Vous pouvez également démarrer l'interface graphique en utilisant l'*Addin* intégré : 
+
+```{r echo=FALSE}
+knitr::include_graphics("man/figures/README-/addins_screen.png")
 ```

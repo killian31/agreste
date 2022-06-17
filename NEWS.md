@@ -1,3 +1,11 @@
+# agreste 0.2
+
+- ajout d'un Addin pour lancer l'app Shiny de formatage
+
+# agreste 0.11
+
+- Ajout de la fonction `app_formatage()` pour utiliser le package par une interface graphique.
+
 # agreste 0.1
 
 Les fonctions suivantes ont été ajoutées :
