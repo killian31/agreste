@@ -4,7 +4,7 @@ test_that("mon_classeur fonctionne correctement and envoie une erreur quand il l
   mon_classeur <- openxlsx::createWorkbook()
   nom_page <- "nom_onglet"
   openxlsx::addWorksheet(mon_classeur, "iris")
-  titre = "DonnÃ©es iris"
+  titre = "Données iris"
   
   expect_error(ajouter_titre_tableau(classeur = nom_page, nom_feuille = "iris", titre = titre),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   expect_error(ajouter_titre_tableau(classeur = mon_classeur, nom_feuille = "tab_iris", titre = iris),"Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")

@@ -4,12 +4,12 @@
 #'
 #' Cette fonction permet de geler une ou plusieurs lignes ainsi qu'une ou plusieurs colonnes d'une feuille de classeur
 #'
-#' @param classeur workbook crÃ©Ã© avec openXLSX
+#' @param classeur workbook créé avec openXLSX
 #' @param nom_feuille nom de la feuille
-#' @param ligne la ligne Ã  geler (0 si pas de ligne Ã  geler)
-#' @param col la colonne Ã  geler (0 si pas de colonne Ã  geler)
+#' @param ligne la ligne à geler (0 si pas de ligne à geler)
+#' @param col la colonne à geler (0 si pas de colonne à geler)
 #'
-#' @return Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
 #' 
 #' @importFrom openxlsx freezePane
 #' @importFrom assertthat assert_that
@@ -22,7 +22,7 @@
 #' library(openxlsx)
 #' library(agreste)
 #' 
-#' # CrÃ©ation d'un classeur avec une feuille contenant iris 
+#' # Création d'un classeur avec une feuille contenant iris 
 #' mon_classeur <- createWorkbook()
 #' ajouter_tableau_excel(classeur = mon_classeur, tableau = iris, nom_feuille = "iris", ligne_debut = 3, col_debut = 2)
 #' 

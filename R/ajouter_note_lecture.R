@@ -4,15 +4,15 @@
 #'
 #' Cette fonction permet d'ajouter une note de lecture sous un tableau dans une feuille Excel
 #'
-#' @param classeur workbook crÃ©Ã© avec openXLSX
+#' @param classeur workbook créé avec openXLSX
 #' @param nom_feuille nom de la feuille
-#' @param note la note Ã  Ã©crire
+#' @param note la note à écrire
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur" 
-#' @param col_debut la colonne de dÃ©part (2eme par dÃ©faut)
-#' @param style le style Ã  appliquer (style "note" par dÃ©faut)
-#' @param fusion LGL si les cellules sont Ã  fusionner ou pas (TRUE par dÃ©faut)
+#' @param col_debut la colonne de départ (2eme par défaut)
+#' @param style le style à appliquer (style "note" par défaut)
+#' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
 #'
-#' @return Rien n'est renvoyÃ© mais la feuille du classeur est modifiÃ©e
+#' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
 #' 
 #' @importFrom openxlsx writeData
 #' @importFrom openxlsx addStyle
@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' 
-#' # CrÃ©ation d'un classeur avec une feuille contenant iris et une feuille contenant airquality
+#' # Création d'un classeur avec une feuille contenant iris et une feuille contenant airquality
 #' # Ajout d'une note de lecture
 #' # Sauvegarde du classeur
 #' # Ouverture du classeur
@@ -130,7 +130,7 @@
 #' 
 #' ajouter_titre_tableau(classeur = mon_classeur,
 #'                       nom_feuille = "airquality",
-#'                       titre = "DonnÃ©es qualitÃ© de l'air",
+#'                       titre = "Données qualité de l'air",
 #'                       col_debut = 2)
 #' 
 #' ajouter_note_lecture(classeur = mon_classeur,

@@ -3,7 +3,7 @@
 
 #' Parametrer le tableur excel
 #' 
-#' Cette fonction permet de crÃ©er une liste avec tous les styles utiles aux publications Agreste xlsx
+#' Cette fonction permet de créer une liste avec tous les styles utiles aux publications Agreste xlsx
 #' @param format le format choisi : "chiffres_et_donnees" ou "primeur"
 #'
 #' @return une liste avec tous les styles disponibles (objets openxls)
