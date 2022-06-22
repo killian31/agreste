@@ -35,6 +35,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx saveWorkbook
+#' @importFrom openxlsx removeCellMerge
 #' 
 #' @export
 #' 

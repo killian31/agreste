@@ -6,6 +6,8 @@
 \alias{agreste-package}
 \title{agreste: Aide À La Publication Sur Agreste}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Aide à la création des documents qui, après PAO, pourront être publiés sur Agreste. Facilite la cration de tableaux, graphiques, cartes. Automatise la création des chiffres et données.
 }
 \author{
