@@ -1,4 +1,4 @@
-Name: Formater dans l'app
+Name: Formater par l'interface
 Description: Lance l'interface graphique pour formater les tableaux
 Binding: app_formatage
 Interactive: true
