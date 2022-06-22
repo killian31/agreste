@@ -36,6 +36,7 @@
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx saveWorkbook
 #' @importFrom openxlsx removeCellMerge
+#' @importFrom openxlsx removeWorksheet
 #' 
 #' @export
 #' 
