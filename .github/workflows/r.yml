@@ -53,6 +53,6 @@ jobs:
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - name: Check
         run: |
-          install.packages("rcmdcheck")
-          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+          install.packages("devtools")
+          devtools::check(args = "--no-examples", error_on = "error", check_dir = "check")
         shell: Rscript {0}
