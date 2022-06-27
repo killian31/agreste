@@ -18,7 +18,6 @@ library(ggplot2)
 library(ggtext)
 ```
 
-
 # Créer données de fond de carte
 
 ```{r function_donnees_fond_carte}
@@ -270,7 +269,6 @@ test_that("donnees_fond_carte works", {
 })
 
 ```
-
 
 # Carte symbole proportionnel
 
@@ -672,10 +670,8 @@ carte_pc_2020 <- carte_aplat(df = permis_construire_region_2020, colonne_code_zo
 
 ```
 
-
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/flat_carte.Rmd", vignette_name = "Creer des cartes", overwrite = "yes", check=F)
 ```
-

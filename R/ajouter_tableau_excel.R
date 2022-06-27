@@ -60,16 +60,27 @@
 #' browseURL("tableau.xlsx")
 #' 
 ajouter_tableau_excel <- function(classeur, tableau, nom_feuille, ligne_debut = 3, col_debut = 2) {
-  # Vérification des paramètres d'entrée
-  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
-  assert_that(is.data.frame(tableau), msg = "Le tableau doit \u00eatre un dataframe ou un tibble.")
-  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
 
+  assert_that(class(classeur)=="Workbook",
+              msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.data.frame(tableau),
+              msg = "Le tableau doit \u00eatre un dataframe ou un tibble.")
+  assert_that(is.string(nom_feuille),
+              msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(ligne_debut > 0,
+              msg = "La ligne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(col_debut > 0,
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(is.numeric(ligne_debut),
+              msg = "La ligne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(is.numeric(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  
   addWorksheet(wb = classeur,
-                         sheetName = nom_feuille)
+               sheetName = nom_feuille)
   writeData(wb = classeur,
-                      sheet = nom_feuille,
-                      x = tableau,
-                      startCol = col_debut,
-                      startRow = ligne_debut)
+            sheet = nom_feuille,
+            x = tableau,
+            startCol = col_debut,
+            startRow = ligne_debut)
 }

@@ -41,8 +41,11 @@
 #' @export
 #' 
 #' @examples
+#' 
 #' library(agreste)
+#' \dontrun{
 #' app_formatage()
+#' }
 app_formatage <- function() {
   
   wb <- createWorkbook()

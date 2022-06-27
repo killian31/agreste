@@ -146,13 +146,25 @@ ajouter_titre_tableau <- function(classeur,
                                   format = "chiffres_et_donnees",
                                   fusion = TRUE) {
   
-  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
-  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
-  assert_that(is.string(titre), msg = "Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
-  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(format)=="character", msg = "Le format doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(class(classeur) == "Workbook",
+              msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille),
+              msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(titre),
+              msg = "Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.numeric(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(col_debut > 0,
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(format)=="character",
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"),
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(class(fusion) == "logical",
+              msg = "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
   
-  style = agreste::creer_liste_style_excel(format = format)$titre
+  liste_style = agreste::creer_liste_style_excel(format = format)
+  style_titre = liste_style$titre
   
   nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
   
@@ -162,10 +174,12 @@ ajouter_titre_tableau <- function(classeur,
   )
   
   if (isTRUE(fusion)) {
-    mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = write_row )
+    if (!is.null(nb_col)) {
+      mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = write_row )
+    }
   }
   writeData(classeur, nom_feuille, titre, startCol = col_debut, startRow = write_row)
-  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = write_row, cols = col_debut)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style_titre, rows = write_row, cols = col_debut)
 }
 
 

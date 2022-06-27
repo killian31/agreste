@@ -85,6 +85,7 @@ attachment::att_amend_desc()
 
 # Check the package
 devtools::check(error_on = "error", args = "--no-exemples")
+covr::report()
 ```
 
 # Share the package
@@ -105,7 +106,7 @@ pkgdown::build_site(examples = FALSE,
                     devel = TRUE)
 
 # build the tar.gz to share with others
-devtools::build()
+devtools::build(binary = TRUE)
 ```
 
 

@@ -108,11 +108,20 @@ formater_auto <- function(classeur,
                           liste_type_donnees,
                           col_debut = 2) {
   
-  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
-  assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
-  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(liste_type_donnees) == "list", msg = "La liste des types de donn\u00e9es doit \u00eatre de type list.")
-  assert_that(class(liste_feuilles_avec_note) == "character", msg = "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
+  assert_that(class(classeur) == "Workbook",
+              msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"),
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(class(liste_feuilles_avec_note) == "character",
+              msg = "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
+  assert_that(class(liste_type_donnees) == "list",
+              msg = "La liste des types de donn\u00e9es doit \u00eatre de type list.")
+  assert_that(class(liste_type_donnees[[1]]) == "character",
+              msg = "La liste des types de donn\u00e9es doit \u00eatre une liste contenant des vecteurs de cha\u00eenes de caract\u00e8re.")
+  assert_that(col_debut > 0,
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(is.numeric(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   
   mes_styles <- creer_liste_style_excel(format = format)
   

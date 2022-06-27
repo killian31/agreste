@@ -38,20 +38,22 @@ geler <- function(classeur,
                   ligne = 0,
                   col = 0) {
   
-  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
-  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
-  assert_that(is.numeric(ligne), msg = "La ligne \u00e0 geler doit \u00eatre un entier positif.")
-  assert_that(is.numeric(col), msg = "La colonne \u00e0 geler doit \u00eatre un entier positif.")
+  assert_that(class(classeur) == "Workbook",
+              msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille),
+              msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(ligne >= 0,
+              msg = "La ligne \u00e0 geler doit \u00eatre un entier positif.")
+  assert_that(col >= 0,
+              msg = "La colonne \u00e0 geler doit \u00eatre un entier positif.")
+  assert_that(is.numeric(ligne),
+              msg = "La ligne \u00e0 geler doit \u00eatre un entier positif.")
+  assert_that(is.numeric(col),
+              msg = "La colonne \u00e0 geler doit \u00eatre un entier positif.")
   
   ligne <- ligne + 1
   col <- col + 1
   
-  
-  if (ligne != 0 & col != 0) {
-    freezePane(classeur, nom_feuille, firstActiveRow = ligne, firstActiveCol = col)
-  } else if (ligne != 0 & col == 0) {
-    freezePane(classeur, nom_feuille, firstActiveRow = ligne)
-  } else if (ligne == 0 & col != 0) {
-    freezePane(classeur, nom_feuille, firstActiveCol = col)
-  }
+  freezePane(classeur, nom_feuille, firstActiveRow = ligne, firstActiveCol = col)
+
 }

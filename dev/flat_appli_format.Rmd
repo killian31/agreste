@@ -298,8 +298,11 @@ app_formatage <- function() {
 ```
 
 ```{r examples-app_formatage, eval=FALSE}
+
 library(agreste)
+#' \dontrun{
 app_formatage()
+#' }
 ```
 
 ```{r development-inflate, eval=FALSE}

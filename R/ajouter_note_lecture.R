@@ -150,11 +150,24 @@ ajouter_note_lecture <- function(classeur,
                                  style = agreste::creer_liste_style_excel()$note,
                                  fusion = TRUE) {
   
-  assert_that(class(classeur)=="Workbook",msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
-  assert_that(is.string(nom_feuille), msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
-  assert_that(is.string(note), msg = "La note doit \u00eatre une cha\u00eene de caract\u00e8re.")
-  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(style)=="Style", msg = "Le style doit \u00eatre un objet de type Style. Voir fonction crer_liste_style_excel pour la cr\u00e9ation de styles.")
+  assert_that(class(classeur) == "Workbook",
+              msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  assert_that(is.string(nom_feuille),
+              msg = "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(is.string(note),
+              msg = "La note doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  assert_that(class(format) == "character",
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"),
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(is.numeric(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(col_debut > 0,
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(style) == "Style",
+              msg = "Le style doit \u00eatre un objet de type Style.")
+  assert_that(class(fusion) == "logical",
+              msg = "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
   
   last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
   row_note = switch (format,

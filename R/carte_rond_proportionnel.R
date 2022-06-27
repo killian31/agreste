@@ -41,7 +41,7 @@
 #' @param taille_max_rond NUM taille du rond correspondant au plus grand volume
 #' @param hauteur_cm NUM hauteur de la carte en cm
 #' @param largeur_cm NUM largeur de la carte en cm
-#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)
 #' @param path_carte CHAR chemin vers l'image à sauvegarder
 #' 
 #' @examples
@@ -183,7 +183,8 @@ carte_rond_proportionnel <- function(df,
            width = largeur_cm, 
            height = hauteur_cm, 
            units = "cm" )
-    
+  } else {
+    plot(carte)
   }
 
 

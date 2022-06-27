@@ -61,7 +61,7 @@ carte_aplat(
 
 \item{largeur_cm}{NUM largeur de la carte en cm}
 
-\item{save_carte}{LGL TRUE si export de la carte au format png, FALSE par défaut}
+\item{save_carte}{LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)}
 
 \item{path_carte}{CHAR chemin vers l'image à sauvegarder}
 }
@@ -70,4 +70,15 @@ une carte de type ggplot 2
 }
 \description{
 Créer une carte représentant les volumes en aplat de couleurs
+}
+\examples{
+library(agreste)
+library(dplyr)
+### récupération des données de permis de construire de SITADEL 
+permis_construire_region_2020 <- agreste::permis_construire_region \%>\% 
+  filter(annee_autorisation == 2020)
+
+### création de la carte et plot
+carte_pc_2020 <- carte_aplat(df = permis_construire_region_2020, colonne_code_zone_geo = REG, colonne_volume = PC, titre_carte = "Carte 1", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région", titre_legende_volume = "Nombre de permis de construire", save_carte = FALSE)
+
 }

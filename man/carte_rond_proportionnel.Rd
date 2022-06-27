@@ -64,7 +64,7 @@ carte_rond_proportionnel(
 
 \item{largeur_cm}{NUM largeur de la carte en cm}
 
-\item{save_carte}{LGL TRUE si export de la carte au format png, FALSE par défaut}
+\item{save_carte}{LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)}
 
 \item{path_carte}{CHAR chemin vers l'image à sauvegarder}
 }

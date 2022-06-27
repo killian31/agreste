@@ -21,32 +21,36 @@
 #' mes_styles$numerique
 #' 
 creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
-  
   assert_that((format %in% c("chiffres_et_donnees", "primeur")), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
   
-  #### global option
   options("openxlsx.borderStyle" = "thin")
   options("openxlsx.borderColour" = "black")
   options("openxlsx.dateFormat" = "mm/dd/yyyy")
-  options("openxlsx.paperSize" = 9) ## A4
-  options("openxlsx.orientation" = "portrait") ## page orientation
-
-  #### styles
+  options("openxlsx.paperSize" = 9)
+  options("openxlsx.orientation" = "portrait")
+  
   titleStyle <- createStyle(
-    fontSize = 11, fontColour = "black",
-    halign = "left", valign = "center",
-    textDecoration = "bold", wrapText = TRUE
+    fontSize = 11,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    textDecoration = "bold",
+    wrapText = TRUE
   )
   
   liste_style <- list(titre = titleStyle)
-
+  
   subtitleStyle <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "right", valign = "center",
-    textDecoration = "italic", wrapText = TRUE
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    textDecoration = "italic",
+    wrapText = TRUE
   )
   
-  liste_style <- append(liste_style, values= c( sous_titre = subtitleStyle))
+  liste_style <-
+    append(liste_style, values = c(sous_titre = subtitleStyle))
   
   headerStyle <- switch(
     format,
@@ -60,250 +64,366 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       borderColour = "black",
       textDecoration = "bold",
       wrapText = TRUE
-  ),
-  "primeur" = createStyle(
-    fontSize = 10,
-    fontColour = "white",
-    halign = "center",
-    valign = "center",
-    fgFill = "#548235",
-    border = "TopBottomLeftRight",
-    borderColour = "black",
-    textDecoration = "bold",
-    wrapText = TRUE
+    ),
+    "primeur" = createStyle(
+      fontSize = 10,
+      fontColour = "white",
+      halign = "center",
+      valign = "center",
+      fgFill = "#548235",
+      border = "TopBottomLeftRight",
+      borderColour = "black",
+      textDecoration = "bold",
+      wrapText = TRUE
+    )
   )
-  )
-
-
-  liste_style <- append(liste_style, values= c( ligne_titre = headerStyle))
-
+  
+  
+  liste_style <-
+    append(liste_style, values = c(ligne_titre = headerStyle))
+  
   # headerUniteStyle <- createStyle(
   #   fontSize = 10, fontColour = "black",
   #   halign = "center", valign = "center", textDecoration = "italic",
   #   border = "LeftRight", borderColour = "black", wrapText = TRUE
   # )
-
-   
+  
+  
   dataStyleText <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "left",
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE
   )
-    
-  liste_style <- append(liste_style, values= c( texte = dataStyleText))
-
+  
+  liste_style <-
+    append(liste_style, values = c(texte = dataStyleText))
+  
   
   dataStyleNum <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    indent = 1,
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     numFmt = "#,##0"
   )
   
-  liste_style <- append(liste_style, values= c( numerique = dataStyleNum))
-
+  liste_style <-
+    append(liste_style, values = c(numerique = dataStyleNum))
+  
   dataStyleNumDecimal <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    indent = 1,
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     numFmt = "#,##0.0"
   )
   
-    liste_style <- append(liste_style, values= c( decimal = dataStyleNumDecimal))
-
-
+  liste_style <-
+    append(liste_style, values = c(decimal = dataStyleNumDecimal))
+  
+  
   dataItalicStyleText <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "left",
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     indent = 1
   )
   
-      liste_style <- append(liste_style, values= c( texte_italique = dataItalicStyleText))
-
+  liste_style <-
+    append(liste_style, values = c(texte_italique = dataItalicStyleText))
+  
   
   dataItalicStyleColonne1Text <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "left",
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     indent = 1
   )
   
-        liste_style <- append(liste_style, values= c( texte_colonne1 = dataItalicStyleColonne1Text))
-
+  liste_style <-
+    append(liste_style,
+           values = c(texte_colonne1 = dataItalicStyleColonne1Text))
+  
   dataItalicStyleNum <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    indent = 1,
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     numFmt = "#,##0"
   )
   
-        liste_style <- append(liste_style, values= c( numerique_italique = dataItalicStyleNum))
-
+  liste_style <-
+    append(liste_style,
+           values = c(numerique_italique = dataItalicStyleNum))
+  
   
   dataItalicStyleNumUneDecimal <- createStyle(
-    fontSize = 10, fontColour = "black", halign = "right", indent = 1,
-    valign = "center", border = "LeftRight", borderColour = "black", wrapText = TRUE,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    indent = 1,
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    wrapText = TRUE,
     numFmt = "#,##0.0"
   )
   
-          liste_style <- append(liste_style, values= c( decimal_italique = dataItalicStyleNumUneDecimal))
-
-
+  liste_style <-
+    append(liste_style,
+           values = c(decimal_italique = dataItalicStyleNumUneDecimal))
+  
+  
   dataTotalStyleText <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "left", valign = "center", fgFill = "#FF8D7E",
-    border = "TopBottomLeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE
   )
   
-            liste_style <- append(liste_style, values= c( texte_total = dataTotalStyleText))
-
+  liste_style <-
+    append(liste_style, values = c(texte_total = dataTotalStyleText))
+  
   
   dataTotalStyleNum <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "right", valign = "center", fgFill = "#FF8D7E",
-    border = "TopBottomLeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE,
-    numFmt = "#,##0", indent = 1
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE,
+    numFmt = "#,##0",
+    indent = 1
   )
   
-              liste_style <- append(liste_style, values= c( numerique_total = dataTotalStyleNum))
-
+  liste_style <-
+    append(liste_style, values = c(numerique_total = dataTotalStyleNum))
+  
   
   dataTotalStyleNumDecimal <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "right", valign = "center", fgFill = "#FF8D7E",
-    border = "TopBottomLeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE,
-    numFmt = "#,##0", indent = 1
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    fgFill = "#FF8D7E",
+    border = "TopBottomLeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE,
+    numFmt = "#,##0",
+    indent = 1
   )
   
-                liste_style <- append(liste_style, values= c(decimal_total = dataTotalStyleNumDecimal))
-
-
+  liste_style <-
+    append(liste_style,
+           values = c(decimal_total = dataTotalStyleNumDecimal))
+  
+  
   dataSubTotalStyleText <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "left", valign = "center",
-    border = "LeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE
   )
-              liste_style <- append(liste_style, values= c( texte_sous_total = dataSubTotalStyleText))
-
+  liste_style <-
+    append(liste_style,
+           values = c(texte_sous_total = dataSubTotalStyleText))
+  
   
   
   dataSubTotalStyleNum <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "right", valign = "center",
-    border = "LeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE,
-    numFmt = "#,##0", indent = 1
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE,
+    numFmt = "#,##0",
+    indent = 1
   )
   
-                liste_style <- append(liste_style, values= c( numerique_sous_total = dataSubTotalStyleNum))
-
+  liste_style <-
+    append(liste_style,
+           values = c(numerique_sous_total = dataSubTotalStyleNum))
+  
   
   dataSubTotalStyleNumDecimal <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "right", valign = "center",
-    border = "LeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE,
-    numFmt = "#,##0.0", indent = 1
-  )
-                  liste_style <- append(liste_style, values= c( decimal_sous_total = dataSubTotalStyleNumDecimal))
-
-
-
-  dataSectionStyleText <- createStyle(
-    fontSize = 10, fontColour = "black",
-    halign = "center", valign = "center", fgFill = "white",
-    border = "TopBottomLeftRight", borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
-  )
-  
-                    liste_style <- append(liste_style, values= c( texte_section = dataSectionStyleText))
-
-  
-  # dataSectionStyleNum <- createStyle(
-  #   fontSize = 10, fontColour = "black",
-  #   halign = "center", valign = "center", fgFill = "white",
-  #   border = "TopBottomLeftRight", borderColour = "black",
-  #   textDecoration = "bold", wrapText = TRUE,
-  #   numFmt = "#,##0", indent = 1
-  # )
-  # 
-  #                     liste_style <- append(liste_style, numerique_section = dataSectionStyleNum)
-  # 
-  # dataSectionStyleNumDecimal <- createStyle(
-  #   fontSize = 10, fontColour = "black",
-  #   halign = "center", valign = "center", fgFill = "white",
-  #   border = "TopBottomLeftRight", borderColour = "black",
-  #   textDecoration = "bold", wrapText = TRUE,
-  #   numFmt = "#,##0.0", indent = 1
-  # )
-  # 
-  #                     liste_style <- append(liste_style, decimal_section = dataSectionStyleNumDecimal)
-
-  noteStyle <- createStyle(
-    fontSize = 9, fontColour = "black",
-    borderColour = "black", textDecoration = "italic",
-    valign = "center", wrapText = TRUE
-  )
-  
-  liste_style <- append(liste_style, values= c( note = noteStyle))
-
-  sourceStyle <- createStyle(
-    fontSize = 9, fontColour = "black", textDecoration = "italic",
-    valign = "center", wrapText = TRUE
-  )
-  
-    liste_style <- append(liste_style, values= c( source = sourceStyle))
-
-
-  sourceStyleSansNote <- createStyle(
-    fontSize = 9, fontColour = "black", textDecoration = "italic",
-    border = "Top", borderColour = "black",
-    valign = "center", wrapText = TRUE
-  )
-  
-      liste_style <- append(liste_style, values= c( source_sans_note_avant = sourceStyleSansNote))
-
-  champStyle <- createStyle(
-      fontSize = 9, fontColour = "black", textDecoration = "italic",
-      valign = "center", wrapText = TRUE
-    )
-    
-      liste_style <- append(liste_style, values= c( champ = champStyle))
-      
-  sommaireSectionStyle <- createStyle(
-    fontSize = 11, fontColour = "black",
-    halign = "left", valign = "center", fgFill = "#FF8D7E",
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    border = "LeftRight",
     borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
+    textDecoration = "bold",
+    wrapText = TRUE,
+    numFmt = "#,##0.0",
+    indent = 1
+  )
+  liste_style <-
+    append(liste_style,
+           values = c(decimal_sous_total = dataSubTotalStyleNumDecimal))
+  
+  
+  
+  dataSectionStyleText <- createStyle(
+    fontSize = 10,
+    fontColour = "black",
+    halign = "center",
+    valign = "center",
+    fgFill = "white",
+    border = "TopBottomLeftRight",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE
   )
   
-        liste_style <- append(liste_style, values= c( sommaire_section = sommaireSectionStyle))
-
+  liste_style <-
+    append(liste_style, values = c(texte_section = dataSectionStyleText))
+  
+  
+  noteStyle <- createStyle(
+    fontSize = 9,
+    fontColour = "black",
+    borderColour = "black",
+    textDecoration = "italic",
+    valign = "center",
+    wrapText = TRUE
+  )
+  
+  liste_style <- append(liste_style, values = c(note = noteStyle))
+  
+  sourceStyle <- createStyle(
+    fontSize = 9,
+    fontColour = "black",
+    textDecoration = "italic",
+    valign = "center",
+    wrapText = TRUE
+  )
+  
+  liste_style <-
+    append(liste_style, values = c(source = sourceStyle))
+  
+  
+  sourceStyleSansNote <- createStyle(
+    fontSize = 9,
+    fontColour = "black",
+    textDecoration = "italic",
+    border = "Top",
+    borderColour = "black",
+    valign = "center",
+    wrapText = TRUE
+  )
+  
+  liste_style <-
+    append(liste_style,
+           values = c(source_sans_note_avant = sourceStyleSansNote))
+  
+  champStyle <- createStyle(
+    fontSize = 9,
+    fontColour = "black",
+    textDecoration = "italic",
+    valign = "center",
+    wrapText = TRUE
+  )
+  
+  liste_style <-
+    append(liste_style, values = c(champ = champStyle))
+  
+  sommaireSectionStyle <- createStyle(
+    fontSize = 11,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    fgFill = "#FF8D7E",
+    borderColour = "black",
+    textDecoration = "bold",
+    wrapText = TRUE
+  )
+  
+  liste_style <-
+    append(liste_style,
+           values = c(sommaire_section = sommaireSectionStyle))
+  
   
   sommaireSection2Style <- createStyle(
-    fontSize = 10, fontColour = "black", indent = 1,
-    halign = "left", valign = "center", fgFill = "#FFE2DB",
+    fontSize = 10,
+    fontColour = "black",
+    indent = 1,
+    halign = "left",
+    valign = "center",
+    fgFill = "#FFE2DB",
     borderColour = "black",
-    textDecoration = "bold", wrapText = TRUE
+    textDecoration = "bold",
+    wrapText = TRUE
   )
   
-          liste_style <- append(liste_style, values= c( sommaire_section2 = sommaireSection2Style))
-
+  liste_style <-
+    append(liste_style,
+           values = c(sommaire_section2 = sommaireSection2Style))
+  
   
   sommaireSheetStyle <- createStyle(
-    fontSize = 10, fontColour = "black", indent = 3,
-    halign = "left", valign = "center",
+    fontSize = 10,
+    fontColour = "black",
+    indent = 3,
+    halign = "left",
+    valign = "center",
     wrapText = TRUE
   )
   
-  liste_style <- append(liste_style, values= c( sommaire_lien = sommaireSheetStyle))
-
+  liste_style <-
+    append(liste_style, values = c(sommaire_lien = sommaireSheetStyle))
+  
   retourSommaireSheetStyle <- createStyle(
-    fontSize = 11, fontColour = "black",
-    halign = "center", valign = "center", fgFill = "#FF8D7E",
+    fontSize = 11,
+    fontColour = "black",
+    halign = "center",
+    valign = "center",
+    fgFill = "#FF8D7E",
     wrapText = TRUE
   )
-    liste_style <- append(liste_style, values= c( bouton_retour_sommaire = retourSommaireSheetStyle))
-
+  liste_style <-
+    append(liste_style,
+           values = c(bouton_retour_sommaire = retourSommaireSheetStyle))
+  
   return(liste_style)
   
 }

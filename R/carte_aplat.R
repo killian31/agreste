@@ -11,7 +11,7 @@
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 theme_void
-#' @importFrom ggplot2 scale_size_area
+#' @importFrom ggplot2 scale_fill_gradient
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 guides
@@ -40,8 +40,18 @@
 #' @param couleur_min CHAR couleur à utiliser pour la plus basse valeur de nuance de l'aplat "nom_couleur" ou "#code_couleur_html"
 #' @param hauteur_cm NUM hauteur de la carte en cm
 #' @param largeur_cm NUM largeur de la carte en cm
-#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut
+#' @param save_carte LGL TRUE si export de la carte au format png, FALSE par défaut (simple plot de la carte)
 #' @param path_carte CHAR chemin vers l'image à sauvegarder
+#' 
+#' @examples
+#' library(agreste)
+#' library(dplyr)
+#' ### récupération des données de permis de construire de SITADEL 
+#' permis_construire_region_2020 <- agreste::permis_construire_region %>% 
+#'   filter(annee_autorisation == 2020)
+#' 
+#' ### création de la carte et plot
+#' carte_pc_2020 <- carte_aplat(df = permis_construire_region_2020, colonne_code_zone_geo = REG, colonne_volume = PC, titre_carte = "Carte 1", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région", titre_legende_volume = "Nombre de permis de construire", save_carte = FALSE)
 #' 
 carte_aplat <- function(df,
            colonne_code_zone_geo,
@@ -114,6 +124,17 @@ carte_aplat <- function(df,
            caption = note_sous_carte) +
       
       theme_void() 
+  }
+  
+  if(isTRUE(save_carte)){
+    
+    ggsave(filename = path_carte,
+           plot = carte, 
+           width = largeur_cm, 
+           height = hauteur_cm, 
+           units = "cm" )
+  } else {
+    plot(carte)
   }
   
   return(carte)

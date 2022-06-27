@@ -54,7 +54,7 @@ creer_excel_depuis_plan <- function(plan,
   assert_that(class(plan) %in% c("character", "data.frame"),msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
   assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
   assert_that(type_virgule %in% c(",", "."), msg = 'Le type de virgule doit \u00eatre "." ou ","')
-  assert_that(is.numeric(col_debut), msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(col_debut > 0, msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(class(save) == "logical", msg = "save doit \u00eatre TRUE ou FALSE")
   assert_that(class(path) == "character", msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
   
