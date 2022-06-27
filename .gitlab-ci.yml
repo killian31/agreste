@@ -30,7 +30,7 @@ building:
     - Rscript -e 'install.packages("xlsx")'
     - Rscript -e 'remotes::install_deps(dependencies = TRUE)'
     - Rscript -e 'remotes::install_local(upgrade = "never")'
-    - R -e 'devtools::check(args = "--no-exemples", error_on = "error", check_dir = "check")'
+    - R -e 'devtools::check(error_on = "error", check_dir = "check")'
 
 # To have the coverage percentage appear as a gitlab badge follow these
 # instructions:
