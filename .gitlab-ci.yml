@@ -13,7 +13,6 @@ cache:
 stages:
   - build
   - test
-  - pkgdown
   - pkgdown-move
   - deploy
 
@@ -46,37 +45,21 @@ coverage:
         - master
         - production
     script:
+        - apt-get update -qq && apt-get install -y libharfbuzz-dev libfribidi-dev libgdal-dev libudunits2-dev libproj-dev
         - Rscript -e 'remotes::install_cran(c("covr", "DT"), upgrade = "never")'
+        - Rscript -e 'install.packages(c("bs4Dash", "collections", "comprehenr", "ggtext", "openxlsx", "sf", "shinyalert", "shinycssloaders", "shinyWidgets"))'
         - Rscript -e 'covr::gitlab(quiet = FALSE)'
     artifacts:
         paths:
             - public
         expire_in: 30 days
+    coverage: '/Coverage: \d+\.\d+/'
 
 # To produce a code coverage report as a GitLab page see
 # https://about.gitlab.com/2016/11/03/publish-code-coverage-report-with-gitlab-pages/
 
-integration:
-    stage: pkgdown
-    allow_failure: true
-    when: on_success
-    only:
-        - master
-        - production
-        - test-ci
-    script:
-        - Rscript -e 'remotes::install_local(upgrade = "never")'
-        - Rscript -e 'remotes::install_cran(c("pkgdown"), upgrade = "never")'
-        - Rscript -e 'pkgdown::build_site()'
-    artifacts:
-        paths:
-            - docs
-        expire_in: 30 days
-
 integration-test:
     stage: pkgdown-move
-    dependencies:
-        - integration
     only:
         - test-ci
     script:
@@ -99,8 +82,6 @@ integration-test:
 
 integration-production:
     stage: pkgdown-move
-    dependencies:
-        - integration
     only:
         - production
     script:
@@ -118,8 +99,6 @@ integration-production:
 
 integration-master:
     stage: pkgdown-move
-    dependencies:
-        - integration
     only:
         - master
     script:
