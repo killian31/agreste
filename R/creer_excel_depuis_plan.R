@@ -19,13 +19,14 @@
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx saveWorkbook
 #' @importFrom openxlsx write.xlsx
+#' @importFrom stringr str_trim
 #' 
 #' @export
 #'
 #' @examples
 #' library(agreste)
 #' library(dplyr)
-#' library(xlsx)
+#' library(openxlsx)
 #' ### Import du fichier de plan
 #' plan = agreste::modele_plan
 #' 
@@ -39,11 +40,11 @@
 #' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 #' ### Formatage
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-#'                                     format = "chiffres_et_donnees",
+#'                                     format = "primeur",
 #'                                     col_debut = 2,
 #'                                     save = TRUE,
-#'                                     path = "cd_a_envoyer.xlsx")
-#' browseURL("cd_a_envoyer.xlsx")
+#'                                     path = "document_a_envoyer.xlsx")
+#' browseURL("document_a_envoyer.xlsx")
 #' 
 creer_excel_depuis_plan <- function(plan,
                                     format,
@@ -51,24 +52,55 @@ creer_excel_depuis_plan <- function(plan,
                                     col_debut,
                                     save = TRUE,
                                     path = "tableau1.xlsx") {
-  assert_that(class(plan) %in% c("character", "data.frame"),msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
-  assert_that(format %in% c("chiffres_et_donnees", "primeur"), msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
-  assert_that(type_virgule %in% c(",", "."), msg = 'Le type de virgule doit \u00eatre "." ou ","')
-  assert_that(col_debut > 0, msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(save) == "logical", msg = "save doit \u00eatre TRUE ou FALSE")
-  assert_that(class(path) == "character", msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
+  
+  assert_that(class(plan) %in% c("character", "data.frame"),
+              msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"),
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(type_virgule %in% c(",", "."),
+              msg = 'Le type de virgule doit \u00eatre "." ou ","')
+  assert_that(is.numeric(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(col_debut > 0,
+              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(save) == "logical",
+              msg = "save doit \u00eatre TRUE ou FALSE")
+  assert_that(class(path) == "character",
+              msg = "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
   
   if (class(plan) == "character") {
-    plan = read.xlsx(plan)
+    plan = read.xlsx(plan,
+                     colNames = TRUE,
+                     rowNames = FALSE)
+  }
+  i <- 0
+  for (liste in plan$Type_colonnes) {
+    i <- i + 1
+    test_list <- strsplit(liste,
+                     split = ", ")[[1]]
+    for (type in test_list) {
+      assert_that(type %in% c("decimal", "texte", "numerique"),
+                  msg = paste("Problème dans la colonne Type_colonnes, tableau ", i, ". Veuillez la vérifier.", sep = ""))
+    }
   }
   
+  plan[,12:18][is.na(plan[,12:18])] <- 0
+  
   nb_tab = nrow(plan)
-  ligne_debut = switch (format,
-    "chiffres_et_donnees" = 3,
-    "primeur" = 5
-  )
+  
+  ligne_debut <- 3 + row_to_add_format(format = format)
+  
   liste_feuilles_note <- c()
   liste_data_types <- list()
+  liste_lignes_titre <- c()
+  liste_lignes_section <- list()
+  liste_lignes_sous_total <- list()
+  liste_lignes_precision <- list()
+  liste_lignes_total <- list()
+  liste_col_widths <- list()
+  
+  
+  titre_doc = plan$Titre_document[1]
   
   wb = createWorkbook()
   
@@ -78,59 +110,90 @@ creer_excel_depuis_plan <- function(plan,
                       sep = ".")
     data <- read.csv(filename,
                      header = TRUE,
-                     check.names = FALSE, dec = type_virgule)
+                     check.names = FALSE,
+                     dec = type_virgule)
     feuille <- plan$Nom_feuille[tab]
     titre <- plan$Titre[tab]
-    avec_note <- plan$Avec_note[tab]
+    if (str_trim(plan$Note_de_lecture[tab]) == "" | is.na(plan$Note_de_lecture[tab])) {
+      avec_note <- FALSE
+    } else {
+      avec_note <- TRUE
+    }
     source <- plan$Source[tab]
     champ <- plan$Champ[tab]
+    if (str_trim(plan$Taille_colonnes[tab]) == "auto") {
+      liste_col_widths <- append(liste_col_widths, "auto")
+    } else {
+      liste_col_widths <- append(liste_col_widths,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Taille_colonnes[tab]), split = ", ")))))
+    }
     liste_data_types <- append(liste_data_types,
-                               strsplit(plan$Liste_unites[tab],
+                               strsplit(plan$Type_colonnes[tab],
                                         split = ", "))
-
+    liste_lignes_titre <- append(liste_lignes_titre,
+                                 as.numeric(unlist(strsplit(str_trim(plan$Lignes_titre[tab]), split = ", "))))
+    liste_lignes_section <- append(liste_lignes_section,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_section[tab]), split = ", ")))))
+    liste_lignes_sous_total <- append(liste_lignes_sous_total,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_sous_total[tab]), split = ", ")))))
+    liste_lignes_precision <- append(liste_lignes_precision,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision[tab]), split = ", ")))))
+    liste_lignes_total <- append(liste_lignes_total,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_total[tab]), split = ", ")))))
+    
     agreste::ajouter_tableau_excel(classeur = wb,
                                    tableau = data,
                                    nom_feuille = feuille,
                                    ligne_debut = ligne_debut,
                                    col_debut = col_debut)
+    
     agreste::ajouter_titre_tableau(classeur = wb,
                                    nom_feuille = feuille,
                                    titre = titre,
                                    col_debut = col_debut,
                                    format = format)
-    if (avec_note == "Oui") {
+    if (isTRUE(avec_note)) {
       liste_feuilles_note <- append(liste_feuilles_note, feuille)
       agreste::ajouter_note_lecture(classeur = wb,
                                     nom_feuille = feuille,
                                     note = plan$Note_de_lecture[tab],
                                     col_debut = col_debut,
                                     format = format)
-      agreste::ajouter_source(classeur = wb,
+    } 
+    
+    agreste::ajouter_source(classeur = wb,
                               nom_feuille = feuille,
                               source = source,
                               col_debut = col_debut,
-                              avec_note = TRUE,
+                              avec_note = avec_note,
                               format = format)
-    } else {
-      agreste::ajouter_source(classeur = wb,
-                              nom_feuille = feuille,
-                              source = source,
-                              col_debut = col_debut,
-                              avec_note = FALSE,
-                              format = format)
-    }
     agreste::ajouter_champ(classeur = wb,
                            nom_feuille = feuille,
                            champ = champ,
                            col_debut = col_debut,
                            format = format)
   }
-
+  if (format == "primeur") {
+      agreste::ajouter_titre_primeur(classeur = wb,
+                                     titre = titre_doc,
+                                     col_debut = col_debut,
+                                     fusion = TRUE)
+  }
+  agreste::taille_colonnes(classeur = wb,
+                          liste_type_donnees = liste_data_types,
+                          largeurs = liste_col_widths,
+                          col_debut = col_debut)
   agreste::formater_auto(wb,
                          format = format,
                          liste_feuilles_avec_note = liste_feuilles_note,
                          liste_type_donnees = liste_data_types,
-                         col_debut = col_debut)
+                         liste_lignes_titre = liste_lignes_titre,
+                         liste_lignes_section = liste_lignes_section,
+                         liste_lignes_sous_total = liste_lignes_sous_total,
+                         liste_lignes_precision = liste_lignes_precision,
+                         liste_lignes_total = liste_lignes_total,
+                         col_debut = col_debut,
+                         avec_titre = TRUE)
   if (isTRUE(save)) {
     saveWorkbook(wb, file = path, overwrite = TRUE)
   }

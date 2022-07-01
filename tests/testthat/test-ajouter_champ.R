@@ -38,16 +38,18 @@ test_that("ajouter_champ fonctionne correctement et renvoie une erreur quand il 
                                     nom_feuille = "iris",
                                     champ = champ,
                                     col_debut = 2,
-                                    style = "gras"),"Le style doit \u00eatre un objet de type Style.")
-  expect_error(ajouter_champ(classeur = mon_classeur,
-                                    nom_feuille = "iris",
-                                    champ = champ,
-                                    col_debut = 2,
                                     fusion = "oui"),
                "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                             nom_feuille = "iris",
+                             champ = champ,
+                             col_debut = 2,
+                             fusion = TRUE,
+                             avec_titre = "non"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
 })
 
-test_that("La source est bien présente dans le workbook et identique à celle rentrée en paramètre", {
+test_that("Le champ est bien présent dans le workbook et identique à celui rentré en paramètre", {
   mon_classeur <- openxlsx::createWorkbook()
 
   champ <- "Un champ de blé"
@@ -63,11 +65,13 @@ test_that("La source est bien présente dans le workbook et identique à celle r
   ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
                  source = "Agreste",
-                 format = "primeur")
+                 format = "primeur",
+                 avec_titre = FALSE)
   ajouter_champ(classeur = mon_classeur,
-                       nom_feuille = "iris",
-                       champ = champ,
-                       format = "primeur")
+                nom_feuille = "iris",
+                champ = champ,
+                format = "primeur",
+                avec_titre = FALSE)
   
   
   expect_equal(openxlsx::readWorkbook(mon_classeur,

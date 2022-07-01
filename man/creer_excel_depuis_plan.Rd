@@ -35,7 +35,7 @@ Cette fonction permet de formater tous les tableaux d'un classeur selon le type 
 \examples{
 library(agreste)
 library(dplyr)
-library(xlsx)
+library(openxlsx)
 ### Import du fichier de plan
 plan = agreste::modele_plan
 
@@ -49,10 +49,10 @@ agreste::resultat_3 \%>\%
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-                                    format = "chiffres_et_donnees",
+                                    format = "primeur",
                                     col_debut = 2,
                                     save = TRUE,
-                                    path = "cd_a_envoyer.xlsx")
-browseURL("cd_a_envoyer.xlsx")
+                                    path = "document_a_envoyer.xlsx")
+browseURL("document_a_envoyer.xlsx")
 
 }

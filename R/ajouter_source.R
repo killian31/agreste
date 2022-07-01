@@ -9,9 +9,9 @@
 #' @param source la source à ajouter
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur" 
 #' @param col_debut la colonne de départ (2eme par défaut)
-#' @param style le style à appliquer (style "source" par défaut)
 #' @param avec_note si une note de lecture est présente ou pas, par défaut TRUE
 #' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#' @param avec_titre LGL si le classeur est un primeur avec un titre
 #'
 #' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
 #' 
@@ -156,9 +156,9 @@ ajouter_source <- function(classeur,
                            source,
                            format = "chiffres_et_donnees",
                            col_debut = 2,
-                           style = agreste::creer_liste_style_excel()$source,
                            avec_note = TRUE,
-                           fusion = TRUE) {
+                           fusion = TRUE,
+                           avec_titre = FALSE) {
   
   assert_that(class(classeur) == "Workbook",
               msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
@@ -174,24 +174,29 @@ ajouter_source <- function(classeur,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(col_debut > 0,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(style) == "Style",
-              msg = "Le style doit \u00eatre un objet de type Style.")
   assert_that(class(avec_note) == "logical",
               msg = "Le param\u00e8tre avec_note doit \u00eatre TRUE ou FALSE.")
   assert_that(class(fusion) == "logical",
               msg = "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  assert_that(class(avec_titre) == "logical",
+              msg = "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
   
+  style = creer_liste_style_excel(format = format)
+  style_source <- style$source
   last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
   if (isTRUE(avec_note)) {
     ligne_de_depart_source = 0
   } else {
     ligne_de_depart_source = 1
   }
-    
-    row_source = switch (format,
-                         "chiffres_et_donnees" = last_row + ligne_de_depart_source + 1,
-                         "primeur" = last_row + ligne_de_depart_source + 3
-    )
+  
+  if (avec_titre == TRUE) {
+    nb_row_to_add <- 0
+  } else {
+    nb_row_to_add <- row_to_add_format(format = format)
+  }
+  
+  row_source <- last_row + ligne_de_depart_source + 1 + nb_row_to_add
 
   nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
   
@@ -199,5 +204,5 @@ ajouter_source <- function(classeur,
     mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = row_source)
   }
   writeData(classeur, nom_feuille, paste("Source :",source), startCol = col_debut, startRow = row_source)
-  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = row_source, cols = col_debut)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style_source, rows = row_source, cols = col_debut)
 }

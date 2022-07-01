@@ -43,13 +43,6 @@ test_that("ajouter_source fonctionne correctement et renvoie une erreur quand il
                               nom_feuille = "iris",
                               source = source,
                               col_debut = 2,
-                              style = "gras",
-                              avec_note = FALSE),
-               "Le style doit \u00eatre un objet de type Style.")
-  expect_error(ajouter_source(classeur = mon_classeur,
-                              nom_feuille = "iris",
-                              source = source,
-                              col_debut = 2,
                               fusion = "oui",
                               avec_note = FALSE),
                "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
@@ -60,6 +53,14 @@ test_that("ajouter_source fonctionne correctement et renvoie une erreur quand il
                               fusion = TRUE,
                               avec_note = "non"),
                "Le param\u00e8tre avec_note doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = 2,
+                              fusion = TRUE,
+                              avec_note = FALSE,
+                              avec_titre = "non"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
 })
 
 test_that("La source est bien présente dans le workbook et identique à celle rentrée en paramètre", {
@@ -70,7 +71,8 @@ test_that("La source est bien présente dans le workbook et identique à celle r
   
   ajouter_tableau_excel(classeur = mon_classeur,
                         tableau = iris,
-                        nom_feuille = "iris")
+                        nom_feuille = "iris",
+                        col_debut = 5)
   ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "iris",
                         titre = "Données Iris",
@@ -78,12 +80,14 @@ test_that("La source est bien présente dans le workbook et identique à celle r
   ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "iris",
                        note = note, 
-                       format = "primeur")
+                       format = "primeur",
+                       avec_titre = FALSE)
   ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
                  source = source,
                  format = "primeur",
-                 avec_note = TRUE)
+                 avec_note = TRUE,
+                 avec_titre = FALSE)
   
   expect_equal(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[dim(iris)[1]+4], paste("Source :", source))
 })

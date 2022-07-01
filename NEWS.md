@@ -1,3 +1,10 @@
+# agreste 0.2.8
+
+- Ajout d'une fonction `taille_colonnes()` pour appliquer une taille de colonnes
+pour respecter les consignes de la PAO (taille max du tableau de 89)
+- Ajout de messages d'erreur clairs en cas de mauvais paramètres rentrés
+- Formatage des lignes de section, sous-total, précision, total
+
 # agreste 0.2
 
 - ajout d'un Addin pour lancer l'app Shiny de formatage

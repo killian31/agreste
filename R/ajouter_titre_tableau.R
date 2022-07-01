@@ -168,10 +168,7 @@ ajouter_titre_tableau <- function(classeur,
   
   nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
   
-  write_row = switch (format,
-    "chiffres_et_donnees" = 1,
-    "primeur" = 3
-  )
+  write_row <- 1 + row_to_add_format(format = format)
   
   if (isTRUE(fusion)) {
     if (!is.null(nb_col)) {
@@ -181,5 +178,4 @@ ajouter_titre_tableau <- function(classeur,
   writeData(classeur, nom_feuille, titre, startCol = col_debut, startRow = write_row)
   addStyle(wb = classeur, sheet = nom_feuille, style = style_titre, rows = write_row, cols = col_debut)
 }
-
 

@@ -9,8 +9,8 @@
 #' @param note la note à écrire
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur" 
 #' @param col_debut la colonne de départ (2eme par défaut)
-#' @param style le style à appliquer (style "note" par défaut)
 #' @param fusion LGL si les cellules sont à fusionner ou pas (TRUE par défaut)
+#' @param avec_titre LGL si le classeur est un primeur avec un titre
 #'
 #' @return Rien n'est renvoyé mais la feuille du classeur est modifiée
 #' 
@@ -147,8 +147,8 @@ ajouter_note_lecture <- function(classeur,
                                  note,
                                  format = "chiffres_et_donnees",
                                  col_debut = 2,
-                                 style = agreste::creer_liste_style_excel()$note,
-                                 fusion = TRUE) {
+                                 fusion = TRUE,
+                                 avec_titre = FALSE) {
   
   assert_that(class(classeur) == "Workbook",
               msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
@@ -164,22 +164,28 @@ ajouter_note_lecture <- function(classeur,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(col_debut > 0,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(style) == "Style",
-              msg = "Le style doit \u00eatre un objet de type Style.")
   assert_that(class(fusion) == "logical",
               msg = "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  assert_that(class(avec_titre) == "logical",
+              msg = "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
   
-  last_row = nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
-  row_note = switch (format,
-    "chiffres_et_donnees" = last_row + 2,
-    "primeur" = last_row + 4
-  )
+  style <- creer_liste_style_excel(format = format)
+  style_note <- style$note
+  last_row <- nrow(readWorkbook(classeur, sheet = nom_feuille, skipEmptyRows = FALSE, colNames = FALSE))
+  
+  if (avec_titre == TRUE) {
+    nb_row_to_add <- 0
+  } else {
+    nb_row_to_add <- row_to_add_format(format = format)
+  }
+  
+  row_note <- last_row + 2 + nb_row_to_add
     
   nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
   
   if (isTRUE(fusion)) {
     mergeCells(classeur, nom_feuille, cols = col_debut:(col_debut+nb_col-1), rows = row_note)
   }
-  writeData(classeur, nom_feuille, paste("Note de lecture :",note), startCol = col_debut, startRow = row_note)
-  addStyle(wb = classeur, sheet = nom_feuille, style = style, rows = row_note, cols = col_debut)
+  writeData(classeur, nom_feuille, paste("Note de lecture :", note), startCol = col_debut, startRow = row_note)
+  addStyle(wb = classeur, sheet = nom_feuille, style = style_note, rows = row_note, cols = col_debut)
 }

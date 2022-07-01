@@ -10,9 +10,9 @@ ajouter_source(
   source,
   format = "chiffres_et_donnees",
   col_debut = 2,
-  style = agreste::creer_liste_style_excel()$source,
   avec_note = TRUE,
-  fusion = TRUE
+  fusion = TRUE,
+  avec_titre = FALSE
 )
 }
 \arguments{
@@ -26,11 +26,11 @@ ajouter_source(
 
 \item{col_debut}{la colonne de départ (2eme par défaut)}
 
-\item{style}{le style à appliquer (style "source" par défaut)}
-
 \item{avec_note}{si une note de lecture est présente ou pas, par défaut TRUE}
 
 \item{fusion}{LGL si les cellules sont à fusionner ou pas (TRUE par défaut)}
+
+\item{avec_titre}{LGL si le classeur est un primeur avec un titre}
 }
 \value{
 Rien n'est renvoyé mais la feuille du classeur est modifiée

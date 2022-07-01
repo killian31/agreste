@@ -36,20 +36,19 @@ test_that("ajouter_note_lecture fonctionne correctement et renvoie une erreur qu
                                     nom_feuille = "iris",
                                     note = note,
                                     col_debut = 2,
-                                    style = "gras"),"Le style doit \u00eatre un objet de type Style.")
+                                    fusion = "oui"),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
   expect_error(ajouter_note_lecture(classeur = mon_classeur,
                                     nom_feuille = "iris",
                                     note = note,
                                     col_debut = 2,
-                                    fusion = "oui"),
-               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+                                    avec_titre = "oui"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
 })
 
-test_that("La source est bien présente dans le workbook et identique à celle rentrée en paramètre", {
+test_that("La note est bien présente dans le workbook et identique à celle rentrée en paramètre", {
   mon_classeur <- openxlsx::createWorkbook()
 
-  mes_styles <- creer_liste_style_excel()
-  
   note <- "Note de lecture"
   
   ajouter_tableau_excel(classeur = mon_classeur,
@@ -62,7 +61,8 @@ test_that("La source est bien présente dans le workbook et identique à celle r
   ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "iris",
                        note = note,
-                       format = "primeur")
+                       format = "primeur",
+                       avec_titre = FALSE)
   
   expect_equal(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[dim(iris)[1]+3], paste("Note de lecture :", note))
 })
