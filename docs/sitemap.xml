@@ -46,6 +46,9 @@
     <loc>/reference/ajouter_tableau_excel.html</loc>
   </url>
   <url>
+    <loc>/reference/ajouter_titre_primeur.html</loc>
+  </url>
+  <url>
     <loc>/reference/ajouter_titre_tableau.html</loc>
   </url>
   <url>
@@ -77,6 +80,9 @@
   </url>
   <url>
     <loc>/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>/reference/taille_colonnes.html</loc>
   </url>
   <url>
     <loc>/stage_killian.html</loc>
