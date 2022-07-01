@@ -3,8 +3,12 @@
 
 # agreste
 
-<!-- badges: start -->
-<!-- badges: end -->
+<div id="badges">
+
+![](https://git.lab.sspcloud.fr/ksteunou/agreste/badges/master/pipeline.svg?job=build)
+![](https://git.lab.sspcloud.fr/ksteunou/agreste/badges/master/coverage.svg)
+
+</div>
 
 Le but du package agreste est de fournir à l’ensemble des agents du SSP
 des outils pour faciliter la diffusion auprès du grand public. Le
