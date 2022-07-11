@@ -47,7 +47,7 @@ coverage:
     script:
         - apt-get update -qq && apt-get install -y libharfbuzz-dev libfribidi-dev libgdal-dev libudunits2-dev libproj-dev
         - Rscript -e 'remotes::install_cran(c("covr", "DT"), upgrade = "never")'
-        - Rscript -e 'install.packages(c("bs4Dash", "collections", "comprehenr", "ggtext", "openxlsx", "sf", "shinyalert", "shinycssloaders", "shinyWidgets"))'
+        - Rscript -e 'install.packages(c("bs4Dash", "collections", "comprehenr", "ggtext", "openxlsx", "sf", "shinyalert", "shinycssloaders", "shinyWidgets", "reader"))'
         - Rscript -e 'covr::gitlab(quiet = FALSE)'
     artifacts:
         paths:
