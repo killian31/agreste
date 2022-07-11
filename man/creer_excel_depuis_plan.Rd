@@ -7,6 +7,7 @@
 creer_excel_depuis_plan(
   plan,
   format,
+  sep = ",",
   type_virgule = ",",
   col_debut,
   save = TRUE,
@@ -17,6 +18,8 @@ creer_excel_depuis_plan(
 \item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque tableau}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
+
+\item{sep}{CHAR le caractère utilisé pour séparer les colonnes des fichiers}
 
 \item{type_virgule}{CHAR le type de séparation décimale utilisée : "." ou ","}
 
@@ -46,13 +49,18 @@ agreste::resultat_2 \%>\%
   write.csv(file = "resultat_2.csv", row.names = FALSE)
 agreste::resultat_3 \%>\%
   write.csv(file = "resultat_3.csv", row.names = FALSE)
+agreste::lait_vache \%>\%
+  write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
+write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+agreste::scieries2020 \%>\%
+  write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-                                    format = "primeur",
-                                    col_debut = 2,
+                                    format = "chiffres_et_donnees",
+                                    col_debut = 1,
                                     save = TRUE,
-                                    path = "document_a_envoyer.xlsx")
-browseURL("document_a_envoyer.xlsx")
+                                    path = "document_a_envoyer.xlsx",
+                                    type_virgule = ".")
 
 }

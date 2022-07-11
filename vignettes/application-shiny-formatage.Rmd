@@ -23,7 +23,10 @@ library(agreste)
 # Ouvrir l'interface graphique du package
 
 ```{r examples-app_formatage, eval = FALSE}
+
 library(agreste)
+#' \dontrun{
 app_formatage()
+#' }
 ```
 

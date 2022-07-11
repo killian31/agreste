@@ -76,6 +76,70 @@ browseURL("tableau.xlsx")
 
 ```
 
+# Ajouter le titre d'un primeur
+
+```{r examples-ajouter_titre_primeur, eval = FALSE}
+library(openxlsx)
+library(agreste)
+mon_classeur <- createWorkbook()
+
+mes_styles <- creer_liste_style_excel(format = "primeur")
+
+start_ligne = 5
+start_col = 2
+nb_col = ncol(iris)
+
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      ligne_debut = 5)
+
+## Formatage
+
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$ligne_titre,
+         rows = start_ligne,
+         cols = start_col:(nb_col+start_col-1))
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 2)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 3)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 4)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$decimal_italique,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 5)
+addStyle(wb = mon_classeur,
+         sheet = "iris",
+         style = mes_styles$texte,
+         rows = (start_ligne+1):(nrow(iris)+start_ligne),
+         cols = 6)
+
+## Ajout du titre 
+
+ajouter_titre_primeur(classeur = mon_classeur,
+                      titre = "Iris")
+
+## Sauvegarde
+saveWorkbook(wb = mon_classeur,
+             file = "tableau.xlsx",
+             overwrite = TRUE)
+
+browseURL("tableau.xlsx")
+```
+
 # Ajouter un titre
 
 ```{r examples_ajouter_titre_tableau, eval = FALSE}
@@ -609,6 +673,97 @@ saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
 browseURL("tableau.xlsx")
 ```
 
+# Appliquer une taille de colonne
+
+```{r examples-taille_colonne, eval = FALSE}
+library(openxlsx)
+library(agreste)
+
+## Création d'un classeur avec deux feuilles et deux tableaux
+mon_classeur <- createWorkbook()
+
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      ligne_debut = 5,
+                      col_debut = 2)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "iris",
+                      titre = "Données fleurs iris",
+                      col_debut = 2,
+                      format = "primeur")
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "iris",
+               source = "Ceci est une source quelconque",
+               format = "primeur",
+               col_debut = 2,
+               avec_note = FALSE,
+               avec_titre = FALSE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "iris",
+              champ = "France métropolitaine",
+              format = "primeur",
+              col_debut = 2,
+              avec_titre = FALSE)
+
+ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = airquality,
+                      nom_feuille = "airquality",
+                      ligne_debut = 5,
+                      col_debut = 2)
+
+ajouter_titre_tableau(classeur = mon_classeur,
+                      nom_feuille = "airquality",
+                      titre = "Données qualité de l'air",
+                      col_debut = 2,
+                      format = "primeur")
+ajouter_note_lecture(classeur = mon_classeur,
+                     nom_feuille = "airquality",
+                     note = "blablabla",
+                     format = "primeur",
+                     col_debut = 2,
+                     avec_titre = FALSE)
+ajouter_source(classeur = mon_classeur,
+               nom_feuille = "airquality",
+               source = "Eurostat",
+               format = "primeur",
+               col_debut = 2,
+               avec_note = TRUE,
+               avec_titre = FALSE)
+ajouter_champ(classeur = mon_classeur,
+              nom_feuille = "airquality",
+              champ = "Daily air quality measurements in New York, May to September 1973.",
+              format = "primeur",
+              col_debut = 2,
+              avec_titre = FALSE)
+
+ajouter_titre_primeur(classeur = mon_classeur,
+                      titre = "Exemple 2022")
+
+taille_colonnes(classeur = mon_classeur,
+                liste_type_donnees = list(c("decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "texte"),
+                                          c("numerique",
+                                            "numerique",
+                                            "decimal",
+                                            "numerique",
+                                            "numerique",
+                                            "numerique")),
+                largeurs = list(c("auto"), c("auto")),
+                col_debut = 2)
+
+
+## Sauver
+saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
+
+## Ouvrir
+browseURL("tableau.xlsx")
+```
+
 # Formater un workbook automatiquement
 
 ```{r examples-formater_auto, eval = FALSE}
@@ -634,12 +789,14 @@ ajouter_source(classeur = mon_classeur,
                source = "Ceci est une source quelconque",
                format = "primeur",
                col_debut = 2,
-               avec_note = FALSE)
+               avec_note = FALSE,
+               avec_titre = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "iris",
               champ = "France métropolitaine",
               format = "primeur",
-              col_debut = 2)
+              col_debut = 2,
+              avec_titre = FALSE)
 
 ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = airquality,
@@ -656,21 +813,42 @@ ajouter_note_lecture(classeur = mon_classeur,
                      nom_feuille = "airquality",
                      note = "blablabla",
                      format = "primeur",
-                     col_debut = 2)
+                     col_debut = 2,
+                     avec_titre = FALSE)
 ajouter_source(classeur = mon_classeur,
                nom_feuille = "airquality",
                source = "Eurostat",
                format = "primeur",
                col_debut = 2,
-               avec_note = TRUE)
+               avec_note = TRUE,
+               avec_titre = FALSE)
 ajouter_champ(classeur = mon_classeur,
               nom_feuille = "airquality",
               champ = "Daily air quality measurements in New York, May to September 1973.",
               format = "primeur",
-              col_debut = 2)
+              col_debut = 2,
+              avec_titre = FALSE)
 
-## Formater comme un Chiffres et Données
-formater_auto(mon_classeur,
+ajouter_titre_primeur(classeur = mon_classeur,
+                      titre = "Exemple 2022")
+
+taille_colonnes(classeur = mon_classeur,
+                liste_type_donnees = list(c("decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "texte"),
+                                          c("numerique",
+                                            "numerique",
+                                            "decimal",
+                                            "numerique",
+                                            "numerique",
+                                            "numerique")),
+                largeurs = list(c("auto"), c("auto")),
+                col_debut = 2)
+
+## Formater comme un Primeur
+formater_auto(classeur = mon_classeur,
               format = "primeur",
               liste_feuilles_avec_note = c("airquality"),
               liste_type_donnees = list(c("decimal",
@@ -683,8 +861,23 @@ formater_auto(mon_classeur,
                                           "decimal",
                                           "numerique",
                                           "numerique",
-                                          "numerique")),
-              col_debut = 2)
+                                          "numerique")), 
+              liste_lignes_titre = list(c(1), c(1)),
+              liste_lignes_section = list(c(5, 9),
+                                          c(3, 8)),
+              liste_lignes_sous_total = list(c(4, 8),
+                                             c(2, 7)),
+              liste_lignes_precision_1 = list(c(2,3),
+                                            c(0)),
+              liste_lignes_precision_2 = list(c(0), c(0)),
+              liste_lignes_precision_3 = list(c(0), c(0)),
+              liste_lignes_precision_4 = list(c(0), c(0)),
+              liste_lignes_total = list(c(150),
+                                        c(100)),
+              liste_unif_unites = c(TRUE, TRUE),
+              liste_cellules_fusion = list(c(0), c(0)),
+              col_debut = 2,
+              avec_titre = TRUE)
 
 ## Sauver
 saveWorkbook(wb = mon_classeur, file = "tableau.xlsx", overwrite = TRUE)
@@ -699,7 +892,7 @@ browseURL("tableau.xlsx")
 ```{r examples-creer_excel_depuis_plan, eval = FALSE}
 library(agreste)
 library(dplyr)
-library(xlsx)
+library(openxlsx)
 ### Import du fichier de plan
 plan = agreste::modele_plan
 
@@ -710,14 +903,19 @@ agreste::resultat_2 %>%
   write.csv(file = "resultat_2.csv", row.names = FALSE)
 agreste::resultat_3 %>%
   write.csv(file = "resultat_3.csv", row.names = FALSE)
+agreste::lait_vache %>%
+  write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
+write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+agreste::scieries2020 %>%
+  write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
                                     format = "chiffres_et_donnees",
-                                    col_debut = 2,
+                                    col_debut = 1,
                                     save = TRUE,
-                                    path = "cd_a_envoyer.xlsx")
-browseURL("cd_a_envoyer.xlsx")
+                                    path = "document_a_envoyer.xlsx",
+                                    type_virgule = ".")
 
 ```
 

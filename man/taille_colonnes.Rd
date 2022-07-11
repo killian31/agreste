@@ -23,7 +23,7 @@ Rien n'est renvoyé mais le classeur est modifié
 \description{
 Cette fonction permet d'appliquer une taille de colonne choisie par
 l'utilisateur ou bien automatiquement,
-le total étant égal à 89, et les colonnes de texte étant plus larges
+le total étant égal à 83, et les colonnes de texte étant plus larges
 que les autres en mode automatique
 }
 \examples{

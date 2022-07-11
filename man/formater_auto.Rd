@@ -12,8 +12,14 @@ formater_auto(
   liste_lignes_titre,
   liste_lignes_section,
   liste_lignes_sous_total,
-  liste_lignes_precision,
+  liste_lignes_precision_1,
+  liste_lignes_precision_2,
+  liste_lignes_precision_3,
+  liste_lignes_precision_4,
   liste_lignes_total,
+  liste_unif_unites,
+  liste_cellules_fusion,
+  type_virgule = ",",
   col_debut = 2,
   avec_titre = FALSE
 )
@@ -30,7 +36,7 @@ feuille avec une note de lecture}
 \item{liste_type_donnees}{LIST liste de vecteurs contenant les types de
 données de chaque colonne}
 
-\item{liste_lignes_titre}{VECTOR vecteur des lignes de titres de colonnes}
+\item{liste_lignes_titre}{LIST liste des lignes de titres de colonnes}
 
 \item{liste_lignes_section}{LIST liste de vecteurs contenant les numéros des
 lignes du tableau qui sont des sections}
@@ -38,11 +44,25 @@ lignes du tableau qui sont des sections}
 \item{liste_lignes_sous_total}{LIST liste des vecteurs contenant les numéros
 des lignes du tableau qui sont des sous-totaux}
 
-\item{liste_lignes_precision}{LIST liste des vecteurs contenant les numéros
-des lignes du tableau qui sont des lignes de précision}
+\item{liste_lignes_precision_1}{LIST liste des vecteurs contenant les numéros
+des lignes du tableau qui sont des lignes de précision de niveau 1}
+
+\item{liste_lignes_precision_2}{LIST liste des vecteurs contenant les numéros
+des lignes du tableau qui sont des lignes de précision de niveau 2}
+
+\item{liste_lignes_precision_3}{LIST liste des vecteurs contenant les numéros
+des lignes du tableau qui sont des lignes de précision de niveau 3}
+
+\item{liste_lignes_precision_4}{LIST liste des vecteurs contenant les numéros
+des lignes du tableau qui sont des lignes de précision de niveau 4}
 
 \item{liste_lignes_total}{LIST liste des vecteurs contenant les numéros
 des lignes du tableau qui sont des lignes de totaux}
+
+\item{liste_unif_unites}{VEC un vecteur de valeurs logiques pour indiquer
+les feuilles ayant des unités de colonnes différentes}
+
+\item{liste_cellules_fusion}{LIST la liste des cellules à fusionner}
 
 \item{col_debut}{NUM la colonne à laquelle les tableaux démarrent}
 
@@ -150,15 +170,20 @@ formater_auto(classeur = mon_classeur,
                                           "numerique",
                                           "numerique",
                                           "numerique")), 
-              liste_lignes_titre = c(1, 1),
+              liste_lignes_titre = list(c(1), c(1)),
               liste_lignes_section = list(c(5, 9),
                                           c(3, 8)),
               liste_lignes_sous_total = list(c(4, 8),
                                              c(2, 7)),
-              liste_lignes_precision = list(c(2,3),
+              liste_lignes_precision_1 = list(c(2,3),
                                             c(0)),
+              liste_lignes_precision_2 = list(c(0), c(0)),
+              liste_lignes_precision_3 = list(c(0), c(0)),
+              liste_lignes_precision_4 = list(c(0), c(0)),
               liste_lignes_total = list(c(150),
                                         c(100)),
+              liste_unif_unites = c(TRUE, TRUE),
+              liste_cellules_fusion = list(c(0), c(0)),
               col_debut = 2,
               avec_titre = TRUE)
 

@@ -106,6 +106,36 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
     append(liste_style, values = c(ligne_titre = headerStyle))
 
   
+  unitsUnifStyle <- createStyle(
+    fontName = font,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    textDecoration = "italic",
+    wrapText = TRUE,
+    indent = 1
+  )
+  
+  liste_style <-
+    append(liste_style, values = c(lignes_unite_uniforme = unitsUnifStyle))
+  
+  unitsDiffStyle <- createStyle(
+    fontName = font,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "right",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    textDecoration = "italic",
+    wrapText = TRUE,
+    indent = 1
+  )
+  
+  liste_style <-
+    append(liste_style, values = c(lignes_unites_differentes = unitsDiffStyle))
+  
   dataStyleText <- createStyle(
     fontName = font,
     fontSize = 10,
@@ -147,7 +177,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
     border = "LeftRight",
     borderColour = "black",
     wrapText = TRUE,
-    numFmt = "#,##0.0"
+    numFmt = "#,##0.00"
   )
   
   liste_style <-
@@ -198,7 +228,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
     border = "LeftRight",
     borderColour = "black",
     wrapText = TRUE,
-    numFmt = "#,##0.0"
+    numFmt = "#,##0.00"
   )
   
   liste_style <-
@@ -276,7 +306,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       fgFill = "#d9d9d9",
       textDecoration = "bold",
       wrapText = TRUE,
-      numFmt = "#,##0.0",
+      numFmt = "#,##0.00",
       indent = 1
     ),
     "chiffres_et_donnees" = createStyle(
@@ -288,7 +318,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       fgFill = "#ff8d7e",
       textDecoration = "bold",
       wrapText = TRUE,
-      numFmt = "#,##0.0",
+      numFmt = "#,##0.00",
       indent = 1
     )
   )
@@ -364,7 +394,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       valign = "center",
       textDecoration = "bold",
       wrapText = TRUE,
-      numFmt = "#,##0.0",
+      numFmt = "#,##0.00",
       indent = 1
     ),
     "chiffres_et_donnees" = createStyle(
@@ -375,7 +405,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
       valign = "center",
       textDecoration = "bold",
       wrapText = TRUE,
-      numFmt = "#,##0.0",
+      numFmt = "#,##0.00",
       indent = 1
     )
   )
@@ -385,7 +415,7 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
            values = c(decimal_sous_total = dataSubTotalStyleNumDecimal))
   
   
-  dataPrecisionStyleText <- createStyle(
+  dataPrecisionStyleText1 <- createStyle(
     fontName = font,
     fontSize = 10,
     fontColour = "black",
@@ -399,8 +429,55 @@ creer_liste_style_excel <- function(format = "chiffres_et_donnees") {
     
   liste_style <-
     append(liste_style,
-           values = c(precision_texte = dataPrecisionStyleText))
+           values = c(precision_texte_1 = dataPrecisionStyleText1))
+  
+  dataPrecisionStyleText2 <- createStyle(
+    fontName = font,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    indent = 2,
+    wrapText = TRUE
+  )
     
+  liste_style <-
+    append(liste_style,
+           values = c(precision_texte_2 = dataPrecisionStyleText2))
+    
+  dataPrecisionStyleText3 <- createStyle(
+    fontName = font,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    indent = 3,
+    wrapText = TRUE
+  )
+    
+  liste_style <-
+    append(liste_style,
+           values = c(precision_texte_3 = dataPrecisionStyleText3))
+  
+  dataPrecisionStyleText4 <- createStyle(
+    fontName = font,
+    fontSize = 10,
+    fontColour = "black",
+    halign = "left",
+    valign = "center",
+    border = "LeftRight",
+    borderColour = "black",
+    indent = 4,
+    wrapText = TRUE
+  )
+    
+  liste_style <-
+    append(liste_style,
+           values = c(precision_texte_4 = dataPrecisionStyleText4))
   
   dataSectionStyleText <- switch (format,
     "primeur" = createStyle(

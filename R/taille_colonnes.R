@@ -4,7 +4,7 @@
 #'
 #' Cette fonction permet d'appliquer une taille de colonne choisie par 
 #' l'utilisateur ou bien automatiquement, 
-#' le total étant égal à 89, et les colonnes de texte étant plus larges 
+#' le total étant égal à 83, et les colonnes de texte étant plus larges 
 #' que les autres en mode automatique
 #'
 #' @param classeur Le classeur excel, objet de type workbook
@@ -127,7 +127,7 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 
   
   indice_feuille <- 0
   
-  pao_max <- 89
+  pao_max <- 83
   weight_num <- 2
   
   for (sheet in sheets) {

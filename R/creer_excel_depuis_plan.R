@@ -6,6 +6,7 @@
 #'
 #' @param plan fichier .xlsx ou data frame contenant les détails pour chaque tableau 
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
+#' @param sep CHAR le caractère utilisé pour séparer les colonnes des fichiers
 #' @param type_virgule CHAR le type de séparation décimale utilisée : "." ou ","
 #' @param col_debut NUM la colonne à laquelle les tableaux démarrent
 #' @param save LGL TRUE si export du classeur au format xlsx
@@ -19,6 +20,10 @@
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx saveWorkbook
 #' @importFrom openxlsx write.xlsx
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx addStyle
+#' @importFrom openxlsx readWorkbook
+#' @importFrom openxlsx mergeCells
 #' @importFrom stringr str_trim
 #' 
 #' @export
@@ -37,17 +42,23 @@
 #'   write.csv(file = "resultat_2.csv", row.names = FALSE)
 #' agreste::resultat_3 %>%
 #'   write.csv(file = "resultat_3.csv", row.names = FALSE)
+#' agreste::lait_vache %>%
+#'   write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
+#' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+#' agreste::scieries2020 %>%
+#'   write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 #' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 #' ### Formatage
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-#'                                     format = "primeur",
-#'                                     col_debut = 2,
+#'                                     format = "chiffres_et_donnees",
+#'                                     col_debut = 1,
 #'                                     save = TRUE,
-#'                                     path = "document_a_envoyer.xlsx")
-#' browseURL("document_a_envoyer.xlsx")
+#'                                     path = "document_a_envoyer.xlsx",
+#'                                     type_virgule = ".")
 #' 
 creer_excel_depuis_plan <- function(plan,
                                     format,
+                                    sep = ",",
                                     type_virgule = ",",
                                     col_debut,
                                     save = TRUE,
@@ -80,11 +91,11 @@ creer_excel_depuis_plan <- function(plan,
                      split = ", ")[[1]]
     for (type in test_list) {
       assert_that(type %in% c("decimal", "texte", "numerique"),
-                  msg = paste("Problème dans la colonne Type_colonnes, tableau ", i, ". Veuillez la vérifier.", sep = ""))
+                  msg = paste("Probl\u00e8me dans la colonne Type_colonnes, tableau ", i, ". Veuillez la v\u00e9rifier.", sep = ""))
     }
   }
   
-  plan[,12:18][is.na(plan[,12:18])] <- 0
+  plan[,12:21][is.na(plan[,12:21])] <- 0
   
   nb_tab = nrow(plan)
   
@@ -95,23 +106,32 @@ creer_excel_depuis_plan <- function(plan,
   liste_lignes_titre <- c()
   liste_lignes_section <- list()
   liste_lignes_sous_total <- list()
-  liste_lignes_precision <- list()
+  liste_lignes_precision_1 <- list()
+  liste_lignes_precision_2 <- list()
+  liste_lignes_precision_3 <- list()
+  liste_lignes_precision_4 <- list()
   liste_lignes_total <- list()
   liste_col_widths <- list()
+  liste_unif_unites <- c()
+  liste_cells_to_merge <- list()
   
-  
+  styles <- creer_liste_style_excel(format = format)
   titre_doc = plan$Titre_document[1]
   
   wb = createWorkbook()
+  
+  ligne_supp_debut_cd <- switch (format,
+        "chiffres_et_donnees" = 1,
+        "primeur" = 0
+      )
   
   for (tab in 1:nb_tab) {
     filename <- paste(plan$Nom_fichier[tab],
                       plan$Type[tab],
                       sep = ".")
-    data <- read.csv(filename,
-                     header = TRUE,
-                     check.names = FALSE,
-                     dec = type_virgule)
+    data <- read_any_file(filename = filename,
+                          header = TRUE,
+                          decimal_mark = type_virgule)
     feuille <- plan$Nom_feuille[tab]
     titre <- plan$Titre[tab]
     if (str_trim(plan$Note_de_lecture[tab]) == "" | is.na(plan$Note_de_lecture[tab])) {
@@ -131,21 +151,65 @@ creer_excel_depuis_plan <- function(plan,
                                strsplit(plan$Type_colonnes[tab],
                                         split = ", "))
     liste_lignes_titre <- append(liste_lignes_titre,
-                                 as.numeric(unlist(strsplit(str_trim(plan$Lignes_titre[tab]), split = ", "))))
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_titre[tab]), split = ", ")))))
     liste_lignes_section <- append(liste_lignes_section,
                                  list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_section[tab]), split = ", ")))))
     liste_lignes_sous_total <- append(liste_lignes_sous_total,
                                  list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_sous_total[tab]), split = ", ")))))
-    liste_lignes_precision <- append(liste_lignes_precision,
-                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision[tab]), split = ", ")))))
+    liste_lignes_precision_1 <- append(liste_lignes_precision_1,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision_1[tab]), split = ", ")))))
+    liste_lignes_precision_2 <- append(liste_lignes_precision_2,
+                               list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision_2[tab]), split = ", ")))))
+    liste_lignes_precision_3 <- append(liste_lignes_precision_3,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision_3[tab]), split = ", ")))))
+    liste_lignes_precision_4 <- append(liste_lignes_precision_4,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision_4[tab]), split = ", ")))))
     liste_lignes_total <- append(liste_lignes_total,
                                  list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_total[tab]), split = ", ")))))
+    liste_unites <- unlist(strsplit(str_trim(plan$Liste_unites[tab]), split = ", "))
+    liste_cells_to_merge <- append(liste_cells_to_merge,
+                                   strsplit(plan$Cellules_a_fusionner[tab], ", "))
     
-    agreste::ajouter_tableau_excel(classeur = wb,
+    if (length(liste_unites) > 1) {
+      max_ligne_titre <- max(liste_lignes_titre[[tab]])
+      liste_unif_unites <- append(liste_unif_unites, FALSE)
+      data[seq(max_ligne_titre + 1,nrow(data)+1),] <- 
+        data[seq(max_ligne_titre,nrow(data)),]
+      data[max_ligne_titre,] <- liste_unites
+    
+      agreste::ajouter_tableau_excel(classeur = wb,
                                    tableau = data,
                                    nom_feuille = feuille,
                                    ligne_debut = ligne_debut,
                                    col_debut = col_debut)
+
+    } else {
+      liste_unif_unites <- append(liste_unif_unites, TRUE)
+      agreste::ajouter_tableau_excel(classeur = wb,
+                                   tableau = data,
+                                   nom_feuille = feuille,
+                                   ligne_debut = ligne_debut + ligne_supp_debut_cd,
+                                   col_debut = col_debut)
+      mergeCells(wb = wb,
+                 sheet = feuille,
+                 cols = col_debut:(ncol(data) + col_debut - 1),
+                 rows = ligne_debut + ligne_supp_debut_cd - 1)
+      writeData(wb = wb,
+                sheet = feuille,
+                x = liste_unites[1],
+                startRow = ligne_debut + ligne_supp_debut_cd - 1,
+                startCol = col_debut)
+      addStyle(wb = wb,
+               sheet = feuille,
+               style = styles$lignes_unite_uniforme,
+               rows = ligne_debut + ligne_supp_debut_cd - 1,
+               cols = col_debut,
+               stack = TRUE)
+      
+    }
+    
+    
+    
     
     agreste::ajouter_titre_tableau(classeur = wb,
                                    nom_feuille = feuille,
@@ -190,15 +254,87 @@ creer_excel_depuis_plan <- function(plan,
                          liste_lignes_titre = liste_lignes_titre,
                          liste_lignes_section = liste_lignes_section,
                          liste_lignes_sous_total = liste_lignes_sous_total,
-                         liste_lignes_precision = liste_lignes_precision,
+                         liste_lignes_precision_1 = liste_lignes_precision_1,
+                         liste_lignes_precision_2 = liste_lignes_precision_2,
+                         liste_lignes_precision_3 = liste_lignes_precision_3,
+                         liste_lignes_precision_4 = liste_lignes_precision_4,
                          liste_lignes_total = liste_lignes_total,
+                         liste_unif_unites = liste_unif_unites,
+                         liste_cellules_fusion = liste_cells_to_merge,
+                         type_virgule = type_virgule,
                          col_debut = col_debut,
                          avec_titre = TRUE)
+  tab <- 0
+  for (feuille in names(wb)) {
+    tab <- tab + 1
+    max_ligne_titre <- max(liste_lignes_titre[[tab]])
+    liste_unites <- unlist(strsplit(str_trim(plan$Liste_unites[tab]), split = ", "))
+    if (length(liste_unites) > 1) {
+      nb_col <- ncol(readWorkbook(wb,
+                                  sheet = feuille))
+      addStyle(wb = wb,
+               sheet = feuille,
+               style = styles$lignes_unites_differentes,
+               rows = ligne_debut + max_ligne_titre,
+               cols = col_debut:(nb_col + col_debut - 1))
+    }
+  }
+  
   if (isTRUE(save)) {
     saveWorkbook(wb, file = path, overwrite = TRUE)
+    browseURL(url = path)
   }
   
   return(wb)
 }
 
 
+
+#' Lit un fichier
+#' 
+#' Prend en charge les fichiers csv, xlsx, rds
+#' 
+#' @param filename CHAR le nom du fichier, extension incluse
+#' 
+#' @importFrom reader get.ext
+#' @importFrom openxlsx read.xlsx
+#' @importFrom arrow read_parquet
+#'
+#' @export
+#' 
+#' @return A dataframe
+read_any_file <- function(filename,
+                          header = TRUE,
+                          sep = ",",
+                          decimal_mark = ".",
+                          sheet = 1) {
+  extension <- get.ext(filename)
+  data = switch (extension,
+    "csv" = read.csv(file = filename,
+                     header = TRUE,
+                     sep = sep,
+                     dec = decimal_mark,
+                     check.names = FALSE,
+                     strip.white = TRUE),
+    "tsv" = read.csv(file = filename,
+                     header = TRUE,
+                     sep = sep,
+                     dec = decimal_mark,
+                     check.names = FALSE,
+                     strip.white = TRUE),
+    "xlsx" = read.xlsx(xlsxFile = filename,
+                       sheet = sheet, 
+                       check.names = FALSE,
+                       colNames = TRUE,
+                       sep.names = " ",
+                       skipEmptyRows = FALSE,
+                       skipEmptyCols = FALSE),
+    "rds" = readRDS(file = filename),
+    "Rds" = readRDS(file = filename),
+    "parquet" = read_parquet(file = filename,
+                             as_data_frame = TRUE),
+    "dataframe" = eval(parse(text = unlist(strsplit(filename, "\\."))[1]))
+  )
+  return(data)
+  
+}

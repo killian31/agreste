@@ -7,6 +7,8 @@ test_that("Le formatage se fait correctement et sans erreur", {
   file1 <- tempfile(pattern = "file", tmpdir = tempdir())
   file2 <- tempfile(pattern = "file", tmpdir = tempdir())
   file3 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
   file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
   
   agreste::resultat_1 %>%
@@ -15,12 +17,18 @@ test_that("Le formatage se fait correctement et sans erreur", {
     write.csv(file = paste(file2, "csv", sep = "."), row.names = FALSE)
   agreste::resultat_3 %>%
     write.csv(file = paste(file3, "csv", sep = "."), row.names = FALSE)
+  agreste::lait_vache %>%
+    openxlsx::write.xlsx(file = paste(file4, "xlsx", sep = "."), rowNames = FALSE)
+  agreste::scieries2020 %>%
+    openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
   plan$Nom_fichier[1] <- file1
   plan$Nom_fichier[2] <- file2
   plan$Nom_fichier[3] <- file3
+  plan$Nom_fichier[4] <- file4
+  plan$Nom_fichier[5] <- file5
   
-  openxlsx::write.xlsx(plan, file_plan, row.names = FALSE)
+  openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
   expect_error(agreste::creer_excel_depuis_plan(plan = 1,
                                                format = "primeur",
@@ -63,6 +71,8 @@ test_that("Le classeur est bien modifié pour un c&d", {
   file1 <- tempfile(pattern = "file", tmpdir = tempdir())
   file2 <- tempfile(pattern = "file", tmpdir = tempdir())
   file3 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
   file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
   
   agreste::resultat_1 %>%
@@ -71,40 +81,46 @@ test_that("Le classeur est bien modifié pour un c&d", {
     write.csv(file = paste(file2, "csv", sep = "."), row.names = FALSE)
   agreste::resultat_3 %>%
     write.csv(file = paste(file3, "csv", sep = "."), row.names = FALSE)
+  agreste::lait_vache %>%
+    openxlsx::write.xlsx(file = paste(file4, "xlsx", sep = "."), rowNames = FALSE)
+  agreste::scieries2020 %>%
+    openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
   plan$Nom_fichier[1] <- file1
   plan$Nom_fichier[2] <- file2
   plan$Nom_fichier[3] <- file3
+  plan$Nom_fichier[4] <- file4
+  plan$Nom_fichier[5] <- file5
   
-  openxlsx::write.xlsx(plan, file_plan, row.names = FALSE)
+  openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
   workbook <- creer_excel_depuis_plan(plan = file_plan,
                                       format = "chiffres_et_donnees",
-                                      col_debut = 2,
+                                      col_debut = 1,
                                       save = FALSE,
-                                      type_virgule = ",")
+                                      type_virgule = ".")
   expect_true(file.info(file_plan)$size > 0)
   expect_equal(length(names(workbook)),
-               3)
+               5)
   expect_equal(names(workbook),
                agreste::modele_plan$Nom_feuille)
   expect_equal(length(openxlsx::getStyles(workbook)),
-               51)
+               105)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,
                                  sheet = agreste::modele_plan$Nom_feuille[1])),
-               22)
+               23)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,
                                  sheet = agreste::modele_plan$Nom_feuille[2])),
-               10)
+               11)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,
                                  sheet = agreste::modele_plan$Nom_feuille[3])),
-               16)
+               17)
 })
 
 test_that("Le classeur est bien modifié pour un primeur", {
@@ -113,6 +129,8 @@ test_that("Le classeur est bien modifié pour un primeur", {
   file1 <- tempfile(pattern = "file", tmpdir = tempdir())
   file2 <- tempfile(pattern = "file", tmpdir = tempdir())
   file3 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
+  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
   file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
   
   agreste::resultat_1 %>%
@@ -121,26 +139,32 @@ test_that("Le classeur est bien modifié pour un primeur", {
     write.csv(file = paste(file2, "csv", sep = "."), row.names = FALSE)
   agreste::resultat_3 %>%
     write.csv(file = paste(file3, "csv", sep = "."), row.names = FALSE)
+  agreste::lait_vache %>%
+    openxlsx::write.xlsx(file = paste(file4, "xlsx", sep = "."), rowNames = FALSE)
+  agreste::scieries2020 %>%
+    openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
   plan$Nom_fichier[1] <- file1
   plan$Nom_fichier[2] <- file2
   plan$Nom_fichier[3] <- file3
+  plan$Nom_fichier[4] <- file4
+  plan$Nom_fichier[5] <- file5
   
-  openxlsx::write.xlsx(plan, file_plan, row.names = FALSE)
+  openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
   workbook <- creer_excel_depuis_plan(plan = file_plan,
                                       format = "primeur",
                                       col_debut = 2,
-                                      save = TRUE,
+                                      save = FALSE,
                                       path = file_plan,
-                                      type_virgule = ",")
+                                      type_virgule = ".")
 
   expect_equal(length(names(workbook)),
-               3)
+               5)
   expect_equal(names(workbook),
                agreste::modele_plan$Nom_feuille)
   expect_equal(length(openxlsx::getStyles(workbook)),
-               54)
+               110)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,

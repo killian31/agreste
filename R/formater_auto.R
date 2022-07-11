@@ -9,15 +9,24 @@
 #' avec une note de lecture
 #' @param liste_type_donnees LIST liste de vecteurs contenant les types de 
 #' données de chaque colonne
-#' @param liste_lignes_titre VECTOR vecteur des lignes de titres de colonnes 
+#' @param liste_lignes_titre LIST liste des lignes de titres de colonnes 
 #' @param liste_lignes_section LIST liste de vecteurs contenant les numéros des 
 #' lignes du tableau qui sont des sections
 #' @param liste_lignes_sous_total LIST liste des vecteurs contenant les numéros
 #' des lignes du tableau qui sont des sous-totaux
-#' @param liste_lignes_precision LIST liste des vecteurs contenant les numéros
-#' des lignes du tableau qui sont des lignes de précision
+#' @param liste_lignes_precision_1 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 1
+#' @param liste_lignes_precision_2 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 2
+#' @param liste_lignes_precision_3 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 3
+#' @param liste_lignes_precision_4 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 4
 #' @param liste_lignes_total LIST liste des vecteurs contenant les numéros
 #' des lignes du tableau qui sont des lignes de totaux
+#' @param liste_unif_unites VEC un vecteur de valeurs logiques pour indiquer 
+#' les feuilles ayant des unités de colonnes différentes
+#' @param liste_cellules_fusion LIST la liste des cellules à fusionner
 #' @param col_debut NUM la colonne à laquelle les tableaux démarrent
 #' @param format CHAR le format entre "chiffres_et_donnees" ou "primeur"
 #' @param avec_titre LGL si le classeur est un primeur avec un titre
@@ -32,9 +41,15 @@ formater <- function(classeur,
                      liste_lignes_titre,
                      liste_lignes_section,
                      liste_lignes_sous_total,
-                     liste_lignes_precision,
+                     liste_lignes_precision_1,
+                     liste_lignes_precision_2,
+                     liste_lignes_precision_3,
+                     liste_lignes_precision_4,
                      liste_lignes_total,
+                     liste_unif_unites,
+                     liste_cellules_fusion,
                      format,
+                     type_virgule = ",",
                      col_debut = 2,
                      avec_titre = FALSE) {
   
@@ -43,11 +58,41 @@ formater <- function(classeur,
   } else {
     nb_row_to_add <- row_to_add_format(format = format)
   }
+  
+  ligne_supp_debut_cd <- switch (format,
+        "chiffres_et_donnees" = 1,
+        "primeur" = 0
+      )
+  header_start = start_row_tabs
+  start_row_tabs = start_row_tabs + ligne_supp_debut_cd
+  
   style_section <- styles$texte_section
-  style_precision <- styles$precision_texte
+  style_precision_1 <- styles$precision_texte_1
+  style_precision_2 <- styles$precision_texte_2
+  style_precision_3 <- styles$precision_texte_3
+  style_precision_4 <- styles$precision_texte_4
   i <- 0
   for (feuille in names(classeur)) {
     i <- i + 1
+    max_ligne_titre <- max(liste_lignes_titre[[i]])
+    if (isTRUE(liste_unif_unites[i])) {
+      shift_rows <- 0
+      if (format == "chiffres_et_donnees") {
+        shift_headers <- 1
+      } else {
+        shift_headers <- 0
+      }
+      
+    } else {
+      shift_headers <- 0
+      if (format == "primeur") {
+        shift_rows <- 1
+      } else {
+        shift_rows <- 0
+      }
+      
+      
+    }
     nb_col <- ncol(readWorkbook(classeur, sheet = feuille))
     last_row <- nrow(readWorkbook(classeur, sheet = feuille, skipEmptyRows = FALSE, colNames = FALSE))
     if (feuille %in% liste_feuilles_avec_note) {
@@ -55,11 +100,15 @@ formater <- function(classeur,
     } else {
       eff_last_row <- last_row - 3 + nb_row_to_add
     }
-    addStyle(wb = classeur,
+    for (line in liste_lignes_titre[[i]]) {
+      addStyle(wb = classeur,
              sheet = feuille,
              style = styles$ligne_titre,
-             rows = start_row_tabs + liste_lignes_titre[i] - 1,
-             cols = col_debut:(nb_col + col_debut - 1))
+             rows = line + header_start + shift_headers - 1,
+             cols = col_debut:(nb_col + col_debut - 1),
+             stack = TRUE)
+    }
+    
   
     for (num_col in col_debut:(nb_col + col_debut - 1)) {
       j <- num_col - col_debut + 1
@@ -82,17 +131,43 @@ formater <- function(classeur,
         "numerique" = styles$numerique_total,
         "decimal" = styles$decimal_total
       )
+      r <- 0
+      col_data = readWorkbook(xlsxFile = classeur,
+                              sheet = feuille,
+                              rows = (start_row_tabs + max_ligne_titre + shift_rows):eff_last_row,
+                              cols = num_col, 
+                              colNames = FALSE)$X1
+      for (row in (start_row_tabs + max_ligne_titre + shift_rows):eff_last_row) {
+        r <- r + 1
+        if (liste_type_donnees[[i]][j] %in% c("numerique", "decimal")) {
+          if (class(col_data[r]) != "numeric") {
+            if ((substr(col_data[r], 1, 1) %in% c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")) | ((nchar(col_data[r]) >= 2) & (substr(col_data[r], 1, 2) %in% c("-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9")))) {
+              if (type_virgule == ",") {
+                x <- parse_number(col_data[r], locale = locale(decimal_mark = type_virgule))
+              } else {
+                x <- as.numeric(col_data[r])
+              }
+              writeData(wb = classeur, 
+                        sheet = feuille,
+                        x = x,
+                        startCol = num_col,
+                        startRow = row)
+            }
+          }
+        }
+      }
+      
       addStyle(wb = classeur,
                sheet = feuille,
                style = style_data,
-               rows = (start_row_tabs + 1):eff_last_row,
+               rows = ((start_row_tabs + max_ligne_titre + shift_rows):eff_last_row),
                cols = num_col,
                stack = TRUE)
       if (!(0 %in% liste_lignes_sous_total[[i]])) {
         addStyle(wb = classeur,
                sheet = feuille,
                style = style_sous_total,
-               rows = liste_lignes_sous_total[[i]] + start_row_tabs,
+               rows = liste_lignes_sous_total[[i]] + start_row_tabs  + max_ligne_titre + shift_rows - 1,
                cols = num_col,
                stack = TRUE)
       }
@@ -101,11 +176,22 @@ formater <- function(classeur,
         addStyle(wb = classeur,
                sheet = feuille,
                style = style_total,
-               rows = liste_lignes_total[[i]] + start_row_tabs,
+               rows = liste_lignes_total[[i]] + start_row_tabs  + max_ligne_titre + shift_rows - 1,
                cols = num_col,
                stack = TRUE)
       }
       
+    }
+    if ((eff_last_row - start_row_tabs - max_ligne_titre - shift_rows + 1) %in% liste_lignes_total[[i]]) {
+      if (format == "chiffres_et_donnees") {
+        addStyle(wb = classeur,
+             sheet = feuille,
+             style = createStyle(border = "top",
+                                 borderColour = "black"),
+             rows = eff_last_row,
+             cols = col_debut:(nb_col + col_debut - 1),
+             stack = TRUE)
+      }
     }
     
     addStyle(wb = classeur,
@@ -116,17 +202,44 @@ formater <- function(classeur,
              cols = col_debut:(nb_col + col_debut - 1),
              stack = TRUE)
     
-    if (!(0 %in% liste_lignes_precision[[i]])) {
+    if (!(0 %in% liste_lignes_precision_1[[i]])) {
       addStyle(wb = classeur,
                sheet = feuille,
-               style = style_precision,
-               rows = liste_lignes_precision[[i]] + start_row_tabs,
+               style = style_precision_1,
+               rows = liste_lignes_precision_1[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               cols = col_debut,
+               stack = TRUE)
+    }
+    
+    if (!(0 %in% liste_lignes_precision_2[[i]])) {
+      addStyle(wb = classeur,
+               sheet = feuille,
+               style = style_precision_2,
+               rows = liste_lignes_precision_2[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               cols = col_debut,
+               stack = TRUE)
+    }
+    
+    if (!(0 %in% liste_lignes_precision_3[[i]])) {
+      addStyle(wb = classeur,
+               sheet = feuille,
+               style = style_precision_3,
+               rows = liste_lignes_precision_3[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               cols = col_debut,
+               stack = TRUE)
+    }
+    
+    if (!(0 %in% liste_lignes_precision_4[[i]])) {
+      addStyle(wb = classeur,
+               sheet = feuille,
+               style = style_precision_4,
+               rows = liste_lignes_precision_4[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
                cols = col_debut,
                stack = TRUE)
     }
     
     if (!(0 %in% liste_lignes_section[[i]])) {
-      for (row_n in liste_lignes_section[[i]] + start_row_tabs) {
+      for (row_n in liste_lignes_section[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1) {
         for (col_n in col_debut:(nb_col + col_debut - 1)) {
           addStyle(wb = classeur,
                sheet = feuille,
@@ -141,9 +254,31 @@ formater <- function(classeur,
         mergeCells(wb = classeur,
                  sheet = feuille,
                  cols = col_debut:(nb_col + col_debut - 1),
-                 rows = merge_row + start_row_tabs)
+                 rows = merge_row + start_row_tabs + max_ligne_titre + shift_rows - 1)
       }
       
+    }
+    
+    if (!(0 %in% liste_cellules_fusion[[i]])) {
+      for (step1 in liste_cellules_fusion[[i]]) {
+      step2 <- unlist(strsplit(step1, split = ";"))
+      assert_that(length(step2) == 2,
+                  msg = paste("Probl\u00e8me dans la colonne Cellules_a_fusionner, tableau ",
+                              i,
+                              ". Veuillez la v\u00e9rifier.",
+                              sep = ""))
+      l_row = eval(parse(text = substr(step2[1], 2, nchar(step2[1]))))
+      if (l_row[1] %in% liste_lignes_titre[[i]]) {
+        rows = l_row + header_start - 1
+      } else {
+        rows <- l_row + start_row_tabs + max_ligne_titre + shift_rows - 1
+      }
+      cols <- eval(parse(text = substr(step2[2], 1, nchar(step2[2]) - 1))) + col_debut - 1
+      mergeCells(wb = classeur,
+                 sheet = feuille,
+                 cols = cols,
+                 rows = rows)
+      }
     }
     
     }
@@ -161,15 +296,24 @@ formater <- function(classeur,
 #' @param col_debut NUM la colonne à laquelle les tableaux démarrent
 #' @param liste_type_donnees LIST liste de vecteurs contenant les types de 
 #' données de chaque colonne
-#' @param liste_lignes_titre VECTOR vecteur des lignes de titres de colonnes 
+#' @param liste_lignes_titre LIST liste des lignes de titres de colonnes 
 #' @param liste_lignes_section LIST liste de vecteurs contenant les numéros des 
 #' lignes du tableau qui sont des sections
 #' @param liste_lignes_sous_total LIST liste des vecteurs contenant les numéros
 #' des lignes du tableau qui sont des sous-totaux
-#' @param liste_lignes_precision LIST liste des vecteurs contenant les numéros
-#' des lignes du tableau qui sont des lignes de précision
+#' @param liste_lignes_precision_1 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 1
+#' @param liste_lignes_precision_2 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 2
+#' @param liste_lignes_precision_3 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 3
+#' @param liste_lignes_precision_4 LIST liste des vecteurs contenant les numéros
+#' des lignes du tableau qui sont des lignes de précision de niveau 4
 #' @param liste_lignes_total LIST liste des vecteurs contenant les numéros
 #' des lignes du tableau qui sont des lignes de totaux
+#' @param liste_unif_unites VEC un vecteur de valeurs logiques pour indiquer 
+#' les feuilles ayant des unités de colonnes différentes
+#' @param liste_cellules_fusion LIST la liste des cellules à fusionner
 #' @param avec_titre LGL si le classeur est un primeur avec un titre
 #'
 #' @return Rien n'est renvoyé mais le classeur est modifié
@@ -179,6 +323,8 @@ formater <- function(classeur,
 #' @importFrom openxlsx createStyle
 #' @importFrom assertthat assert_that
 #' @importFrom assertthat is.string
+#' @importFrom readr parse_number
+#' @importFrom readr locale
 #' 
 #' @export
 #'
@@ -278,15 +424,20 @@ formater <- function(classeur,
 #'                                           "numerique",
 #'                                           "numerique",
 #'                                           "numerique")), 
-#'               liste_lignes_titre = c(1, 1),
+#'               liste_lignes_titre = list(c(1), c(1)),
 #'               liste_lignes_section = list(c(5, 9),
 #'                                           c(3, 8)),
 #'               liste_lignes_sous_total = list(c(4, 8),
 #'                                              c(2, 7)),
-#'               liste_lignes_precision = list(c(2,3),
+#'               liste_lignes_precision_1 = list(c(2,3),
 #'                                             c(0)),
+#'               liste_lignes_precision_2 = list(c(0), c(0)),
+#'               liste_lignes_precision_3 = list(c(0), c(0)),
+#'               liste_lignes_precision_4 = list(c(0), c(0)),
 #'               liste_lignes_total = list(c(150),
 #'                                         c(100)),
+#'               liste_unif_unites = c(TRUE, TRUE),
+#'               liste_cellules_fusion = list(c(0), c(0)),
 #'               col_debut = 2,
 #'               avec_titre = TRUE)
 #' 
@@ -303,8 +454,14 @@ formater_auto <- function(classeur,
                           liste_lignes_titre,
                           liste_lignes_section,
                           liste_lignes_sous_total,
-                          liste_lignes_precision,
+                          liste_lignes_precision_1,
+                          liste_lignes_precision_2,
+                          liste_lignes_precision_3,
+                          liste_lignes_precision_4,
                           liste_lignes_total,
+                          liste_unif_unites,
+                          liste_cellules_fusion,
+                          type_virgule = ",",
                           col_debut = 2,
                           avec_titre = FALSE) {
   
@@ -312,21 +469,24 @@ formater_auto <- function(classeur,
               msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   assert_that(format %in% c("chiffres_et_donnees", "primeur"),
               msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
-  
-  assert_that(class(liste_feuilles_avec_note) == "character",
+  if (!is.null(liste_feuilles_avec_note)) {
+    assert_that(class(liste_feuilles_avec_note) == "character",
               msg = "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
-  for (feuille in liste_feuilles_avec_note) {
+    for (feuille in liste_feuilles_avec_note) {
     assert_that(feuille %in% names(classeur),
                 msg = paste("La feuille", feuille, "n'est pas une feuille existante."))
+    }
   }
+
+  
   assert_that(class(liste_type_donnees) == "list",
               msg = "La liste des types de donn\u00e9es doit \u00eatre de type list.")
   for(i in 1:length(liste_type_donnees)) {
     assert_that(class(liste_type_donnees[[i]]) == "character",
               msg = "La liste des types de donn\u00e9es doit \u00eatre une liste contenant des vecteurs de cha\u00eenes de caract\u00e8re.")
   }
-  assert_that(class(liste_lignes_titre) == "numeric",
-              msg = "La liste des lignes de titre doit \u00eatre un vecteur de nombres entiers.")
+  assert_that(class(liste_lignes_titre) == "list",
+              msg = "La liste des lignes de titre doit \u00eatre de type list.")
   assert_that(class(liste_lignes_section) == "list",
               msg = "La liste des lignes de section doit \u00eatre de type list.")
   for (i in 1:length(liste_lignes_section)) {
@@ -339,10 +499,10 @@ formater_auto <- function(classeur,
     assert_that(class(liste_lignes_sous_total[[i]]) == "numeric",
               msg = "La liste des lignes de sous-total doit \u00eatre une liste contenant des vecteurs de nombres entiers.")
   }
-  assert_that(class(liste_lignes_precision) == "list",
+  assert_that(class(liste_lignes_precision_1) == "list",
               msg = "La liste des lignes de pr\u00e9cision doit \u00eatre de type list.")
   for (i in 1:length(liste_lignes_section)) {
-    assert_that(class(liste_lignes_precision[[i]]) == "numeric",
+    assert_that(class(liste_lignes_precision_1[[i]]) == "numeric",
               msg = "La liste des lignes de pr\u00e9cision doit \u00eatre une liste contenant des vecteurs de nombres entiers.")
   }
   assert_that(class(liste_lignes_total) == "list",
@@ -371,9 +531,15 @@ formater_auto <- function(classeur,
            liste_lignes_titre = liste_lignes_titre,
            liste_lignes_section = liste_lignes_section,
            liste_lignes_sous_total = liste_lignes_sous_total,
-           liste_lignes_precision = liste_lignes_precision,
+           liste_lignes_precision_1 = liste_lignes_precision_1,
+           liste_lignes_precision_2 = liste_lignes_precision_2,
+           liste_lignes_precision_3 = liste_lignes_precision_3,
+           liste_lignes_precision_4 = liste_lignes_precision_4,
            liste_lignes_total = liste_lignes_total,
+           liste_unif_unites = liste_unif_unites,
+           liste_cellules_fusion = liste_cellules_fusion,
            col_debut = col_debut,
+           type_virgule = type_virgule,
            format = format,
            avec_titre = avec_titre)
 }

@@ -22,14 +22,14 @@ library(agreste)
 
 # Créer données de fond de carte
 
-```{r examples-donnees_fond_carte}
+```{r examples-donnees_fond_carte, eval = FALSE}
 data_geo_france_region_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "region_metro")
 data_geo_france_dep_metro <- donnees_fond_carte(zone_geographique = "france", niveau_representation = "departement_metro")
 ```
 
 # Carte symbole proportionnel
 
-```{r examples-carte-rond-proportionnel}
+```{r examples-carte-rond-proportionnel, eval = FALSE}
 library(agreste)
 library(dplyr)
 ### récupération des données de permis de construire de SITADEL 
@@ -53,4 +53,16 @@ browseURL("carteDEP.png")
 ```
 
 # Carte aplat de couleurs
+
+```{r examples-carte_aplat, eval = FALSE}
+library(agreste)
+library(dplyr)
+### récupération des données de permis de construire de SITADEL 
+permis_construire_region_2020 <- agreste::permis_construire_region %>% 
+  filter(annee_autorisation == 2020)
+
+### création de la carte et plot
+carte_pc_2020 <- carte_aplat(df = permis_construire_region_2020, colonne_code_zone_geo = REG, colonne_volume = PC, titre_carte = "Carte 1", sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région", titre_legende_volume = "Nombre de permis de construire", save_carte = FALSE)
+
+```
 

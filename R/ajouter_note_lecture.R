@@ -18,6 +18,7 @@
 #' @importFrom openxlsx addStyle
 #' @importFrom openxlsx readWorkbook
 #' @importFrom openxlsx mergeCells
+#' @importFrom openxlsx setRowHeights
 #' @importFrom assertthat assert_that
 #' @importFrom assertthat is.string
 #' 
@@ -188,4 +189,8 @@ ajouter_note_lecture <- function(classeur,
   }
   writeData(classeur, nom_feuille, paste("Note de lecture :", note), startCol = col_debut, startRow = row_note)
   addStyle(wb = classeur, sheet = nom_feuille, style = style_note, rows = row_note, cols = col_debut)
+  setRowHeights(wb = classeur,
+                sheet = nom_feuille,
+                rows = row_note,
+                heights = (1 + nchar(paste("Note de lecture :", note))%/%100)*15)
 }

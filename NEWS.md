@@ -1,3 +1,10 @@
+# agreste 0.2.9
+
+- Formatage des lignes de niveaux différents de précision (jusqu'à 4)
+- Résolution de bugs concernant le formatage des nombres décimaux inférieurs à 1
+- Ajout de la possibilité de fusionner des cellules par le plan
+- Ajout d'une fonction `read_any_file()` qui permet de lire un fichier de type `csv`, `tsv`, `xlsx`, `Rds`, `parquet`, ou un objet `data.frame`
+
 # agreste 0.2.8
 
 - Ajout d'une fonction `taille_colonnes()` pour appliquer une taille de colonnes

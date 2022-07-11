@@ -37,6 +37,10 @@
 #' @importFrom openxlsx saveWorkbook
 #' @importFrom openxlsx removeCellMerge
 #' @importFrom openxlsx removeWorksheet
+#' @importFrom purrr map
+#' @importFrom purrr set_names
+#' @importFrom purrr %>%
+#' @importFrom stringr str_replace
 #' 
 #' @export
 #' 
@@ -53,6 +57,8 @@ app_formatage <- function() {
   list_col_data_types <- list()
   index_current_sheet <- 0
   
+  plan <- modele_plan[NULL,]
+  
   wd <- getwd()
   
   ui = dashboardPage(
@@ -65,12 +71,17 @@ app_formatage <- function() {
     skin = "light",
     
     fileInput(
-      inputId = "file1",
-      label = "Choisir un fichier CSV",
+      inputId = "upload",
+      label = "Choisir les fichiers",
       multiple = TRUE,
       accept = c("text/csv",
                  "text/comma-separated-values,text/plain",
-                 ".csv")),
+                 ".csv",
+                 ".xlsx",
+                 ".rds",
+                 ".Rds",
+                 ".parquet",
+                 ".xls")),
     
     # Horizontal line ----
     tags$hr(),
@@ -85,23 +96,7 @@ app_formatage <- function() {
                              Tab = "\t"),
                  selected = ","),
     
-    # Input: Select quotes ----
-    radioButtons("quote", "Guillemets",
-                 choices = c(Aucun = "",
-                             "Doubles Guillemets" = '"',
-                             "Simples Guillemets" = "'"),
-                 selected = '"'),
-    
-    # Horizontal line ----
-    tags$hr(),
-    
-    # Input: Select number of rows to display ----
-    radioButtons("disp", "Afficher",
-                 choices = c(Head = "head",
-                             Tout = "all"),
-                 selected = "head"),
-    
-    radioButtons("virg", "Type de virgule",
+    radioButtons("virg", "Séparateur décimal",
                  choices = c(Virgule = ",",
                              Point = "."),
                  selected = ","),
@@ -109,6 +104,8 @@ app_formatage <- function() {
   # controlbar = dashboardControlbar(),
   footer = dashboardFooter(),
   body = dashboardBody(
+    DTOutput("files"),
+    DTOutput("contents") %>% withSpinner(),
     prettyRadioButtons(inputId = "format",
                        label = "Format",
                        choices = c("Chiffres et données" = "chiffres_et_donnees",
@@ -117,15 +114,33 @@ app_formatage <- function() {
     textInput("feuille", "Nom de la feuille :"),
     textInput("title", "Titre du tableau :"),
     # Output: Data file ----
-    tableOutput("contents") %>% withSpinner(),
+    
     uiOutput("deroul"),
+    uiOutput("larg"),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_header", "Lignes de surtitre")),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_sous_titre", "Lignes de sous-titre")),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_section", "Lignes de section")),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_precision", "Lignes de précision")),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_sous_total", "Lignes de sous-total")),
+    div(style="display: inline-block;vertical-align:top; width: 100px;",
+        actionButton("lignes_total", "Lignes de total")),
     tags$hr(),
-    textInput("note", "Note de lecture :"),
-    textInput("source", "Source"),
-    textInput("champ", "Champ"),
+    div(style="display: inline-block;vertical-align:top; width: 300px;",
+        textInput("note", "Note de lecture :")),
+    div(style="display: inline-block;vertical-align:top; width: 300px;",
+        textInput("source", "Source")),
+    div(style="display: inline-block;vertical-align:top; width: 300px;",
+        textInput("champ", "Champ")),
+    
     tags$hr(),
     actionButton("validate", "Valider"),
     textInput("output_file", "Nom du fichier de sortie", value = "output.xlsx"),
+    actionButton("exporter", "Exporter le plan"),
     actionButton("enreg", "Enregistrer le fichier Excel")
   ),
   )
@@ -138,40 +153,46 @@ app_formatage <- function() {
     # )
     
     options(shiny.maxRequestSize=15*1024^2) # set maximum file size to 15MB
-    output$contents <- renderTable({
+    
+    observeEvent(input$upload, {
+      plan <<- modele_plan[NULL,]
+    })
+    
+    output$files <- renderDataTable({
+      req(input$upload)
+      datatable(input$upload, selection = list(mode = "single", selected = 1))
+    })
+    
+    all_files <- reactive({
+      req(input$upload)
+      map(input$upload$datapath, read_any_file) %>%
+        set_names(input$upload$name)
       
-      # input$file1 will be NULL initially. After the user selects
-      # and uploads a file, head of that data file by default,
-      # or all rows if selected, will be shown.
+    })
+    
+    output$contents <- renderDataTable({
       
-      req(input$file1)
-      
-      df <- read.csv(input$file1$datapath,
-                     header = input$header,
-                     sep = input$sep,
-                     quote = input$quote,
-                     check.names = FALSE,
-                     dec = input$virg)
-      
-      
-      if(input$disp == "head") {
-        return(head(df, n = 4L))
-      }
-      else {
-        return(df)
-      }
+      req(input$upload)
+      req(all_files())
+
+      all_files()[[
+        input$upload$name[[input$files_rows_selected]]
+      ]]
       
     })
     
     output$deroul <- renderUI({
-      req(input$file1)
+      req(input$upload)
+      req(all_files())
       
-      df <- read.csv(input$file1$datapath,
-                     header = input$header,
-                     sep = input$sep,
-                     quote = input$quote,
-                     check.names = FALSE,
-                     dec = input$virg)
+      # df <- read_any_file(input$upload$datapath,
+      #                     header = input$header,
+      #                     sep = input$sep,
+      #                     decimal_mark = input$virg)
+      
+      df <- all_files()[[
+        input$upload$name[[input$files_rows_selected]]
+      ]]
       
       lapply(1:ncol(df), function(i) {
         div(style="display: inline-block;vertical-align:top; width: 100px;",
@@ -184,103 +205,61 @@ app_formatage <- function() {
                         choices = c("Texte" = "texte",
                                     "Entier" = "numerique",
                                     "Décimal" = "decimal")))
+        })
+      })
+      
+    output$larg <- renderUI({
+      req(input$upload)
+      req(all_files())
+    
+      # df <- read_any_file(input$upload$datapath,
+      #                   header = input$header,
+      #                   sep = input$sep,
+      #                   decimal_mark = input$virg)
+      
+      df <- all_files()[[
+      input$upload$name[[input$files_rows_selected]]
+      ]]
+      
+      lapply(1:ncol(df), function(i) {
+        div(style="display: inline-block;vertical-align:top; width: 100px;",
+            numericInput(inputId = paste("taille_",
+                                        as.character(i),
+                                        sep = ""),
+                      label = paste("Largeur",
+                                      as.character(i),
+                                      sep = " "),
+                      value = 83/ncol(df),
+                      min = 3,
+                      max = 83,
+                      step = 0.01))
       })
     })
     
+    observeEvent(input$contents$name, {
+      updateTextInput(inputId = "feuille", value = plan$Nom_feuille[input$files_row_selected])
+      print(plan)
+    })
+      
     observeEvent(input$validate, {
-      # print(input$.shinylogs_input$inputs[[(length(input$.shinylogs_input$inputs) - 1)]])
-      req(input$file1)
-      vec_data_types <- c()
-      new_sheet <- TRUE
-      df <- read.csv(input$file1$datapath,
-                     header = input$header,
-                     sep = input$sep,
-                     quote = input$quote,
-                     check.names = FALSE,
-                     dec = input$virg)
+      req(input$upload)
+      req(all_files())
       
-      for (i in 1:ncol(df)) {
-        id <- eval(parse(text = paste("input$col_", as.character(i), sep = "")))
-        vec_data_types <- append(vec_data_types, id)
-      }
+      df <- all_files()[[
+        input$upload$name[[input$files_rows_selected]]
+      ]]
       
-      
-      df <- read.csv(input$file1$datapath,
-                     header = input$header,
-                     sep = input$sep,
-                     quote = input$quote,
-                     check.names = FALSE,
-                     dec = input$virg)
-      
-      if (input$feuille != "" & input$title != "") {
-        # showModal(modalDialog("Écriture...", footer = NULL))
-        # remove sheet before adding it again (fastest way to clean it)
-        if (input$feuille %in% names(wb)) {
-          removeWorksheet(wb, input$feuille)
-          new_sheet <- FALSE
-        } else {
-          new_sheet <- TRUE
-        }
-        start_line <- switch (input$format,
-                              "chiffres_et_donnees" = 3,
-                              "primeur" = 5
-        )
-        ajouter_tableau_excel(wb, df, input$feuille, ligne_debut = start_line)
-        
-        removeCellMerge(wb, input$feuille, 2:(ncol(df)+2-1), 1)
-        ajouter_titre_tableau(wb,
-                              input$feuille,
-                              input$title,
-                              fusion = TRUE,
-                              format = input$format)
-        
-        if (input$note != "") {
-          list_sheets_with_note <<- append(list_sheets_with_note, input$feuille)
-          ajouter_note_lecture(wb, input$feuille, input$note, format = input$format)
-          ajouter_source(wb, input$feuille, input$source, avec_note = TRUE, format =input$format)
-        } else if (input$source != "") {
-          ajouter_source(wb, input$feuille, input$source, avec_note = FALSE, format = input$format)
-        }
-        if (input$champ != "") {
-          ajouter_champ(wb, input$feuille, input$champ, format = input$format)
-        }
-        
-        
-        if (isTRUE(new_sheet)) {
-          index_current_sheet <<- index_current_sheet + 1
-        }
-        list_col_data_types[[index_current_sheet]] <<- vec_data_types
-        
-        # removeModal()
-      } else {
-        shinyalert("Veuillez indiquer un nom de feuille et de titre avant de valider.", type = "error")
-        print("Veuillez indiquer un nom de feuille et de titre avant de valider.")
-      }
+      plan <<- valider_donnees(plan = plan, input = input, df = df)
+      shinyalert("Bouton en cours de développement", type = "info")
       
     })
     
     observeEvent(input$enreg, {
-      req(input$file1)
-      req(input$feuille)
-      req(input$title)
+      req(input$upload)
+      req(all_files())
+      shinyalert("Bouton en cours de développement", type = "info")
       
-      # showModal(modalDialog("Enregistrement...", footer = NULL))
-      # formatting
-      if (input$source != "" & input$champ != "") {
-        formater_auto(classeur = wb,
-                      format = input$format,
-                      liste_feuilles_avec_note = list_sheets_with_note,
-                      liste_type_donnees = list_col_data_types)
-        # save
-        saveWorkbook(wb, file = paste("~", input$output_file, sep = "/"), overwrite = TRUE)
-        # removeModal()
-        shinyalert(title = "Enregistrement réussi", type = "success")
-        print("Enregistrement réussi.")
-        # } else if (input$.shinylogs_input[(length(input$.shinylogs_input) - 1)]$name != "validate") {
-        #   shinyalert("Veuillez valider vos modifications avant d'enregistrer", type = "warning")
-      } else {
-        shinyalert("Veuillez indiquer une source et un champ avant d'enregistrer", type = "error")
-      }
+      
     })
   }
   
@@ -288,3 +267,43 @@ app_formatage <- function() {
            server = server)
 }
 
+
+#' Enregistre les données de l'app vers le plan
+#' 
+#' @param plan le dataframe de plan
+#' @param input les inputs shiny
+#' @param df le tableau actuellement sélectionné
+#' 
+#' @return le dataframe de plan modifié
+#' @noRd
+valider_donnees <- function(plan, input, df) {
+  
+  index_tab <- input$files_rows_selected
+  filename <- input$upload$name[index_tab]
+  file_ext <- get.ext(filename)
+  n_tab <- length(input$upload$name)
+  if (dim(plan)[1] == 0) {
+    lignes <- data.frame(matrix("", n_tab, ncol(plan)))
+    names(lignes) <- names(plan)
+    plan <- rbind(plan, lignes)
+  }
+  
+  
+  
+  vec_data_types <- c()
+  vec_col_width <- c()
+  
+  for (i in 1:ncol(df)) {
+    id_types <- eval(parse(text = paste("input$col_", as.character(i), sep = "")))
+    id_widths <- eval(parse(text = paste("input$taille_", as.character(i), sep = "")))
+    vec_data_types <- append(vec_data_types, id_types)
+    vec_col_width <- append(vec_col_width, id_widths)
+  }
+  plan$Nom_fichier[index_tab] <- str_replace(filename,
+                                             paste(".", file_ext, sep = ""),
+                                             "")
+  plan$Type[index_tab] <- file_ext
+  plan$Nom_feuille[index_tab] <- input$feuille
+  
+  return(plan)
+} 
