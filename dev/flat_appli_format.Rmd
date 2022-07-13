@@ -15,6 +15,8 @@ library(openxlsx)
 library(DT)
 library(purrr)
 library(stringr)
+library(rstudioapi)
+library(openxlsx)
 library(reader)
 ```
 
@@ -38,30 +40,44 @@ library(reader)
 #' @importFrom shiny textInput
 #' @importFrom shiny tableOutput
 #' @importFrom shiny uiOutput
+#' @importFrom shiny verbatimTextOutput
 #' @importFrom shiny actionButton
 #' @importFrom shiny req
 #' @importFrom shiny renderUI
+#' @importFrom shiny renderPrint
 #' @importFrom shiny selectInput
 #' @importFrom shiny observeEvent
 #' @importFrom shiny showModal
 #' @importFrom shiny removeModal
+#' @importFrom shiny p
+#' @importFrom shiny div
+#' @importFrom shiny tabPanel
+#' @importFrom shiny downloadButton
+#' @importFrom shiny downloadHandler
+#' @importFrom shiny icon
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinyalert shinyalert
 #' @importFrom shinyWidgets prettyRadioButtons
+#' @importFrom shinyWidgets actionBttn
+#' @importFrom shinyWidgets downloadBttn
 #' @importFrom bs4Dash dashboardPage
 #' @importFrom bs4Dash dashboardHeader
 #' @importFrom bs4Dash dashboardSidebar
 #' @importFrom bs4Dash dashboardFooter
 #' @importFrom bs4Dash dashboardBody
+#' @importFrom bs4Dash tabBox
 #' @importFrom magrittr %>%
-#' @importFrom openxlsx createWorkbook
-#' @importFrom openxlsx saveWorkbook
-#' @importFrom openxlsx removeCellMerge
-#' @importFrom openxlsx removeWorksheet
+#' @importFrom openxlsx write.xlsx
 #' @importFrom purrr map
 #' @importFrom purrr set_names
 #' @importFrom purrr %>%
 #' @importFrom stringr str_replace
+#' @importFrom stringr str_trim
+#' @importFrom rstudioapi selectFile
+#' @importFrom rstudioapi selectDirectory
+#' @importFrom DT datatable
+#' @importFrom DT DTOutput
+#' @importFrom DT renderDataTable
 #' 
 #' @export
 #' 
@@ -73,7 +89,7 @@ app_formatage <- function() {
   list_col_data_types <- list()
   index_current_sheet <- 0
   
-  plan <- modele_plan[NULL,]
+  plan <- agreste::modele_plan[NULL,]
   
   wd <- getwd()
   
@@ -84,8 +100,12 @@ app_formatage <- function() {
   header = dashboardHeader(title = "Mise en forme de tableaux"),
   
   sidebar = dashboardSidebar(
+    minified = FALSE,
     skin = "light",
-    
+    fileInput(inputId = "upload_plan",
+              label = "Importer un plan",
+              multiple = FALSE,
+              accept = ".xlsx"),
     fileInput(
       inputId = "upload",
       label = "Choisir les fichiers",
@@ -99,13 +119,8 @@ app_formatage <- function() {
                  ".parquet",
                  ".xls")),
     
-    # Horizontal line ----
     tags$hr(),
     
-    # Input: Checkbox if file has header ----
-    checkboxInput("header", "Header", TRUE),
-    
-    # Input: Select separator ----
     radioButtons("sep", "Separateur",
                  choices = c(Virgule = ",",
                              "Point Virgule" = ";",
@@ -115,49 +130,96 @@ app_formatage <- function() {
     radioButtons("virg", "Séparateur décimal",
                  choices = c(Virgule = ",",
                              Point = "."),
-                 selected = ","),
+                 selected = ",")
+    
   ),
   # controlbar = dashboardControlbar(),
   footer = dashboardFooter(),
   body = dashboardBody(
     DTOutput("files"),
     DTOutput("contents") %>% withSpinner(),
-    prettyRadioButtons(inputId = "format",
+    tabBox(
+      tabPanel(title = "Choix du format",
+               prettyRadioButtons(inputId = "format",
                        label = "Format",
                        choices = c("Chiffres et données" = "chiffres_et_donnees",
                                    Primeur = "primeur"),
-                       selected = "chiffres_et_donnees"),
-    textInput("feuille", "Nom de la feuille :"),
-    textInput("title", "Titre du tableau :"),
-    # Output: Data file ----
-    
-    uiOutput("deroul"),
-    uiOutput("larg"),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_header", "Lignes de surtitre")),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_sous_titre", "Lignes de sous-titre")),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_section", "Lignes de section")),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_precision", "Lignes de précision")),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_sous_total", "Lignes de sous-total")),
-    div(style="display: inline-block;vertical-align:top; width: 100px;",
-        actionButton("lignes_total", "Lignes de total")),
+                       selected = "chiffres_et_donnees")),
+      tabPanel(title = "Titres",
+               textInput("feuille", "Nom de la feuille :"),
+               textInput("titre_primeur", "Titre du document (si primeur)"),
+               textInput("title", "Titre du tableau :")),
+      tabPanel(title = "Colonnes",
+               uiOutput("deroul"),
+               uiOutput("larg"),
+               actionBttn("validate_colonnes", "Valider", color = "success",
+                          icon = icon("check"))),
+      tabPanel(title = "Lignes",
+               p("Séléctionnez les lignes souhaitées puis cliquez sur le bouton pour les formater :"),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_titre", "Lignes de surtitre")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_section", "Lignes de section")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_precision_1", "Lignes de précision 1")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_precision_2", "Lignes de précision 2")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_precision_3", "Lignes de précision 3")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_precision_4", "Lignes de précision 4")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_sous_total", "Lignes de sous-total")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   actionButton("lignes_total", "Lignes de total")),
+               tags$hr(),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_titre")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_section")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_precision_1")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_precision_2")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_precision_3")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_precision_4")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_sous_total")),
+               div(style="display: inline-block;vertical-align:top; width: 100px;",
+                   verbatimTextOutput("disp_lignes_total"))),
+      tabPanel(title = "Unités",
+               radioButtons(inputId = "is_unite_unif",
+                            label = "L'unité est commune à toutes les colonnes :",
+                            choices = c("Oui" = "oui",
+                                        "Non" = "non"),
+                            selected = "oui"),
+               p("(remplir uniquement la première si oui)"),
+               uiOutput("unites"),
+               actionBttn("validate_unites", "Valider", color = "success",
+                          icon = icon("check"))),
+      tabPanel(title = "Texte",
+               div(style="display: inline-block;vertical-align:top; width: 300px;",
+                   textInput("note", "Note de lecture :")),
+               div(style="display: inline-block;vertical-align:top; width: 300px;",
+                   textInput("source", "Source")),
+               div(style="display: inline-block;vertical-align:top; width: 300px;",
+                   textInput("champ", "Champ"))),
+      width = 12, 
+      height = 300,
+      collapsed = FALSE,
+      selected = "Colonnes"
+    ),
+    tabBox(tabPanel(title = "Cellules à fusionner",
+                    DTOutput("contents_fusion"),
+                    actionBttn("add_fusion", "Fusionner", color = "royal", icon = icon("plus"))),
+           collapsed = TRUE,
+           width = 12),
     tags$hr(),
-    div(style="display: inline-block;vertical-align:top; width: 300px;",
-        textInput("note", "Note de lecture :")),
-    div(style="display: inline-block;vertical-align:top; width: 300px;",
-        textInput("source", "Source")),
-    div(style="display: inline-block;vertical-align:top; width: 300px;",
-        textInput("champ", "Champ")),
-    
-    tags$hr(),
-    actionButton("validate", "Valider"),
-    textInput("output_file", "Nom du fichier de sortie", value = "output.xlsx"),
-    actionButton("exporter", "Exporter le plan"),
-    actionButton("enreg", "Enregistrer le fichier Excel")
+    downloadBttn("exporter", "Exporter le plan"),
+    downloadBttn("enreg", "Enregistrer le fichier Excel"),
+    actionBttn("close", "Fermer", color = "danger", icon = icon("door-open"))
   ),
   )
   
@@ -171,14 +233,28 @@ app_formatage <- function() {
     options(shiny.maxRequestSize=15*1024^2) # set maximum file size to 15MB
     
     observeEvent(input$upload, {
-      plan <<- modele_plan[NULL,]
+      if (length(input$upload_plan) == 0) {
+        plan <<- fill_plan(plan = agreste::modele_plan[NULL,], input = input)
+      }
+    })
+    
+    observeEvent(input$upload_plan, {
+      inFile <- input$upload_plan
+      if (is.null(inFile)) {
+        return(NULL)
+      }
+      plan <<- read.xlsx(xlsxFile = inFile$datapath, sheet = 1, colNames = TRUE)
+      plan[is.na(plan)] <<- ""
+
     })
     
     output$files <- renderDataTable({
       req(input$upload)
-      datatable(input$upload, selection = list(mode = "single", selected = 1))
+      datatable(input$upload,
+                selection = list(mode = "single", selected = dim(input$upload)[1]))
     })
     
+
     all_files <- reactive({
       req(input$upload)
       map(input$upload$datapath, read_any_file) %>%
@@ -197,18 +273,51 @@ app_formatage <- function() {
       
     })
     
+    output$contents_fusion <- renderDataTable(selection = list(target = 'cell'),
+                                              expr = {
+      
+      req(input$upload)
+      req(all_files())
+
+      df <- all_files()[[
+              input$upload$name[[input$files_rows_selected]]
+            ]]
+      cols <- names(df)
+      names(df) <- NULL
+      df[seq(2,nrow(df)+1),] <- 
+        df[seq(1,nrow(df)),]
+      df[1,] <- cols
+      df
+    })
+    
+    output$disp_lignes_titre <- renderPrint(plan$Lignes_titre[input$files_rows_selected])
+    output$disp_lignes_section <- renderPrint(plan$Lignes_section[input$files_rows_selected])
+    output$disp_lignes_precision_1 <- renderPrint(plan$Lignes_precision_1[input$files_rows_selected])
+    output$disp_lignes_precision_2 <- renderPrint(plan$Lignes_precision_2[input$files_rows_selected])
+    output$disp_lignes_precision_3 <- renderPrint(plan$Lignes_precision_3[input$files_rows_selected])
+    output$disp_lignes_precision_4 <- renderPrint(plan$Lignes_precision_4[input$files_rows_selected])
+    output$disp_lignes_sous_total <- renderPrint(plan$Lignes_sous_total[input$files_rows_selected])
+    output$disp_lignes_total <- renderPrint(plan$Lignes_total[input$files_rows_selected])
+      
     output$deroul <- renderUI({
       req(input$upload)
       req(all_files())
       
-      # df <- read_any_file(input$upload$datapath,
-      #                     header = input$header,
-      #                     sep = input$sep,
-      #                     decimal_mark = input$virg)
-      
       df <- all_files()[[
         input$upload$name[[input$files_rows_selected]]
       ]]
+      
+      if (!is.null(input$upload_plan)) {
+        plan <<- read.xlsx(xlsxFile = input$upload_plan$datapath, sheet = 1, colNames = TRUE)
+        plan[is.na(plan)] <<- ""
+      }
+      
+      if (plan$Type_colonnes[input$files_rows_selected] == "") {
+        liste_data_types <- rep("decimal", ncol(df))
+      } else {
+        liste_data_types <- unlist(strsplit(plan$Type_colonnes[input$files_rows_selected], split = ", "))
+      }
+      
       
       lapply(1:ncol(df), function(i) {
         div(style="display: inline-block;vertical-align:top; width: 100px;",
@@ -220,22 +329,29 @@ app_formatage <- function() {
                                       sep = " "),
                         choices = c("Texte" = "texte",
                                     "Entier" = "numerique",
-                                    "Décimal" = "decimal")))
+                                    "Décimal" = "decimal"),
+                        selected = liste_data_types[i]))
         })
       })
       
     output$larg <- renderUI({
       req(input$upload)
       req(all_files())
-    
-      # df <- read_any_file(input$upload$datapath,
-      #                   header = input$header,
-      #                   sep = input$sep,
-      #                   decimal_mark = input$virg)
       
       df <- all_files()[[
       input$upload$name[[input$files_rows_selected]]
       ]]
+      
+      if (!is.null(input$upload_plan)) {
+        plan <<- read.xlsx(xlsxFile = input$upload_plan$datapath, sheet = 1, colNames = TRUE)
+        plan[is.na(plan)] <<- ""
+      }
+      
+      if (plan$Taille_colonnes[input$files_rows_selected] == "" | plan$Taille_colonnes[input$files_rows_selected] == "auto" | substr(plan$Taille_colonnes[input$files_rows_selected], 1, 1) == "0") {
+        liste_col_widths <- rep(83/ncol(df), ncol(df))
+      } else {
+        liste_col_widths <- as.numeric(unlist(strsplit(str_trim(plan$Taille_colonnes[input$files_rows_selected]), split = ", ")))
+      }
       
       lapply(1:ncol(df), function(i) {
         div(style="display: inline-block;vertical-align:top; width: 100px;",
@@ -245,19 +361,14 @@ app_formatage <- function() {
                       label = paste("Largeur",
                                       as.character(i),
                                       sep = " "),
-                      value = 83/ncol(df),
+                      value = liste_col_widths[i],
                       min = 3,
                       max = 83,
                       step = 0.01))
       })
     })
     
-    observeEvent(input$contents$name, {
-      updateTextInput(inputId = "feuille", value = plan$Nom_feuille[input$files_row_selected])
-      print(plan)
-    })
-      
-    observeEvent(input$validate, {
+    output$unites <- renderUI({
       req(input$upload)
       req(all_files())
       
@@ -265,22 +376,173 @@ app_formatage <- function() {
         input$upload$name[[input$files_rows_selected]]
       ]]
       
-      plan <<- valider_donnees(plan = plan, input = input, df = df)
-      shinyalert("Bouton en cours de développement", type = "info")
+      if (!is.null(input$upload_plan)) {
+        plan <<- read.xlsx(xlsxFile = input$upload_plan$datapath, sheet = 1, colNames = TRUE)
+        plan[is.na(plan)] <<- ""
+      }
+      
+      if (plan$Liste_unites[input$files_rows_selected] == "") {
+        liste_unites <- rep("", ncol(df))
+      } else {
+        liste_unites <- unlist(strsplit(plan$Liste_unites[input$files_rows_selected], split = ", "))
+      }
+      
+      lapply(1:ncol(df), function(i) {
+        div(style="display: inline-block;vertical-align:top; width: 100px;",
+            textInput(inputId = paste("unite_",
+                                        as.character(i),
+                                        sep = ""),
+                      label = paste("Unité",
+                                      as.character(i),
+                                      sep = " "),
+                      value = liste_unites[i]))
+      })
+    })
+    
+    observeEvent(input$close, {
+      stopApp()
+    })
+    
+    observeEvent(c(input$files_rows_selected, input$upload_plan), {
+      updateTextInput(inputId = "feuille", value = plan$Nom_feuille[input$files_rows_selected])
+      updateTextInput(inputId = "titre_primeur", value = plan$Titre_document[1])
+      updateTextInput(inputId = "title", value = plan$Titre[input$files_rows_selected])
+      updateTextInput(inputId = "note", value = plan$Note_de_lecture[input$files_rows_selected])
+      updateTextInput(inputId = "source", value = plan$Source[input$files_rows_selected])
+      updateTextInput(inputId = "champ", value = plan$Champ[input$files_rows_selected])
       
     })
     
-    observeEvent(input$enreg, {
+    output$exporter <- downloadHandler(
+      filename = function() {
+        "plan.xlsx"
+      },
+      content = function(file) {
+        write.xlsx(x = plan, file = file, overwrite = TRUE,
+                   rowNames = FALSE, colNames = TRUE)
+      
+      }
+    )
+    
+    observeEvent(input$lignes_titre, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_titre[tab_index] <- paste(c("1", lignes + 1), collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_titre <- renderPrint(plan$Lignes_titre[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_section, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_section[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_section <- renderPrint(plan$Lignes_section[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_precision_1, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_precision_1[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_precision_1 <- renderPrint(plan$Lignes_precision_1[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_precision_2, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_precision_2[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_precision_2 <- renderPrint(plan$Lignes_precision_2[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_precision_3, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_precision_3[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_precision_3 <- renderPrint(plan$Lignes_precision_3[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_precision_4, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_precision_4[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_precision_4 <- renderPrint(plan$Lignes_precision_4[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_sous_total, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_sous_total[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_sous_total <- renderPrint(plan$Lignes_sous_total[input$files_rows_selected])
+    })
+    
+    observeEvent(input$lignes_total, {
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_total[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_total <- renderPrint(plan$Lignes_total[input$files_rows_selected])
+    })
+    
+    observeEvent(c(input$feuille,
+                   input$titre_primeur,
+                   input$title,
+                   input$note,
+                   input$source,
+                   input$champ,
+                   input$validate_colonnes,
+                   input$validate_unites), {
       req(input$upload)
       req(all_files())
-      shinyalert("Bouton en cours de développement", type = "info")
       
-      
+      df <- all_files()[[
+        input$upload$name[[input$files_rows_selected]]
+      ]]
+      plan <<- valider_donnees(plan = plan, input = input, df = df)
     })
+    
+    observeEvent(c(input$validate_colonnes, input$validate_unites), {
+      req(input$upload)
+      req(all_files())
+      shinyalert("Modifications enregistrées", type = "success", timer = 1000)
+    })
+    
+    output$enreg <- downloadHandler(
+      filename = function() {
+        "document_formate.xlsx"
+      },
+      content = function(file) {
+        
+        col_debut <- switch (input$format,
+          "chiffres_et_donnees" = 1,
+          "primeur" = 2
+        )
+        plan[is.na(plan)] <- ""
+        creer_excel_depuis_plan(plan = plan,
+                                format = input$format,
+                                sep = input$sep,
+                                type_virgule = input$virg,
+                                col_debut = col_debut,
+                                save = TRUE,
+                                path = file)
+      }
+    )
   }
   
   shinyApp(ui = ui,
-           server = server)
+          server = server)
 }
 
 ```
@@ -304,34 +566,73 @@ app_formatage()
 valider_donnees <- function(plan, input, df) {
   
   index_tab <- input$files_rows_selected
-  filename <- input$upload$name[index_tab]
-  file_ext <- get.ext(filename)
-  n_tab <- length(input$upload$name)
-  if (dim(plan)[1] == 0) {
-    lignes <- data.frame(matrix("", n_tab, ncol(plan)))
-    names(lignes) <- names(plan)
-    plan <- rbind(plan, lignes)
-  }
-  
-  
   
   vec_data_types <- c()
   vec_col_width <- c()
+  vec_unites <- c()
   
   for (i in 1:ncol(df)) {
     id_types <- eval(parse(text = paste("input$col_", as.character(i), sep = "")))
     id_widths <- eval(parse(text = paste("input$taille_", as.character(i), sep = "")))
+    id_unites <- eval(parse(text = paste("input$unite_", as.character(i), sep = "")))
+    vec_unites <- append(vec_unites, id_unites)
     vec_data_types <- append(vec_data_types, id_types)
     vec_col_width <- append(vec_col_width, id_widths)
   }
-  plan$Nom_fichier[index_tab] <- str_replace(filename,
-                                             paste(".", file_ext, sep = ""),
-                                             "")
-  plan$Type[index_tab] <- file_ext
+  plan$Titre_document[1] <- input$titre_primeur
   plan$Nom_feuille[index_tab] <- input$feuille
-  
+  plan$Titre[index_tab] <- input$title
+  plan$Type_colonnes[index_tab] <- paste(vec_data_types, collapse = ", ")
+  plan$Taille_colonnes[index_tab] <- paste(vec_col_width, collapse = ", ")
+  if (input$is_unite_unif == "oui") {
+    plan$Liste_unites[index_tab] <- paste(vec_unites[1], collapse = ", ")
+  } else {
+    plan$Liste_unites[index_tab] <- paste(vec_unites, collapse = ", ")
+  }
+  plan$Note_de_lecture[index_tab] <- input$note
+  plan$Source[index_tab] <- input$source
+  plan$Champ[index_tab] <- input$champ
   return(plan)
 } 
+```
+
+```{r function-fill_plan}
+#' rempli le plan par défaut
+#' 
+#' @param plan DATA.FRAME le dataframe de plan
+#' 
+#' @return un data.frame de plan complété
+fill_plan <- function(plan, input) {
+  n_tab <- length(input$upload$name)
+  lignes <- data.frame(matrix("", n_tab, ncol(plan)))
+  names(lignes) <- names(plan)
+  plan <- rbind(plan, lignes)
+  
+  titre_doc <- "Titre du document"
+  plan$Titre_document[1] <- titre_doc
+  for (tab_index in 1:n_tab) {
+    filename <- input$upload$name[tab_index]
+    file_ext <- get.ext(filename)
+    nom_fichier <- str_replace(filename,
+                               paste(".", file_ext, sep = ""),
+                               "")
+    nom_feuille <- paste("Feuille", tab_index)
+    titre <- paste("Titre tableau", tab_index)
+    note <- paste("Note de lecture", tab_index)
+    source <- paste("Source", tab_index)
+    champ <- paste("Champ", tab_index)
+    
+    plan$Nom_fichier[tab_index] <- nom_fichier
+    plan$Type[tab_index] <- file_ext
+    plan$Nom_feuille[tab_index] <- nom_feuille
+    plan$Titre[tab_index] <- titre
+    plan$Note_de_lecture[tab_index] <- note
+    plan$Source[tab_index] <- source
+    plan$Champ[tab_index] <- champ
+    plan$Lignes_titre[tab_index] <- "1"
+  }
+  return(plan)
+}
 ```
 
 ```{r development-inflate, eval=FALSE}

@@ -2242,7 +2242,7 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 
   for (sheet in sheets) {
     nb_col <- ncol(readWorkbook(classeur, sheet = sheet))
     indice_feuille <- indice_feuille + 1
-    if (largeurs[[indice_feuille]][1] == "auto") {
+    if (largeurs[[indice_feuille]][1] == "auto" | largeurs[[indice_feuille]][1] == 0) {
       types <- liste_type_donnees[[indice_feuille]]
       mean_width <- pao_max/nb_col
       nb_text <- sum(to_vec(for(type in types) if(type == "texte") 1))
@@ -3408,7 +3408,7 @@ creer_excel_depuis_plan <- function(plan,
     }
   }
   
-  plan[,12:21][is.na(plan[,12:21])] <- 0
+  plan[,12:20][is.na(plan[,12:20])] <- 0
   
   nb_tab = nrow(plan)
   
@@ -3620,14 +3620,14 @@ agreste::resultat_3 %>%
   write.csv(file = "resultat_3.csv", row.names = FALSE)
 agreste::lait_vache %>%
   write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
-write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 agreste::scieries2020 %>%
   write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-                                    format = "chiffres_et_donnees",
-                                    col_debut = 1,
+                                    format = "primeur",
+                                    col_debut = 2,
                                     save = TRUE,
                                     path = "document_a_envoyer.xlsx",
                                     type_virgule = ".")

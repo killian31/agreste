@@ -63,6 +63,6 @@ pkgdown::build_site(examples = FALSE,
                     devel = TRUE)
 
 # build the tar.gz to share with others
-devtools::build(binary = TRUE)
+devtools::build()
 ```
 
