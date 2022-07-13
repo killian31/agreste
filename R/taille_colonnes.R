@@ -133,7 +133,7 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 
   for (sheet in sheets) {
     nb_col <- ncol(readWorkbook(classeur, sheet = sheet))
     indice_feuille <- indice_feuille + 1
-    if (largeurs[[indice_feuille]][1] == "auto") {
+    if (largeurs[[indice_feuille]][1] == "auto" | largeurs[[indice_feuille]][1] == 0) {
       types <- liste_type_donnees[[indice_feuille]]
       mean_width <- pao_max/nb_col
       nb_text <- sum(to_vec(for(type in types) if(type == "texte") 1))

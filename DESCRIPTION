@@ -1,6 +1,6 @@
 Package: agreste
 Title: Aide À La Publication Sur Agreste
-Version: 0.2.9
+Version: 0.3.0
 Authors@R: c(
     person("Anaël", "Delorme", , "anael.delorme@agriculture.gouv.fr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1122-9076")),
@@ -20,6 +20,7 @@ Imports:
     collections,
     comprehenr,
     dplyr,
+    DT,
     ggplot2,
     ggtext,
     glue,
@@ -28,6 +29,7 @@ Imports:
     purrr,
     reader,
     readr,
+    rstudioapi,
     sf,
     shiny,
     shinyalert,

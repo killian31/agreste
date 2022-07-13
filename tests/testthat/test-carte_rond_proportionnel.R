@@ -13,7 +13,7 @@ test_that("carte_rond_proportionnel works", {
       titre_carte = "Carte 1",
       sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
       titre_legende_volume = "Nombre de permis de construire",
-      save_carte = TRUE,
+      save_carte = FALSE,
       path_carte = "carte.png"
     )
   
@@ -27,7 +27,7 @@ test_that("carte_rond_proportionnel works", {
       titre_carte = "Carte 1",
       sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
       titre_legende_volume = "Nombre de permis de construire",
-      save_carte = TRUE,
+      save_carte = FALSE,
       path_carte = "carte.png",
       zone_geographique = "BLABLA",
       niveau_representation = "region_metro"
@@ -43,7 +43,7 @@ test_that("carte_rond_proportionnel works", {
       titre_carte = "Carte 1",
       sous_titre_carte = "Nombre de permis de construire délivré en 2020 par région",
       titre_legende_volume = "Nombre de permis de construire",
-      save_carte = TRUE,
+      save_carte = FALSE,
       path_carte = "carte.png",
       niveau_representation = "BLABLA"
     ),

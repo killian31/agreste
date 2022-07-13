@@ -1,3 +1,8 @@
+# agreste 0.3.0
+
+- Interface graphique Shiny pour créer un plan de formatage, et utiliser 
+la fonction `creer_excel_depuis_plan` par un bouton
+
 # agreste 0.2.9
 
 - Formatage des lignes de niveaux différents de précision (jusqu'à 4)

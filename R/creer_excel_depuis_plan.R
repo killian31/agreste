@@ -44,14 +44,14 @@
 #'   write.csv(file = "resultat_3.csv", row.names = FALSE)
 #' agreste::lait_vache %>%
 #'   write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
-#' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 #' agreste::scieries2020 %>%
 #'   write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 #' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
+#' 
 #' ### Formatage
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-#'                                     format = "chiffres_et_donnees",
-#'                                     col_debut = 1,
+#'                                     format = "primeur",
+#'                                     col_debut = 2,
 #'                                     save = TRUE,
 #'                                     path = "document_a_envoyer.xlsx",
 #'                                     type_virgule = ".")
@@ -95,7 +95,7 @@ creer_excel_depuis_plan <- function(plan,
     }
   }
   
-  plan[,12:21][is.na(plan[,12:21])] <- 0
+  plan[,12:20][is.na(plan[,12:20])] <- 0
   
   nb_tab = nrow(plan)
   

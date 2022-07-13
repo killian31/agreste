@@ -13,18 +13,16 @@
 Le but du package agreste est de fournir à l’ensemble des agents du SSP
 des outils pour faciliter la diffusion auprès du grand public. Le
 package agreste propose des aides pour construire des tableaux, des
-graphiques, des cartes… Il facilite la création des documents attendus
-par la PAO (docx, xlsx). Il apporte des modèles de Rmarkdown.
+cartes… Il facilite la création des documents attendus par la PAO (docx,
+xlsx). Il apporte des modèles de Rmarkdown.
 
 ## Installation
 
 Vous pouvez installer le package agreste à partir du fichier
-`agreste.tar.gz` :
+`agreste_0.3.0.tar.gz` :
 
 ``` r
-install.packages("C:/Users/killian.steunou/Downloads/chemin/agreste.tar.gz",
-                 repos=NULL,
-                 type = "source")
+remotes::install_local("C:/Users/killian.steunou/Downloads/chemin/agreste_0.3.0.tar.gz")
 ```
 
 ## Example
