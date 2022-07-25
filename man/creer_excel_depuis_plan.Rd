@@ -7,6 +7,7 @@
 creer_excel_depuis_plan(
   plan,
   format,
+  datadir = "",
   sep = ",",
   type_virgule = ",",
   col_debut,
@@ -18,6 +19,8 @@ creer_excel_depuis_plan(
 \item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque tableau}
 
 \item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
+
+\item{datadir}{CHAR le chemin vers le dossier contenant les données. Dossier de travail actif si non spécifié.}
 
 \item{sep}{CHAR le caractère utilisé pour séparer les colonnes des fichiers}
 
@@ -39,6 +42,7 @@ Cette fonction permet de formater tous les tableaux d'un classeur selon le type 
 library(agreste)
 library(dplyr)
 library(openxlsx)
+library(rstudioapi)
 ### Import du fichier de plan
 plan = agreste::modele_plan
 
@@ -57,6 +61,7 @@ write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
+                                    datadir = selectDirectory(),
                                     format = "primeur",
                                     col_debut = 2,
                                     save = TRUE,

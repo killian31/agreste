@@ -14,7 +14,6 @@ Cette fonction permet d'ouvrir l'interface graphique s'appuyant
 sur les fonctions de formatage du package pour éditer des tableaux plus rapidement
 }
 \examples{
-
 library(agreste)
 \dontrun{
 app_formatage()

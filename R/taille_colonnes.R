@@ -12,6 +12,7 @@
 #' les types de données de chaque colonne
 #' @param largeurs LIST liste de vecteurs contenant les largeurs colonne, 
 #' "auto" pour appliquer des largeurs automatique
+#' @param format CHAR le format de publication : "primeur" ou "chiffres_et_donnees"
 #' @param col_debut La colonne à laquelle commencent les tableaux, par défaut 2
 #'
 #' @return Rien n'est renvoyé mais le classeur est modifié
@@ -103,6 +104,7 @@
 #'                                             "numerique",
 #'                                             "numerique")),
 #'                 largeurs = list(c("auto"), c("auto")),
+#'                 format = "primeur",
 #'                 col_debut = 2)
 #' 
 #' 
@@ -111,7 +113,7 @@
 #' 
 #' ## Ouvrir
 #' browseURL("tableau.xlsx")
-taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 2) {
+taille_colonnes <- function(classeur, liste_type_donnees, largeurs, format, col_debut = 2) {
   assert_that(class(classeur) == "Workbook",
               msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   assert_that(class(liste_type_donnees) == "list",
@@ -135,7 +137,7 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 
     indice_feuille <- indice_feuille + 1
     if (largeurs[[indice_feuille]][1] == "auto" | largeurs[[indice_feuille]][1] == 0) {
       types <- liste_type_donnees[[indice_feuille]]
-      mean_width <- pao_max/nb_col
+      mean_width <- round(pao_max/nb_col, digits = 2) - 0.01
       nb_text <- sum(to_vec(for(type in types) if(type == "texte") 1))
       nb_num <- nb_col - nb_text
       text_width <- mean_width + nb_num*weight_num/nb_text
@@ -153,11 +155,14 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, col_debut = 
       widths <- largeurs[[indice_feuille]]
     }
     
-    assert_that(sum(widths) <= pao_max,
+    if (format == "chiffres_et_donnees") {
+      assert_that(sum(widths) <= pao_max,
                 msg = paste("La largeur du tableau ne doit pas dépasser ",
                             pao_max,
                             ". Largeur actuelle : ",
                             sum(widths), sep = ""))
+    }
+    
     setColWidths(wb = classeur,
                  sheet = sheet,
                  cols = col_debut:(nb_col + col_debut - 1),

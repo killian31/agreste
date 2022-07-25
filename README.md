@@ -12,31 +12,35 @@
 
 Le but du package agreste est de fournir à l’ensemble des agents du SSP
 des outils pour faciliter la diffusion auprès du grand public. Le
-package agreste propose des aides pour construire des tableaux, des
-cartes… Il facilite la création des documents attendus par la PAO (docx,
-xlsx). Il apporte des modèles de Rmarkdown.
+package agreste propose de l’aide pour construire des tableaux. Il
+facilite la création des documents attendus par la PAO (docx, xlsx) et
+apporte des modèles de Rmarkdown.
 
 ## Installation
 
 Vous pouvez installer le package agreste à partir du fichier
-`agreste_0.3.0.tar.gz` :
+`agreste_1.1.1.tar.gz` :
 
 ``` r
-remotes::install_local("C:/Users/killian.steunou/Downloads/chemin/agreste_0.3.0.tar.gz")
+remotes::install_local("C:/Users/killian.steunou/Downloads/chemin/agreste_1.1.1.tar.gz")
 ```
 
-## Example
+## Utilisation
 
-Voici un exemple simple d’utilisation du package agreste :
+Le package agreste a trois utilisations majeures :
 
-``` r
-library(agreste)
+-   La création d’un fichier Excel contenant les différents tableaux
+    associés à une publication, formatés automatiquement selon le type
+    de cette dernière (chiffres et données, primeur), à partir d’un plan
+    de formatage :
+    [`creer_excel_depuis_plan()`](reference/creer_excel_depuis_plan.html)
+-   L’interface graphique intégrée qui permet de faciliter la création
+    du fichier de plan évoqué ci-dessus :
+    [`app_formatage()`](reference/app_formatage.html)
+-   Ouvrir un modèle de RMarkdown, préformaté selon la publication :
+    chiffres_et_donnees, primeur ou réponse à la demande
 
-# Démarrer l'app Shiny pour mettre en forme les tableaux
-app_formatage()
-```
-
-Vous pouvez également démarrer l’interface graphique en utilisant
-l’*Addin* intégré :
+Vous pouvez démarrer l’interface graphique en utilisant l’*Addin*
+intégré :
 
 <img src="man/figures/README-/addins_screen.png" width="100%" />

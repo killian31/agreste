@@ -6,6 +6,7 @@
 #'
 #' @param plan fichier .xlsx ou data frame contenant les détails pour chaque tableau 
 #' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
+#' @param datadir CHAR le chemin vers le dossier contenant les données. Dossier de travail actif si non spécifié.
 #' @param sep CHAR le caractère utilisé pour séparer les colonnes des fichiers
 #' @param type_virgule CHAR le type de séparation décimale utilisée : "." ou ","
 #' @param col_debut NUM la colonne à laquelle les tableaux démarrent
@@ -24,6 +25,11 @@
 #' @importFrom openxlsx addStyle
 #' @importFrom openxlsx readWorkbook
 #' @importFrom openxlsx mergeCells
+#' @importFrom openxlsx addWorksheet
+#' @importFrom openxlsx worksheetOrder
+#' @importFrom openxlsx worksheetOrder<-
+#' @importFrom openxlsx writeFormula
+#' @importFrom openxlsx makeHyperlinkString
 #' @importFrom stringr str_trim
 #' 
 #' @export
@@ -32,6 +38,7 @@
 #' library(agreste)
 #' library(dplyr)
 #' library(openxlsx)
+#' library(rstudioapi)
 #' ### Import du fichier de plan
 #' plan = agreste::modele_plan
 #' 
@@ -50,6 +57,7 @@
 #' 
 #' ### Formatage
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
+#'                                     datadir = selectDirectory(),
 #'                                     format = "primeur",
 #'                                     col_debut = 2,
 #'                                     save = TRUE,
@@ -58,6 +66,7 @@
 #' 
 creer_excel_depuis_plan <- function(plan,
                                     format,
+                                    datadir = "",
                                     sep = ",",
                                     type_virgule = ",",
                                     col_debut,
@@ -95,7 +104,7 @@ creer_excel_depuis_plan <- function(plan,
     }
   }
   
-  plan[,12:20][is.na(plan[,12:20])] <- 0
+  plan[,14:22][is.na(plan[,14:22])] <- 0
   
   nb_tab = nrow(plan)
   
@@ -124,12 +133,15 @@ creer_excel_depuis_plan <- function(plan,
         "chiffres_et_donnees" = 1,
         "primeur" = 0
       )
-  
   for (tab in 1:nb_tab) {
     filename <- paste(plan$Nom_fichier[tab],
                       plan$Type[tab],
                       sep = ".")
-    data <- read_any_file(filename = filename,
+    if (datadir == "") {
+      datadir <- getwd()
+    }
+    complete_filename <- paste(datadir, filename, sep = "/")
+    data <- read_any_file(filename = complete_filename,
                           header = TRUE,
                           decimal_mark = type_virgule)
     feuille <- plan$Nom_feuille[tab]
@@ -176,8 +188,7 @@ creer_excel_depuis_plan <- function(plan,
       data[seq(max_ligne_titre + 1,nrow(data)+1),] <- 
         data[seq(max_ligne_titre,nrow(data)),]
       data[max_ligne_titre,] <- liste_unites
-    
-      agreste::ajouter_tableau_excel(classeur = wb,
+      ajouter_tableau_excel(classeur = wb,
                                    tableau = data,
                                    nom_feuille = feuille,
                                    ligne_debut = ligne_debut,
@@ -185,7 +196,7 @@ creer_excel_depuis_plan <- function(plan,
 
     } else {
       liste_unif_unites <- append(liste_unif_unites, TRUE)
-      agreste::ajouter_tableau_excel(classeur = wb,
+      ajouter_tableau_excel(classeur = wb,
                                    tableau = data,
                                    nom_feuille = feuille,
                                    ligne_debut = ligne_debut + ligne_supp_debut_cd,
@@ -211,43 +222,44 @@ creer_excel_depuis_plan <- function(plan,
     
     
     
-    agreste::ajouter_titre_tableau(classeur = wb,
+    ajouter_titre_tableau(classeur = wb,
                                    nom_feuille = feuille,
                                    titre = titre,
                                    col_debut = col_debut,
                                    format = format)
     if (isTRUE(avec_note)) {
       liste_feuilles_note <- append(liste_feuilles_note, feuille)
-      agreste::ajouter_note_lecture(classeur = wb,
+      ajouter_note_lecture(classeur = wb,
                                     nom_feuille = feuille,
                                     note = plan$Note_de_lecture[tab],
                                     col_debut = col_debut,
                                     format = format)
     } 
     
-    agreste::ajouter_source(classeur = wb,
+    ajouter_source(classeur = wb,
                               nom_feuille = feuille,
                               source = source,
                               col_debut = col_debut,
                               avec_note = avec_note,
                               format = format)
-    agreste::ajouter_champ(classeur = wb,
+    ajouter_champ(classeur = wb,
                            nom_feuille = feuille,
                            champ = champ,
                            col_debut = col_debut,
                            format = format)
   }
   if (format == "primeur") {
-      agreste::ajouter_titre_primeur(classeur = wb,
+      ajouter_titre_primeur(classeur = wb,
                                      titre = titre_doc,
                                      col_debut = col_debut,
                                      fusion = TRUE)
   }
-  agreste::taille_colonnes(classeur = wb,
+  taille_colonnes(classeur = wb,
                           liste_type_donnees = liste_data_types,
                           largeurs = liste_col_widths,
+                          format = format,
                           col_debut = col_debut)
-  agreste::formater_auto(wb,
+  formater_auto(wb,
                          format = format,
                          liste_feuilles_avec_note = liste_feuilles_note,
                          liste_type_donnees = liste_data_types,
@@ -261,7 +273,6 @@ creer_excel_depuis_plan <- function(plan,
                          liste_lignes_total = liste_lignes_total,
                          liste_unif_unites = liste_unif_unites,
                          liste_cellules_fusion = liste_cells_to_merge,
-                         type_virgule = type_virgule,
                          col_debut = col_debut,
                          avec_titre = TRUE)
   tab <- 0
@@ -280,6 +291,116 @@ creer_excel_depuis_plan <- function(plan,
     }
   }
   
+  nom_feuille_sommaire <- "Sommaire"
+  col_sommaire <- 1
+  plan[,4:5][is.na(plan[,4:5])] <- ""
+  addWorksheet(wb = wb, sheetName = nom_feuille_sommaire)
+  
+  setColWidths(wb = wb, sheet = nom_feuille_sommaire, cols = col_sommaire, widths = 83)
+  writeData(wb = wb, sheet = nom_feuille_sommaire, x = "Sommaire")
+  addStyle(wb = wb, sheet = nom_feuille_sommaire,
+           style = styles$titre, rows = 1, cols = col_sommaire)
+  index_chap <- 1
+  for (chap in plan$Chapitre) {
+    if (index_chap > 1) {
+      if (chap %in% plan$Chapitre[1:(index_chap-1)]) {
+        plan$Chapitre[index_chap] <- ""
+      }
+    }
+    index_chap <- index_chap + 1
+  }
+  index_sous_chap <- 1
+  for (sous_chap in plan$`Sous-chapitre`) {
+    if (index_sous_chap > 1) {
+      if (sous_chap %in% plan$`Sous-chapitre`[1:(index_sous_chap-1)]) {
+        plan$`Sous-chapitre`[index_sous_chap] <- ""
+      }
+    }
+    index_sous_chap <- index_sous_chap + 1
+  }
+  ligne_actuelle = 3
+  titre_ecrit <- FALSE
+  
+  for (i in 1:nrow(plan)) {
+    if (plan$Chapitre[i] != "") {
+      writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$Chapitre[i],
+                startCol = col_sommaire, startRow = ligne_actuelle)
+      addStyle(wb = wb, sheet = nom_feuille_sommaire,
+               style = styles$sommaire_chapitre,
+               rows = ligne_actuelle, cols = col_sommaire)
+      titre_ecrit <- FALSE
+      ligne_actuelle <- ligne_actuelle + 1
+      if (plan$`Sous-chapitre`[i] != "") {
+        writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$`Sous-chapitre`[i],
+                startCol = col_sommaire, startRow = ligne_actuelle)
+        addStyle(wb = wb, sheet = nom_feuille_sommaire,
+                 style = styles$sommaire_sous_chapitre,
+                 rows = ligne_actuelle, cols = col_sommaire)
+        titre_ecrit <- FALSE
+        ligne_actuelle <- ligne_actuelle + 1
+      }
+    } else if (plan$`Sous-chapitre`[i] != "") {
+      writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$`Sous-chapitre`[i],
+                startCol = col_sommaire, startRow = ligne_actuelle)
+      addStyle(wb = wb, sheet = nom_feuille_sommaire,
+               style = styles$sommaire_sous_chapitre,
+               rows = ligne_actuelle, cols = col_sommaire)
+      titre_ecrit <- FALSE
+      ligne_actuelle <- ligne_actuelle + 1
+    } else {
+      writeFormula(wb = wb, sheet = nom_feuille_sommaire,
+                   x = makeHyperlinkString(sheet = plan$Nom_feuille[i],
+                                           text = plan$Titre[i],
+                                           row = 1,
+                                           col = 1), 
+                   startCol = col_sommaire,
+                   startRow = ligne_actuelle)
+                
+      addStyle(wb = wb, sheet = nom_feuille_sommaire,
+               style = styles$sommaire_lien,
+               rows = ligne_actuelle, cols = col_sommaire)
+      titre_ecrit <- TRUE
+      ligne_actuelle <- ligne_actuelle + 1
+    }
+    
+    
+    if (titre_ecrit == FALSE) {
+      writeFormula(wb = wb, sheet = nom_feuille_sommaire,
+                   x = makeHyperlinkString(sheet = plan$Nom_feuille[i],
+                                           text = plan$Titre[i],
+                                           row = 1,
+                                           col = 1), 
+                   startCol = col_sommaire,
+                   startRow = ligne_actuelle)
+      addStyle(wb = wb, sheet = nom_feuille_sommaire,
+               style = styles$sommaire_lien,
+               rows = ligne_actuelle, cols = col_sommaire)
+      titre_ecrit <- TRUE
+      ligne_actuelle <- ligne_actuelle + 1
+    }
+  }
+  
+  for (nom_feuille in names(wb)) {
+    if (nom_feuille != nom_feuille_sommaire) {
+      cols <- ncol(readWorkbook(wb, sheet = nom_feuille)) + col_debut + 1
+      writeFormula(wb = wb, sheet = nom_feuille,
+                 x = makeHyperlinkString(sheet = nom_feuille_sommaire,
+                                         text = "Retour sommaire",
+                                         row = 1,
+                                         col = 1),
+                 startCol = cols,
+                 startRow = 1)
+      addStyle(wb = wb, sheet = nom_feuille,
+               style = styles$bouton_retour_sommaire,
+               rows = 1, cols = cols)
+      mergeCells(wb = wb, sheet = nom_feuille, cols = cols:(cols+2), rows = 1:2)
+    }
+    
+  }
+  
+  ord <- c(nb_tab + 1, 1:nb_tab)
+  worksheetOrder(wb = wb) <- ord
+  
   if (isTRUE(save)) {
     saveWorkbook(wb, file = path, overwrite = TRUE)
     browseURL(url = path)
@@ -289,52 +410,3 @@ creer_excel_depuis_plan <- function(plan,
 }
 
 
-
-#' Lit un fichier
-#' 
-#' Prend en charge les fichiers csv, xlsx, rds
-#' 
-#' @param filename CHAR le nom du fichier, extension incluse
-#' 
-#' @importFrom reader get.ext
-#' @importFrom openxlsx read.xlsx
-#' @importFrom arrow read_parquet
-#'
-#' @export
-#' 
-#' @return A dataframe
-read_any_file <- function(filename,
-                          header = TRUE,
-                          sep = ",",
-                          decimal_mark = ".",
-                          sheet = 1) {
-  extension <- get.ext(filename)
-  data = switch (extension,
-    "csv" = read.csv(file = filename,
-                     header = TRUE,
-                     sep = sep,
-                     dec = decimal_mark,
-                     check.names = FALSE,
-                     strip.white = TRUE),
-    "tsv" = read.csv(file = filename,
-                     header = TRUE,
-                     sep = sep,
-                     dec = decimal_mark,
-                     check.names = FALSE,
-                     strip.white = TRUE),
-    "xlsx" = read.xlsx(xlsxFile = filename,
-                       sheet = sheet, 
-                       check.names = FALSE,
-                       colNames = TRUE,
-                       sep.names = " ",
-                       skipEmptyRows = FALSE,
-                       skipEmptyCols = FALSE),
-    "rds" = readRDS(file = filename),
-    "Rds" = readRDS(file = filename),
-    "parquet" = read_parquet(file = filename,
-                             as_data_frame = TRUE),
-    "dataframe" = eval(parse(text = unlist(strsplit(filename, "\\."))[1]))
-  )
-  return(data)
-  
-}

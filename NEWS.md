@@ -1,3 +1,18 @@
+# agreste 1.1.1
+- refonte avec page d'accueil accueillante
+- correction d'une erreur dans la largeur max des tableaux
+
+# agreste 1.1.0
+- Ajout d'un sommaire avec chapitres et sous-chapitres
+- Première version entièrement fonctionnelle de l'appli
+
+# agreste 1.0.2
+- Choix du dossier contenant les fichiers de données à formater
+- Ajout de messages utilisateur clairs dans l'interface graphique
+
+# agreste 1.0.1
+- Possibilité d'importer un plan dans l'app Shiny, de l'éditer et de formater directement ses tableaux
+
 # agreste 0.3.0
 
 - Interface graphique Shiny pour créer un plan de formatage, et utiliser 

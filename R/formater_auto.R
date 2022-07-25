@@ -49,7 +49,6 @@ formater <- function(classeur,
                      liste_unif_unites,
                      liste_cellules_fusion,
                      format,
-                     type_virgule = ",",
                      col_debut = 2,
                      avec_titre = FALSE) {
   
@@ -90,8 +89,6 @@ formater <- function(classeur,
       } else {
         shift_rows <- 0
       }
-      
-      
     }
     nb_col <- ncol(readWorkbook(classeur, sheet = feuille))
     last_row <- nrow(readWorkbook(classeur, sheet = feuille, skipEmptyRows = FALSE, colNames = FALSE))
@@ -142,11 +139,7 @@ formater <- function(classeur,
         if (liste_type_donnees[[i]][j] %in% c("numerique", "decimal")) {
           if (class(col_data[r]) != "numeric") {
             if ((substr(col_data[r], 1, 1) %in% c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")) | ((nchar(col_data[r]) >= 2) & (substr(col_data[r], 1, 2) %in% c("-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9")))) {
-              if (type_virgule == ",") {
-                x <- parse_number(col_data[r], locale = locale(decimal_mark = type_virgule))
-              } else {
-                x <- as.numeric(col_data[r])
-              }
+              x <- as.numeric(col_data[r])
               writeData(wb = classeur, 
                         sheet = feuille,
                         x = x,
@@ -167,7 +160,7 @@ formater <- function(classeur,
         addStyle(wb = classeur,
                sheet = feuille,
                style = style_sous_total,
-               rows = liste_lignes_sous_total[[i]] + start_row_tabs  + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_sous_total[[i]] + start_row_tabs + shift_rows,
                cols = num_col,
                stack = TRUE)
       }
@@ -176,13 +169,13 @@ formater <- function(classeur,
         addStyle(wb = classeur,
                sheet = feuille,
                style = style_total,
-               rows = liste_lignes_total[[i]] + start_row_tabs  + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_total[[i]] + start_row_tabs + shift_rows,
                cols = num_col,
                stack = TRUE)
       }
       
     }
-    if ((eff_last_row - start_row_tabs - max_ligne_titre - shift_rows + 1) %in% liste_lignes_total[[i]]) {
+    if ((eff_last_row - start_row_tabs - shift_rows) %in% liste_lignes_total[[i]]) {
       if (format == "chiffres_et_donnees") {
         addStyle(wb = classeur,
              sheet = feuille,
@@ -206,7 +199,7 @@ formater <- function(classeur,
       addStyle(wb = classeur,
                sheet = feuille,
                style = style_precision_1,
-               rows = liste_lignes_precision_1[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_precision_1[[i]] + start_row_tabs + shift_rows,
                cols = col_debut,
                stack = TRUE)
     }
@@ -215,7 +208,7 @@ formater <- function(classeur,
       addStyle(wb = classeur,
                sheet = feuille,
                style = style_precision_2,
-               rows = liste_lignes_precision_2[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_precision_2[[i]] + start_row_tabs + shift_rows,
                cols = col_debut,
                stack = TRUE)
     }
@@ -224,7 +217,7 @@ formater <- function(classeur,
       addStyle(wb = classeur,
                sheet = feuille,
                style = style_precision_3,
-               rows = liste_lignes_precision_3[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_precision_3[[i]] + start_row_tabs + shift_rows,
                cols = col_debut,
                stack = TRUE)
     }
@@ -233,13 +226,13 @@ formater <- function(classeur,
       addStyle(wb = classeur,
                sheet = feuille,
                style = style_precision_4,
-               rows = liste_lignes_precision_4[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1,
+               rows = liste_lignes_precision_4[[i]] + start_row_tabs + shift_rows,
                cols = col_debut,
                stack = TRUE)
     }
     
     if (!(0 %in% liste_lignes_section[[i]])) {
-      for (row_n in liste_lignes_section[[i]] + start_row_tabs + max_ligne_titre + shift_rows - 1) {
+      for (row_n in liste_lignes_section[[i]] + start_row_tabs + shift_rows) {
         for (col_n in col_debut:(nb_col + col_debut - 1)) {
           addStyle(wb = classeur,
                sheet = feuille,
@@ -254,7 +247,7 @@ formater <- function(classeur,
         mergeCells(wb = classeur,
                  sheet = feuille,
                  cols = col_debut:(nb_col + col_debut - 1),
-                 rows = merge_row + start_row_tabs + max_ligne_titre + shift_rows - 1)
+                 rows = merge_row + start_row_tabs - max_ligne_titre + shift_rows + 1)
       }
       
     }
@@ -269,9 +262,9 @@ formater <- function(classeur,
                               sep = ""))
       l_row = eval(parse(text = substr(step2[1], 2, nchar(step2[1]))))
       if (l_row[1] %in% liste_lignes_titre[[i]]) {
-        rows = l_row + header_start - 1
+        rows = l_row + header_start + shift_headers - 1
       } else {
-        rows <- l_row + start_row_tabs + max_ligne_titre + shift_rows - 1
+        rows <- l_row + start_row_tabs + shift_rows - 1
       }
       cols <- eval(parse(text = substr(step2[2], 1, nchar(step2[2]) - 1))) + col_debut - 1
       mergeCells(wb = classeur,
@@ -407,6 +400,7 @@ formater <- function(classeur,
 #'                                             "numerique",
 #'                                             "numerique")),
 #'                 largeurs = list(c("auto"), c("auto")),
+#'                 format = "primeur",
 #'                 col_debut = 2)
 #' 
 #' ## Formater comme un Primeur
@@ -461,7 +455,6 @@ formater_auto <- function(classeur,
                           liste_lignes_total,
                           liste_unif_unites,
                           liste_cellules_fusion,
-                          type_virgule = ",",
                           col_debut = 2,
                           avec_titre = FALSE) {
   
@@ -539,7 +532,6 @@ formater_auto <- function(classeur,
            liste_unif_unites = liste_unif_unites,
            liste_cellules_fusion = liste_cellules_fusion,
            col_debut = col_debut,
-           type_virgule = type_virgule,
            format = format,
            avec_titre = avec_titre)
 }

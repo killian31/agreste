@@ -22,8 +22,10 @@ library(agreste)
 
 # Ouvrir l'interface graphique du package
 
-```{r examples-app_formatage, eval = FALSE}
+Cette fonction permet de lancer une interface graphique Shiny, dans le but de faciliter la création d'un plan, qui pourra être réutilisé par la suite avec la fonction [`creer_excel_depuis_plan()`](../reference/creer_excel_depuis_plan.html). 
 
+
+```{r examples-app_formatage, eval = FALSE}
 library(agreste)
 #' \dontrun{
 app_formatage()

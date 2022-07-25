@@ -9,3 +9,840 @@ test_that('Les styles définis sont bien de type "Style"', {
     expect_true(class(st) == "Style")
   }
 })
+
+test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  expect_error(ajouter_tableau_excel(classeur = "iris",
+                                     tableau = iris,
+                                     nom_feuille = "tab_iris"),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = "tab_iris",
+                                     nom_feuille = "tab_iris"),
+               "Le tableau doit \u00eatre un dataframe ou un tibble.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = iris,
+                                     nom_feuille = iris),
+               "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = iris,
+                                     nom_feuille = "tab_iris",
+                                     ligne_debut = 0,
+                                     col_debut = 2),
+               "La ligne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = iris,
+                                     nom_feuille = "tab_iris",
+                                     ligne_debut = 3,
+                                     col_debut = 0),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = iris,
+                                     nom_feuille = "tab_iris",
+                                     ligne_debut = "1",
+                                     col_debut = 2),
+               "La ligne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_tableau_excel(classeur = mon_classeur,
+                                     tableau = iris,
+                                     nom_feuille = "tab_iris",
+                                     ligne_debut = 3,
+                                     col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+
+})
+
+test_that("Le tableau ajouté est le même dans le workbook", {
+  mon_classeur <- openxlsx::createWorkbook()
+  
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris,
+                        nom_feuille = "Iris")
+  
+  expect_equal(sum(openxlsx::readWorkbook(mon_classeur, colNames = TRUE) == iris), 750)
+})
+
+test_that("Les noms de feuille sont les bons", {
+  mon_classeur <- openxlsx::createWorkbook()
+  for (i in 1:6) {
+    ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris,
+                        nom_feuille = paste("Iris", i))
+  }
+  expect_true(sum(names(mon_classeur) == c("Iris 1", "Iris 2", "Iris 3", "Iris 4", "Iris 5", "Iris 6")) == 6)
+  
+})
+
+
+test_that("ajouter_titre_primeur fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  titre = "Données iris"
+  
+  expect_error(ajouter_titre_primeur(classeur = nom_page,
+                                     titre = titre),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_titre_primeur(classeur = mon_classeur,
+                                     titre = iris),
+               "Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_titre_primeur(classeur = mon_classeur,
+                                     titre = titre,
+                                     col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_titre_primeur(classeur = mon_classeur,
+                                     titre = titre,
+                                     col_debut = 0),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_titre_primeur(classeur = mon_classeur,
+                                     titre = titre,
+                                     col_debut = 2,
+                                     fusion = "oui"),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+
+})
+
+test_that("Le titre est le bon dans le workbook", {
+  mon_classeur <- openxlsx::createWorkbook()
+  titre = "Données iris"
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris, 
+                        nom_feuille = "iris",
+                        col_debut = 5)
+  ajouter_titre_primeur(classeur = mon_classeur,
+                        titre = titre)
+  expect_true(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[1] == titre)
+})
+
+
+test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  titre = "Données iris"
+  
+  expect_error(ajouter_titre_tableau(classeur = nom_page,
+                                     nom_feuille = "iris",
+                                     titre = titre),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "tab_iris",
+                                     titre = iris),
+               "Le titre doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = iris,
+                                     titre = titre),
+               "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "iris",
+                                     titre = titre,
+                                     col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "iris",
+                                     titre = titre,
+                                     col_debut = 0),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "iris",
+                                     titre = titre,
+                                     col_debut = 2,
+                                     format = 2),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "iris",
+                                     titre = titre,
+                                     col_debut = 2,
+                                     format ="chiffres_et_donnees",
+                                     fusion = "oui"),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+
+})
+
+test_that("Le titre est le bon dans le workbook", {
+  mon_classeur <- openxlsx::createWorkbook()
+  titre = "Données iris"
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris, 
+                        nom_feuille = "iris")
+  ajouter_titre_tableau(classeur = mon_classeur,
+                                     nom_feuille = "iris",
+                                     titre = titre,
+                                     col_debut = 2,
+                                     format ="chiffres_et_donnees",
+                                     fusion = TRUE)
+  expect_true(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[1] == titre)
+})
+
+
+test_that("ajouter_note_lecture fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(mon_classeur, "iris")
+  note = "Une note quelconque"
+  
+  expect_error(ajouter_note_lecture(classeur = note,
+                                    nom_feuille = "iris",
+                                    note = note),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = iris),
+               "La note doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = iris,
+                                    note = note),
+               "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = note,
+                                    format = "info rapide"),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = note,
+                                    col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = note,
+                                    col_debut = 0),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = note,
+                                    col_debut = 2,
+                                    fusion = "oui"),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_note_lecture(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    note = note,
+                                    col_debut = 2,
+                                    avec_titre = "oui"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
+})
+
+test_that("La note est bien présente dans le workbook et identique à celle rentrée en paramètre", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  note <- "Note de lecture"
+  
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris,
+                        nom_feuille = "iris")
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données Iris",
+                        format = "primeur")
+  ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "iris",
+                       note = note,
+                       format = "primeur",
+                       avec_titre = FALSE)
+  
+  expect_equal(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[dim(iris)[1]+3], paste("Note de lecture :", note))
+})
+
+
+test_that("ajouter_source fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  ajouter_tableau_excel(classeur = mon_classeur, 
+                        nom_feuille = "iris",
+                        tableau = iris)
+  source = "Une note quelconque"
+  expect_error(ajouter_source(classeur = source,
+                              nom_feuille = "iris",
+                              source = source,
+                              avec_note = FALSE),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = iris,
+                              avec_note = FALSE),
+               "La source doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = iris,
+                              source = source,
+                              avec_note = FALSE),
+               "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              format = "info rapide",
+                              avec_note = FALSE),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = "2",
+                              avec_note = FALSE),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = 0,
+                              avec_note = FALSE),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = 2,
+                              fusion = "oui",
+                              avec_note = FALSE),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = 2,
+                              fusion = TRUE,
+                              avec_note = "non"),
+               "Le param\u00e8tre avec_note doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_source(classeur = mon_classeur,
+                              nom_feuille = "iris",
+                              source = source,
+                              col_debut = 2,
+                              fusion = TRUE,
+                              avec_note = FALSE,
+                              avec_titre = "non"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
+})
+
+test_that("La source est bien présente dans le workbook et identique à celle rentrée en paramètre", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  note <- "Une note de lecture"
+  source <- "Une source quelconque"
+  
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris,
+                        nom_feuille = "iris",
+                        col_debut = 5)
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données Iris",
+                        format = "primeur")
+  ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "iris",
+                       note = note, 
+                       format = "primeur",
+                       avec_titre = FALSE)
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = source,
+                 format = "primeur",
+                 avec_note = TRUE,
+                 avec_titre = FALSE)
+  
+  expect_equal(openxlsx::readWorkbook(mon_classeur, colNames = FALSE, skipEmptyRows = FALSE)$X1[dim(iris)[1]+4], paste("Source :", source))
+})
+
+
+test_that("ajouter_champ fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  ajouter_tableau_excel(classeur = mon_classeur, 
+                        nom_feuille = "iris",
+                        tableau = iris)
+  champ = "Un champ de blé"
+  
+  expect_error(ajouter_champ(classeur = champ,
+                                    nom_feuille = "iris",
+                                    champ = champ),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    champ = iris),
+               "Le champ doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = iris,
+                                    champ = champ),
+               "Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    champ = champ,
+                                    format = "info rapide"),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    champ = champ,
+                                    col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    champ = champ,
+                                    col_debut = 0),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                                    nom_feuille = "iris",
+                                    champ = champ,
+                                    col_debut = 2,
+                                    fusion = "oui"),
+               "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
+  expect_error(ajouter_champ(classeur = mon_classeur,
+                             nom_feuille = "iris",
+                             champ = champ,
+                             col_debut = 2,
+                             fusion = TRUE,
+                             avec_titre = "non"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
+})
+
+test_that("Le champ est bien présent dans le workbook et identique à celui rentré en paramètre", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  champ <- "Un champ de blé"
+  
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = iris,
+                        nom_feuille = "iris",
+                        ligne_debut = 5)
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données Iris",
+                        format = "primeur")
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = "Agreste",
+                 format = "primeur",
+                 avec_titre = FALSE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "iris",
+                champ = champ,
+                format = "primeur",
+                avec_titre = FALSE)
+  
+  
+  expect_equal(openxlsx::readWorkbook(mon_classeur,
+                                      colNames = FALSE,
+                                      skipEmptyRows = FALSE)$X1[dim(iris)[1]+5],
+               paste("Champ :",
+                     champ))
+})
+
+
+test_that("mon_classeur fonctionne correctement and envoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+  nom_page <- "nom_onglet"
+  openxlsx::addWorksheet(mon_classeur, "iris")
+
+  expect_error(geler(classeur = nom_page, nom_feuille = "iris"),"Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = iris),"Le nom de feuille doit \u00eatre une cha\u00eene de caract\u00e8re.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = "iris", ligne = "1"),"La ligne \u00e0 geler doit \u00eatre un entier positif.")
+  expect_error(geler(classeur = mon_classeur, nom_feuille = "iris", ligne = 1, col = "2"),"La colonne \u00e0 geler doit \u00eatre un entier positif.")
+})
+
+test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il le faut", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      col_debut = 2)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données fleurs iris",
+                        col_debut = 2)
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = "Ceci est une source quelconque",
+                 col_debut = 2,
+                 avec_note = FALSE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "iris",
+                champ = "France métropolitaine",
+                col_debut = 2)
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = airquality,
+                        nom_feuille = "airquality",
+                        col_debut = 2)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "airquality",
+                        titre = "Données qualité de l'air",
+                        col_debut = 2)
+  ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "airquality",
+                       note = "blablabla",
+                       col_debut = 2)
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "airquality",
+                 source = "Eurostat",
+                 col_debut = 2,
+                 avec_note = TRUE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "airquality",
+                champ = "Daily air quality measurements in New York, May to September 1973.",
+                col_debut = 2)
+
+
+  expect_error(formater_auto(classeur = "workbook",
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("airquality"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0))),
+               "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = 2,
+                             liste_feuilles_avec_note = c("airquality"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0))),
+               'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c(1,2,3),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0))),
+               "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("feuille 1"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0))),
+               "La feuille feuille 1 n'est pas une feuille existante.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("airquality"),
+                             liste_type_donnees = c("decimal",
+                                                    "decimal",
+                                                    "decimal",
+                                                    "decimal",
+                                                    "texte"),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0))),
+               "La liste des types de donn\u00e9es doit \u00eatre de type list.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("airquality"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre = list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0)),
+                             col_debut = "2"),
+               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  expect_error(formater_auto(classeur = mon_classeur,
+                             format = "chiffres_et_donnees",
+                             liste_feuilles_avec_note = c("airquality"),
+                             liste_type_donnees = list(c("decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "decimal",
+                                                         "texte"),
+                                                       c("numerique",
+                                                         "numerique",
+                                                         "decimal",
+                                                         "numerique",
+                                                         "numerique",
+                                                         "numerique")),
+                             liste_lignes_titre =list(c(1), c(1)),
+                             liste_lignes_section = list(c(5, 9),
+                                                          c(3, 8)),
+                             liste_lignes_sous_total = list(c(4, 8),
+                                                             c(2, 7)),
+                             liste_lignes_precision_1 = list(c(2,3),
+                                                            c(0)),
+                             liste_lignes_precision_2 = list(c(0), c(0)),
+                             liste_lignes_precision_3 = list(c(0), c(0)),
+                             liste_lignes_precision_4 = list(c(0), c(0)),
+                             liste_lignes_total = list(c(150),
+                                                        c(100)),
+                             liste_unif_unites = c(TRUE, TRUE),
+                             liste_cellules_fusion = list(c(0), c(0)),
+                             col_debut = 2,
+                             avec_titre = "non"),
+               "Le param\u00e8tre avec_titre doit \u00eatre TRUE ou FALSE.")
+
+})
+
+test_that("Le classeur est bien modifié pour un c&d", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      col_debut = 2)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données fleurs iris",
+                        col_debut = 2)
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = "Ceci est une source quelconque",
+                 col_debut = 2,
+                 avec_note = FALSE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "iris",
+                champ = "France métropolitaine",
+                col_debut = 2)
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = airquality,
+                        nom_feuille = "airquality",
+                        col_debut = 2)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "airquality",
+                        titre = "Données qualité de l'air",
+                        col_debut = 2)
+  ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "airquality",
+                       note = "blablabla",
+                       col_debut = 2)
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "airquality",
+                 source = "Eurostat",
+                 col_debut = 2,
+                 avec_note = TRUE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "airquality",
+                champ = "Daily air quality measurements in New York, May to September 1973.",
+                col_debut = 2)
+  
+  expect_equal(length(openxlsx::getStyles(mon_classeur)), 7)
+  
+  formater_auto(classeur = mon_classeur,
+                format = "chiffres_et_donnees",
+                liste_feuilles_avec_note = c("airquality"),
+                liste_type_donnees = list(c("decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "texte"),
+                                           c("numerique",
+                                             "numerique",
+                                             "decimal",
+                                             "numerique",
+                                             "numerique",
+                                             "numerique")),
+                 liste_lignes_titre = list(c(1), c(1)),
+                 liste_lignes_section = list(c(5, 9),
+                                              c(3, 8)),
+                 liste_lignes_sous_total = list(c(4, 8),
+                                                 c(2, 7)),
+                 liste_lignes_precision_1 = list(c(2,3),
+                                                c(0)),
+                 liste_lignes_precision_2 = list(c(0), c(0)),
+                 liste_lignes_precision_3 = list(c(0), c(0)),
+                 liste_lignes_precision_4 = list(c(0), c(0)),
+                 liste_lignes_total = list(c(150),
+                                            c(100)),
+                 liste_unif_unites = c(TRUE, TRUE),
+                 liste_cellules_fusion = list(c(0), c(0)))
+  expect_equal(length(openxlsx::getStyles(mon_classeur)), 76)
+})
+
+test_that("Le classeur est bien modifié pour un primeur", {
+  mon_classeur <- openxlsx::createWorkbook()
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                      tableau = iris,
+                      nom_feuille = "iris",
+                      col_debut = 2,
+                      ligne_debut = 5)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "iris",
+                        titre = "Données fleurs iris",
+                        col_debut = 2,
+                        format = "primeur")
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "iris",
+                 source = "Ceci est une source quelconque",
+                 col_debut = 2,
+                 avec_note = FALSE,
+                 format = "primeur",
+                 avec_titre = FALSE)
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "iris",
+                champ = "France métropolitaine",
+                col_debut = 2,
+                format = "primeur",
+                avec_titre = FALSE)
+
+  ajouter_tableau_excel(classeur = mon_classeur,
+                        tableau = airquality,
+                        nom_feuille = "airquality",
+                        col_debut = 2,
+                        ligne_debut = 5)
+
+  ajouter_titre_tableau(classeur = mon_classeur,
+                        nom_feuille = "airquality",
+                        titre = "Données qualité de l'air",
+                        col_debut = 2,
+                        format = "primeur")
+  ajouter_note_lecture(classeur = mon_classeur,
+                       nom_feuille = "airquality",
+                       note = "blablabla",
+                       col_debut = 2,
+                       format = "primeur")
+  ajouter_source(classeur = mon_classeur,
+                 nom_feuille = "airquality",
+                 source = "Eurostat",
+                 col_debut = 2,
+                 avec_note = TRUE,
+                 format = "primeur")
+  ajouter_champ(classeur = mon_classeur,
+                nom_feuille = "airquality",
+                champ = "Daily air quality measurements in New York, May to September 1973.",
+                col_debut = 2,
+                format = "primeur")
+  ajouter_titre_primeur(classeur = mon_classeur,
+                                 titre = "Exemple")
+  
+  expect_equal(length(openxlsx::getStyles(mon_classeur)), 9)
+  
+  formater_auto(classeur = mon_classeur,
+                format = "primeur",
+                liste_feuilles_avec_note = c("airquality"),
+                liste_type_donnees = list(c("decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "decimal",
+                                            "texte"),
+                                           c("numerique",
+                                             "numerique",
+                                             "decimal",
+                                             "numerique",
+                                             "numerique",
+                                             "numerique")),
+                 liste_lignes_titre = list(c(1), c(1)),
+                 liste_lignes_section = list(c(5, 9),
+                                              c(3, 8)),
+                 liste_lignes_sous_total = list(c(4, 8),
+                                                 c(2, 7)),
+                 liste_lignes_precision_1 = list(c(2,3),
+                                                c(0)),
+                 liste_lignes_precision_2 = list(c(0), c(0)),
+                 liste_lignes_precision_3 = list(c(0), c(0)),
+                 liste_lignes_precision_4 = list(c(0), c(0)),
+                 liste_lignes_total = list(c(150),
+                                            c(100)),
+                 liste_unif_unites = c(TRUE, TRUE),
+                 liste_cellules_fusion = list(c(0), c(0)))
+  expect_equal(length(openxlsx::getStyles(mon_classeur)), 76)
+})

@@ -4,12 +4,14 @@ test_that("Le formatage se fait correctement et sans erreur", {
   
   plan <- agreste::modele_plan
   
-  file1 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file2 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file3 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
+  temp_dir <- tempdir()
+  
+  file1 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file2 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file3 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file4 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file5 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file_plan <- tempfile(pattern = "file", tmpdir = temp_dir, fileext = ".xlsx")
   
   agreste::resultat_1 %>%
     write.csv(file = paste(file1, "csv", sep = "."), row.names = FALSE)
@@ -22,41 +24,47 @@ test_that("Le formatage se fait correctement et sans erreur", {
   agreste::scieries2020 %>%
     openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
-  plan$Nom_fichier[1] <- file1
-  plan$Nom_fichier[2] <- file2
-  plan$Nom_fichier[3] <- file3
-  plan$Nom_fichier[4] <- file4
-  plan$Nom_fichier[5] <- file5
+  plan$Nom_fichier[1] <- basename(file1)
+  plan$Nom_fichier[2] <- basename(file2)
+  plan$Nom_fichier[3] <- basename(file3)
+  plan$Nom_fichier[4] <- basename(file4)
+  plan$Nom_fichier[5] <- basename(file5)
   
   openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
-  expect_error(agreste::creer_excel_depuis_plan(plan = 1,
-                                               format = "primeur",
-                                               col_debut = 2,
-                                               save = FALSE),
+  expect_error(creer_excel_depuis_plan(plan = 1,
+                                       datadir = temp_dir,
+                                       format = "primeur",
+                                       col_debut = 2,
+                                       save = FALSE),
                "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
-  expect_error(agreste::creer_excel_depuis_plan(plan = file_plan,
+  expect_error(creer_excel_depuis_plan(plan = file_plan,
+                                       datadir = temp_dir,
                                                format = "irapide",
                                                col_debut = 2,
                                                save = FALSE),
                'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
-  expect_error(agreste::creer_excel_depuis_plan(plan = file_plan,
+  expect_error(creer_excel_depuis_plan(plan = file_plan,
+                                       datadir = temp_dir,
                                                format = "chiffres_et_donnees",
                                                col_debut = "B",
                                                save = FALSE),
                "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  expect_error(agreste::creer_excel_depuis_plan(plan = file_plan,
+  expect_error(creer_excel_depuis_plan(plan = file_plan,
+                                       datadir = temp_dir,
                                                format = "chiffres_et_donnees",
                                                col_debut = 2,
                                                save = "oui"),
                "save doit \u00eatre TRUE ou FALSE")
-  expect_error(agreste::creer_excel_depuis_plan(plan = file_plan,
+  expect_error(creer_excel_depuis_plan(plan = file_plan,
+                                       datadir = temp_dir,
                                                format = "chiffres_et_donnees",
                                                col_debut = 2,
                                                save = TRUE,
                                                path = plan),
                "Le chemin du fichier \u00e0 sauvegarder doit \u00eatre une cha\u00eene de caract\u00e8res.")
-  expect_error(agreste::creer_excel_depuis_plan(plan = file_plan,
+  expect_error(creer_excel_depuis_plan(plan = file_plan,
+                                       datadir = temp_dir,
                                                format = "chiffres_et_donnees",
                                                col_debut = 2,
                                                save = TRUE,
@@ -68,12 +76,14 @@ test_that("Le formatage se fait correctement et sans erreur", {
 test_that("Le classeur est bien modifié pour un c&d", {
   plan <- agreste::modele_plan
   
-  file1 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file2 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file3 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
+  temp_dir <- tempdir()
+  
+  file1 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file2 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file3 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file4 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file5 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file_plan <- tempfile(pattern = "file", tmpdir = temp_dir, fileext = ".xlsx")
   
   agreste::resultat_1 %>%
     write.csv(file = paste(file1, "csv", sep = "."), row.names = FALSE)
@@ -86,26 +96,27 @@ test_that("Le classeur est bien modifié pour un c&d", {
   agreste::scieries2020 %>%
     openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
-  plan$Nom_fichier[1] <- file1
-  plan$Nom_fichier[2] <- file2
-  plan$Nom_fichier[3] <- file3
-  plan$Nom_fichier[4] <- file4
-  plan$Nom_fichier[5] <- file5
+  plan$Nom_fichier[1] <- basename(file1)
+  plan$Nom_fichier[2] <- basename(file2)
+  plan$Nom_fichier[3] <- basename(file3)
+  plan$Nom_fichier[4] <- basename(file4)
+  plan$Nom_fichier[5] <- basename(file5)
   
   openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
   workbook <- creer_excel_depuis_plan(plan = file_plan,
+                                      datadir = temp_dir,
                                       format = "chiffres_et_donnees",
                                       col_debut = 1,
                                       save = FALSE,
                                       type_virgule = ".")
   expect_true(file.info(file_plan)$size > 0)
   expect_equal(length(names(workbook)),
-               5)
+               6)
   expect_equal(names(workbook),
-               agreste::modele_plan$Nom_feuille)
+               c(agreste::modele_plan$Nom_feuille, "Sommaire"))
   expect_equal(length(openxlsx::getStyles(workbook)),
-               105)
+               131)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,
@@ -126,12 +137,14 @@ test_that("Le classeur est bien modifié pour un c&d", {
 test_that("Le classeur est bien modifié pour un primeur", {
   plan <- agreste::modele_plan
   
-  file1 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file2 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file3 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file4 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file5 <- tempfile(pattern = "file", tmpdir = tempdir())
-  file_plan <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".xlsx")
+  temp_dir <- tempdir()
+  
+  file1 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file2 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file3 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file4 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file5 <- tempfile(pattern = "file", tmpdir = temp_dir)
+  file_plan <- tempfile(pattern = "file", tmpdir = temp_dir, fileext = ".xlsx")
   
   agreste::resultat_1 %>%
     write.csv(file = paste(file1, "csv", sep = "."), row.names = FALSE)
@@ -144,15 +157,16 @@ test_that("Le classeur est bien modifié pour un primeur", {
   agreste::scieries2020 %>%
     openxlsx::write.xlsx(file = paste(file5, "xlsx", sep = "."), rowNames = FALSE)
   
-  plan$Nom_fichier[1] <- file1
-  plan$Nom_fichier[2] <- file2
-  plan$Nom_fichier[3] <- file3
-  plan$Nom_fichier[4] <- file4
-  plan$Nom_fichier[5] <- file5
+  plan$Nom_fichier[1] <- basename(file1)
+  plan$Nom_fichier[2] <- basename(file2)
+  plan$Nom_fichier[3] <- basename(file3)
+  plan$Nom_fichier[4] <- basename(file4)
+  plan$Nom_fichier[5] <- basename(file5)
   
   openxlsx::write.xlsx(plan, file_plan, rowNames = FALSE)
   
   workbook <- creer_excel_depuis_plan(plan = file_plan,
+                                      datadir = temp_dir,
                                       format = "primeur",
                                       col_debut = 2,
                                       save = FALSE,
@@ -160,11 +174,11 @@ test_that("Le classeur est bien modifié pour un primeur", {
                                       type_virgule = ".")
 
   expect_equal(length(names(workbook)),
-               5)
+               6)
   expect_equal(names(workbook),
-               agreste::modele_plan$Nom_feuille)
+               c(agreste::modele_plan$Nom_feuille, "Sommaire"))
   expect_equal(length(openxlsx::getStyles(workbook)),
-               110)
+               136)
   expect_equal(nrow(readWorkbook(workbook,
                                  skipEmptyRows = FALSE,
                                  colNames = FALSE,

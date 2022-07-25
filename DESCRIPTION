@@ -1,6 +1,6 @@
 Package: agreste
 Title: Aide À La Publication Sur Agreste
-Version: 0.3.0
+Version: 1.1.1
 Authors@R: c(
     person("Anaël", "Delorme", , "anael.delorme@agriculture.gouv.fr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1122-9076")),
