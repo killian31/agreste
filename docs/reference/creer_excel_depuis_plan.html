@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">agreste</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">creer_excel_depuis_plan</span><span class="op">(</span></span>
 <span>  <span class="va">plan</span>,</span>
 <span>  <span class="va">format</span>,</span>
+<span>  datadir <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  sep <span class="op">=</span> <span class="st">","</span>,</span>
 <span>  type_virgule <span class="op">=</span> <span class="st">","</span>,</span>
 <span>  <span class="va">col_debut</span>,</span>
@@ -72,6 +73,10 @@
 
 <dt>format</dt>
 <dd><p>CHAR le type de publication : "chiffres_et_donnees" ou "primeur"</p></dd>
+
+
+<dt>datadir</dt>
+<dd><p>CHAR le chemin vers le dossier contenant les données. Dossier de travail actif si non spécifié.</p></dd>
 
 
 <dt>sep</dt>
@@ -106,6 +111,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">agreste</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html" class="external-link">openxlsx</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/rstudioapi" class="external-link">rstudioapi</a></span><span class="op">)</span></span>
 <span><span class="co">### Import du fichier de plan</span></span>
 <span><span class="va">plan</span> <span class="op">=</span> <span class="fu">agreste</span><span class="fu">::</span><span class="va">modele_plan</span></span>
 <span></span>
@@ -124,6 +130,7 @@
 <span></span>
 <span><span class="co">### Formatage</span></span>
 <span><span class="va">workbook</span> <span class="op">&lt;-</span> <span class="fu">creer_excel_depuis_plan</span><span class="op">(</span>plan <span class="op">=</span> <span class="st">"plan.xlsx"</span>,</span>
+<span>                                    datadir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/rstudioapi/man/file-dialogs.html" class="external-link">selectDirectory</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                                    format <span class="op">=</span> <span class="st">"primeur"</span>,</span>
 <span>                                    col_debut <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                                    save <span class="op">=</span> <span class="cn">TRUE</span>,</span>

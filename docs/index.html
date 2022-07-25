@@ -37,7 +37,7 @@
     
     <a class="navbar-brand me-2" href="index.html">agreste</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,24 +80,26 @@
 <div id="badges">
 <p><img src="https://git.lab.sspcloud.fr/ksteunou/agreste/badges/master/pipeline.svg?job=build"><img src="https://git.lab.sspcloud.fr/ksteunou/agreste/badges/master/coverage.svg"></p>
 </div>
-<p>Le but du package agreste est de fournir à l’ensemble des agents du SSP des outils pour faciliter la diffusion auprès du grand public. Le package agreste propose des aides pour construire des tableaux, des cartes… Il facilite la création des documents attendus par la PAO (docx, xlsx). Il apporte des modèles de Rmarkdown.</p>
+<p>Le but du package agreste est de fournir à l’ensemble des agents du SSP des outils pour faciliter la diffusion auprès du grand public. Le package agreste propose de l’aide pour construire des tableaux. Il facilite la création des documents attendus par la PAO (docx, xlsx) et apporte des modèles de Rmarkdown.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Vous pouvez installer le package agreste à partir du fichier <code>agreste_0.3.0.tar.gz</code> :</p>
+<p>Vous pouvez installer le package agreste à partir du fichier <code>agreste_1.1.1.tar.gz</code> :</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"C:/Users/killian.steunou/Downloads/chemin/agreste_0.3.0.tar.gz"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"C:/Users/killian.steunou/Downloads/chemin/agreste_1.1.1.tar.gz"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="utilisation">Utilisation<a class="anchor" aria-label="anchor" href="#utilisation"></a>
 </h2>
-<p>Voici un exemple simple d’utilisation du package agreste :</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">agreste</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Démarrer l'app Shiny pour mettre en forme les tableaux</span></span>
-<span><span class="fu"><a href="reference/app_formatage.html">app_formatage</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Vous pouvez également démarrer l’interface graphique en utilisant l’<em>Addin</em> intégré :</p>
+<p>Le package agreste a trois utilisations majeures :</p>
+<ul>
+<li>La création d’un fichier Excel contenant les différents tableaux associés à une publication, formatés automatiquement selon le type de cette dernière (chiffres et données, primeur), à partir d’un plan de formatage : <a href="reference/creer_excel_depuis_plan.html"><code>creer_excel_depuis_plan()</code></a>
+</li>
+<li>L’interface graphique intégrée qui permet de faciliter la création du fichier de plan évoqué ci-dessus : <a href="reference/app_formatage.html"><code>app_formatage()</code></a>
+</li>
+<li>Ouvrir un modèle de RMarkdown, préformaté selon la publication : chiffres_et_donnees, primeur ou réponse à la demande</li>
+</ul>
+<p>Vous pouvez démarrer l’interface graphique en utilisant l’<em>Addin</em> intégré :</p>
 <p><img src="reference/figures/README-/addins_screen.png" width="100%"></p>
 </div>
 </div>
