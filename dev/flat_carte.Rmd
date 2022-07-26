@@ -18,7 +18,9 @@ library(ggplot2)
 library(ggtext)
 ```
 
-# Créer données de fond de carte
+Fonctions en cours de développement.
+
+# Créer les données de fond de carte
 
 ```{r function_donnees_fond_carte}
 #' Créer un tableau avec les données géographiques de fond de carte
@@ -270,7 +272,7 @@ test_that("donnees_fond_carte works", {
 
 ```
 
-# Carte symbole proportionnel
+# Carte avec symbole proportionnel
 
 ```{r function-carte-rond-proportionnel}
 #' Créer une carte représentant les volumes en ronds proportionnels
@@ -523,7 +525,7 @@ test_that("carte_rond_proportionnel works", {
 })
 ```
 
-# Carte aplat de couleurs
+# Carte en aplat de couleurs
 
 ```{r function-carte_aplat}
 #' Créer une carte représentant les volumes en aplat de couleurs
