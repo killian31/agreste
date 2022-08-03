@@ -181,7 +181,7 @@ app_formatage <- function() {
                         tags$li("Tableaux de données à formater"),
                         tags$li("Sélection du dossier où sont stockées les tableaux")
                       ))),
-                div(class = "card-footer", icon("exclamation-triangle"),
+                div(class = "card-footer", icon("exclamation-triangle", verify_fa = FALSE),
                     " Si vous importez un fichier de plan, il est nécessaire de l'importer avant les tableaux.")),
               div(class = "card text-white bg-secondary mb-3", style = "max-width: 18rem;",
                   div(class = "card-header", tags$h4("Paramètres d'import")),
@@ -207,7 +207,7 @@ app_formatage <- function() {
                       div(class = "card-text",
                           "Parcourez vos différents tableaux et définissez les différents paramètres d'apparence de chacun (par exemple taille des colonnes, unités, source, cellules à fusionner...)")
                       ),
-                  div(class = "card-footer", icon("exclamation-triangle"),
+                  div(class = "card-footer", icon("exclamation-triangle", verify_fa = FALSE),
                       " Si vous n'avez pas importé de plan, vous devez valider pour chaque tableau les colonnes et les unités")
                   ),
               div(class = "card text-white bg-success mb-3", style = "max-width: 18rem;",
@@ -246,12 +246,14 @@ app_formatage <- function() {
                          ".rds",
                          ".Rds",
                          ".parquet",
-                         ".xls")),
+                         ".xls",
+                         ".ods")),
             actionBttn(inputId = "datadir", label = "Dossier de données", icon = icon("folder"), color = "royal"),
             verbatimTextOutput(outputId = "dirpath"))
         ),
         tabItem(tabName = "import_param",
-                radioButtons("sep", "Separateur",
+                div(style="display: inline-block;vertical-align:top; width: 500px;",
+                    radioButtons("sep", "Separateur",
                        choices = c(Virgule = ",",
                                    "Point Virgule" = ";",
                                    Tab = "\t"),
@@ -260,13 +262,19 @@ app_formatage <- function() {
                 radioButtons("virg", "Séparateur décimal",
                              choices = c(Virgule = ",",
                                          Point = "."),
-                             selected = ","),
-                tags$hr(),
-                prettyRadioButtons(inputId = "format",
-                                   label = "Format",
-                                   choices = c("Chiffres et données" = "chiffres_et_donnees",
-                                               Primeur = "primeur"),
-                                   selected = "chiffres_et_donnees")),
+                             selected = ",")),
+                div(style="display: inline-block;vertical-align:top; width: 500px;",
+                    prettyRadioButtons(inputId = "format",
+                                       label = "Type de publication",
+                                       choices = c("Chiffres et données" = "chiffres_et_donnees",
+                                                   Primeur = "primeur"),
+                                       selected = "chiffres_et_donnees"),
+                    checkboxInput(
+                      inputId = "largeur_max",
+                      label = "Utiliser la règle de diffusion de largeur maximale des tableaux (actuellement 83)",
+                      value = TRUE
+                    )
+                  )),
         tabItem(tabName = "table_order",
                 p("Sélectionnez tous les fichiers dans l'ordre que vous souhaitez pour le modifier :"),
                 DTOutput("files_order"),
@@ -311,6 +319,8 @@ app_formatage <- function() {
                                actionButton("lignes_sous_total", "Lignes de sous-total")),
                            div(style="display: inline-block;vertical-align:top; width: 100px;",
                                actionButton("lignes_total", "Lignes de total")),
+                           div(style="display: inline-block;vertical-align:top; width: 100px;",
+                               actionButton("lignes_italique", "Lignes en italique")),
                            tags$hr(),
                            div(style="display: inline-block;vertical-align:top; width: 100px;",
                                verbatimTextOutput("disp_lignes_titre")),
@@ -327,7 +337,9 @@ app_formatage <- function() {
                            div(style="display: inline-block;vertical-align:top; width: 100px;",
                                verbatimTextOutput("disp_lignes_sous_total")),
                            div(style="display: inline-block;vertical-align:top; width: 100px;",
-                               verbatimTextOutput("disp_lignes_total"))),
+                               verbatimTextOutput("disp_lignes_total")),
+                           div(style="display: inline-block;vertical-align:top; width: 100px;",
+                               verbatimTextOutput("disp_lignes_italique"))),
                   tabPanel(title = "Unités",
                            id = "tab_units",
                            radioButtons(inputId = "is_unite_unif",
@@ -356,7 +368,7 @@ app_formatage <- function() {
                            div(style="display: inline-block;vertical-align:top; width: 300px;",
                                textInput("sous_chapitre", "Nom du sous-chapitre :"))),
                   width = 12, 
-                  height = 300,
+                  height = 500,
                   collapsed = FALSE,
                   id = "setting_box"
                 )),
@@ -402,13 +414,17 @@ app_formatage <- function() {
     output$files <- renderDataTable({
       req(input$upload)
       datatable(input$upload,
-                selection = list(mode = "single", selected = 1))
+                selection = list(mode = "single", selected = 1),
+                options = list(pageLength = 100,
+                               lengthMenu = c(5,10,20,50,100)))
     })
     
     output$files_order <- renderDataTable({
       req(input$upload)
       datatable(input$upload,
-                selection = list(mode = "multiple"))
+                selection = list(mode = "multiple"),
+                options = list(pageLength = 100,
+                               lengthMenu = c(5,10,20,50,100)))
     })
     
     observeEvent(input$datadir, {
@@ -439,7 +455,10 @@ app_formatage <- function() {
         set_names(input$upload$name)
     })
     
-    output$contents <- renderDataTable({
+    output$contents <- renderDataTable(
+      options = list(pageLength = 200,
+                     lengthMenu = c(5,15,50,100,200)),
+      expr = {
       
       req(input$upload)
       req(all_files())
@@ -452,6 +471,8 @@ app_formatage <- function() {
     })
     
     output$contents_fusion <- renderDataTable(selection = list(target = 'cell'),
+                                              options = list(pageLength = 200,
+                                                             lengthMenu = c(5,15,50,100,200)),
                                               expr = {
       
       req(input$upload)
@@ -460,12 +481,12 @@ app_formatage <- function() {
       
       df <- all_files()[[
               input$upload$name[[ordre[input$files_rows_selected]]]
-            ]]
+            ]] %>% as.data.frame()
       cols <- names(df)
       names(df) <- NULL
       df[seq(2,nrow(df)+1),] <- 
         df[seq(1,nrow(df)),]
-      df[1,] <- cols
+      df[1,] <- as.list(cols)
       df
     })
     
@@ -477,6 +498,7 @@ app_formatage <- function() {
     output$disp_lignes_precision_4 <- renderPrint(plan$Lignes_precision_4[input$files_rows_selected])
     output$disp_lignes_sous_total <- renderPrint(plan$Lignes_sous_total[input$files_rows_selected])
     output$disp_lignes_total <- renderPrint(plan$Lignes_total[input$files_rows_selected])
+    output$disp_lignes_italique <- renderPrint(plan$Lignes_italique[input$files_rows_selected])
     output$liste_fusion <- renderPrint(plan$Cellules_a_fusionner[input$files_rows_selected])
     
     global <- reactiveValues(tab_id = "")
@@ -744,6 +766,16 @@ app_formatage <- function() {
       selectRows(proxy_contents, NULL)
     })
     
+    observeEvent(input$lignes_italique, {
+      req(input$files_rows_selected)
+      lignes <- input$contents_rows_selected
+      tab_index <- input$files_rows_selected
+      plan_modif <- plan
+      plan_modif$Lignes_italique[tab_index] <- paste(lignes, collapse = ", ")
+      plan <<- plan_modif
+      output$disp_lignes_italique <- renderPrint(plan$Lignes_italique[input$files_rows_selected])
+      selectRows(proxy_contents, NULL)
+    })
     
     observeEvent(input$feuille, {
       req(input$upload)
@@ -851,7 +883,7 @@ app_formatage <- function() {
       for (i in 1:ncol(df)) {
         widths <- append(widths, eval(parse(text = paste("input$taille_", as.character(i), sep = ""))))
       }
-      if (sum(widths) > 83  & input$format == "chiffres_et_donnees") {
+      if (sum(widths) > 83  & input$format == "chiffres_et_donnees" & isTRUE(input$largeur_max)) {
         shinyalert("La largeur totale dépasse 83", type = "warning")
       } else {
         shinyalert("Modifications enregistrées", type = "success", timer = 1000)
@@ -907,28 +939,35 @@ app_formatage <- function() {
       output$liste_fusion <- renderPrint(plan$Cellules_a_fusionner[input$files_rows_selected])
     })
     observeEvent(input$validate_order, {
-      ordre <<- input$files_order_rows_selected
+      req(input$files_order_rows_selected)
+      selection <- input$files_order_rows_selected
+      if (length(selection) == dim(input$upload)[1]) {
+        ordre <<- input$files_order_rows_selected
       
-      output$files <- renderDataTable({
-        req(input$upload)
-        df <- input$upload[ordre,]
-        rownames(df) <- 1:nrow(df)
-        datatable(df,
-                  selection = list(mode = "single", selected = 1))
-        })
-      
-      if (length(input$upload_plan) == 0) {
-        plan <<- fill_plan(plan = agreste::modele_plan[NULL,], input = input)
+        output$files <- renderDataTable({
+          req(input$upload)
+          df <- input$upload[ordre,]
+          rownames(df) <- 1:nrow(df)
+          datatable(df,
+                    selection = list(mode = "single", selected = 1))
+          })
+        
+        if (length(input$upload_plan) == 0) {
+          plan <<- fill_plan(plan = agreste::modele_plan[NULL,], input = input)
+        }
+        
+        if (is.null(input$upload_plan)[1]) {
+          old_index_title <- plan$Titre_document[1]
+          plan <<- plan[ordre,]
+          rownames(plan) <<- 1:nrow(plan)
+          plan$Titre_document <<- rep("", nrow(plan))
+          plan$Titre_document[1] <<- old_index_title
+        }
+        shinyalert("L'ordre a été modifié", type = "success", timer = 750)
+      } else {
+        shinyalert("Veuillez sélectionner tous les tableaux.", type = "error")
       }
       
-      if (is.null(input$upload_plan)[1]) {
-        old_index_title <- plan$Titre_document[1]
-        plan <<- plan[ordre,]
-        rownames(plan) <<- 1:nrow(plan)
-        plan$Titre_document <<- rep("", nrow(plan))
-        plan$Titre_document[1] <<- old_index_title
-      }
-      shinyalert("L'ordre a été modifié", type = "success", timer = 750)
     })
     
     output$enreg <- downloadHandler(
@@ -943,22 +982,33 @@ app_formatage <- function() {
         )
         plan[is.na(plan)] <- ""
         is_error <- FALSE
+        index_error <- 0
         for (i in 1:dim(plan)[1]) {
           if (plan$Type_colonnes[i] == "" | plan$Liste_unites[i] == "" | plan$Taille_colonnes[i] == "") {
             is_error <- TRUE
+            index_error <- i
           }
         }
         if (is_error & length(input$upload_plan) == 0) {
-          shinyalert("Veuillez vérifier les colonnes et les unités de chaque tableau.", type = "error")
+          shinyalert(paste("Veuillez vérifier les colonnes et les unités du tableau", i), type = "error")
         } else {
+          shinyalert(title = "Formatage en cours...",
+                     text = "Vos tableaux sont en cours de formatage, vous pouvez vous rendre dans la console de RStudio pour suivre l'avancement du traitement. Votre tableau Excel formaté téléchargé directement dans votre navigateur.",
+                     type = "info",
+                     closeOnClickOutside = TRUE,
+                     animation = "slide-from-bottom",
+                     size = "l")
+          
           creer_excel_depuis_plan(plan = plan,
-                                format = input$format,
-                                datadir = datapath,
-                                sep = input$sep,
-                                type_virgule = input$virg,
-                                col_debut = col_debut,
-                                save = TRUE,
-                                path = file)
+                                  format = input$format,
+                                  datadir = datapath,
+                                  sep = input$sep,
+                                  type_virgule = input$virg,
+                                  col_debut = col_debut,
+                                  save = TRUE,
+                                  path = file,
+                                  utiliser_largeur_max = input$largeur_max)
+          
         }
       }
     )
@@ -1000,7 +1050,12 @@ valider_donnees <- function(plan, input, df, a_modifier) {
   for (i in 1:ncol(df)) {
     id_types <- eval(parse(text = paste("input$col_", as.character(i), sep = "")))
     id_widths <- eval(parse(text = paste("input$taille_", as.character(i), sep = "")))
-    id_unites <- eval(parse(text = paste("input$unite_", as.character(i), sep = "")))
+    char_type <- eval(parse(text = paste("input$unite_", as.character(i), sep = "")))
+    if (is.null(char_type)) {
+      id_unites <- " "
+    } else {
+      id_unites <- char_type
+    }
     vec_unites <- append(vec_unites, id_unites)
     vec_data_types <- append(vec_data_types, id_types)
     vec_col_width <- append(vec_col_width, id_widths)
@@ -1017,7 +1072,7 @@ valider_donnees <- function(plan, input, df, a_modifier) {
     plan$Taille_colonnes[index_tab] <- paste(vec_col_width, collapse = ", ")
   } else if (a_modifier == "unites") {
     if (input$is_unite_unif == "oui") {
-    plan$Liste_unites[index_tab] <- paste(vec_unites[1], collapse = ", ")
+    plan$Liste_unites[index_tab] <- vec_unites[1]
     } else {
     plan$Liste_unites[index_tab] <- paste(vec_unites, collapse = ", ")
     }
@@ -1074,6 +1129,7 @@ fill_plan <- function(plan, input) {
   return(plan)
 }
 ```
+
 
 
 ```{r development-inflate, eval=FALSE}

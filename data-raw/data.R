@@ -96,11 +96,12 @@ usethis::use_data(resultat_3,  overwrite = TRUE, internal = FALSE)
 #' @format data frame de 17 lignes et 8 variables
 "lait_vache"
 lait_vache <- read.xlsx("data-raw/excel/lait_vache.xlsx",
-                       colNames = TRUE,
-                       check.names = FALSE,
-                       skipEmptyRows = FALSE,
-                       skipEmptyCols = FALSE,
-                       sep.names = " ")
+                        colNames = TRUE,
+                        check.names = FALSE,
+                        skipEmptyRows = FALSE,
+                        skipEmptyCols = FALSE,
+                        sep.names = " ")
+
 usethis::use_data(lait_vache,  overwrite = TRUE, internal = FALSE)
 
 #' Données d'exemple
@@ -108,9 +109,10 @@ usethis::use_data(lait_vache,  overwrite = TRUE, internal = FALSE)
 #' @format data frame de 17 lignes et 8 variables
 "scieries2020"
 scieries2020 <- read.xlsx("data-raw/excel/scieries2020.xlsx",
-                        colNames = TRUE,
-                        check.names = FALSE,
-                        skipEmptyRows = FALSE,
-                        skipEmptyCols = FALSE,
-                        sep.names = " ")
+                          colNames = TRUE,
+                          check.names = FALSE,
+                          skipEmptyRows = FALSE,
+                          skipEmptyCols = FALSE,
+                          sep.names = " ")
+                          
 usethis::use_data(scieries2020,  overwrite = TRUE, internal = FALSE)
