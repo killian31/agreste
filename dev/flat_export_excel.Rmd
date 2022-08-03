@@ -3647,7 +3647,7 @@ creer_excel_depuis_plan <- function(plan,
               msg = "La colonne de d\u00e9but doit \u00eatre NULL ou bien un entier positif.")
   assert_that(col_debut > 0 | is.null(col_debut),
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(class(datadir) == "character" | is.null("datadir"),
+  assert_that(class(datadir) == "character" | is.null(datadir),
               msg = "Le dossier contenant les donn\u00e9es doit \u00eatre une cha\u00eene de caract\u00e8res ou NULL.")
   assert_that(sep %in% c(",", ";", "\t"),
               msg = 'Le s\u00e9parateur doit \u00eatre parmi ",", ";" et "\t".')
