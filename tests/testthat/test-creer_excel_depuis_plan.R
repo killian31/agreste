@@ -49,7 +49,7 @@ test_that("Le formatage se fait correctement et sans erreur", {
                                                format = "chiffres_et_donnees",
                                                col_debut = "B",
                                                save = FALSE),
-               "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+               "La colonne de d\u00e9but doit \u00eatre NULL ou bien un entier positif.")
   expect_error(creer_excel_depuis_plan(plan = file_plan,
                                        datadir = temp_dir,
                                                format = "chiffres_et_donnees",

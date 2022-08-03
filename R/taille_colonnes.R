@@ -13,7 +13,9 @@
 #' @param largeurs LIST liste de vecteurs contenant les largeurs colonne, 
 #' "auto" pour appliquer des largeurs automatique
 #' @param format CHAR le format de publication : "primeur" ou "chiffres_et_donnees"
-#' @param col_debut La colonne à laquelle commencent les tableaux, par défaut 2
+#' @param col_debut La colonne à laquelle commencent les tableaux, par défaut 1
+#' @param largeur_max LGL si le classeur doit respecter la largeur maximale des 
+#' règles de diffusion (83 pour un chiffres et données)
 #'
 #' @return Rien n'est renvoyé mais le classeur est modifié
 #' 
@@ -113,17 +115,25 @@
 #' 
 #' ## Ouvrir
 #' browseURL("tableau.xlsx")
-taille_colonnes <- function(classeur, liste_type_donnees, largeurs, format, col_debut = 2) {
+taille_colonnes <- function(classeur, liste_type_donnees, largeurs, format, col_debut = 1, largeur_max = TRUE) {
   assert_that(class(classeur) == "Workbook",
               msg = "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
   assert_that(class(liste_type_donnees) == "list",
               msg = "La liste des types de donn\u00e9es doit \u00eatre de type list.")
-  assert_that(class(liste_type_donnees[[1]]) == "character",
-              msg = "La liste des types de donn\u00e9es doit \u00eatre une liste contenant des vecteurs de cha\u00eenes de caract\u00e8re.")
+  for (i in 1:length(liste_type_donnees)) {
+    for (j in 1:length(liste_type_donnees[[i]])) {
+      assert_that(liste_type_donnees[[i]][j] %in% c("texte", "numerique", "decimal"),
+              msg = "La liste des types de donn\u00e9es doit \u00eatre une liste contenant des vecteurs de cha\u00eenes de caract\u00e8re parmi 'texte', 'numerique' et 'decimal'.")
+    }
+  }
   assert_that(col_debut > 0,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(is.numeric(col_debut),
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(format %in% c("chiffres_et_donnees", "primeur"),
+              msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
+  assert_that(class(largeur_max) == "logical",
+              msg = "Le param\u00e8tre largeur_max doit \u00eatre TRUE ou FALSE.")
   
   sheets <- names(classeur)
   
@@ -135,6 +145,11 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, format, col_
   for (sheet in sheets) {
     nb_col <- ncol(readWorkbook(classeur, sheet = sheet))
     indice_feuille <- indice_feuille + 1
+    assert_that(((largeurs[[indice_feuille]][1] == "auto" | largeurs[[indice_feuille]][1] == 0) | class(largeurs[[indice_feuille]]) == "numeric"),
+                msg = paste("Probl\u00e8me dans la colonne Taille_colonnes, tableau ",
+                              indice_feuille,
+                              ". Veuillez la v\u00e9rifier.",
+                              sep = ""))
     if (largeurs[[indice_feuille]][1] == "auto" | largeurs[[indice_feuille]][1] == 0) {
       types <- liste_type_donnees[[indice_feuille]]
       mean_width <- round(pao_max/nb_col, digits = 2) - 0.01
@@ -155,12 +170,12 @@ taille_colonnes <- function(classeur, liste_type_donnees, largeurs, format, col_
       widths <- largeurs[[indice_feuille]]
     }
     
-    if (format == "chiffres_et_donnees") {
+    if (format == "chiffres_et_donnees" & isTRUE(largeur_max)) {
       assert_that(sum(widths) <= pao_max,
                 msg = paste("La largeur du tableau ne doit pas dépasser ",
                             pao_max,
                             ". Largeur actuelle : ",
-                            sum(widths), sep = ""))
+                            sum(widths), ", tableau ", indice_feuille, sep = ""))
     }
     
     setColWidths(wb = classeur,

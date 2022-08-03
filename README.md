@@ -19,10 +19,10 @@ apporte des modèles de Rmarkdown.
 ## Installation
 
 Vous pouvez installer le package agreste à partir du fichier
-`agreste_1.1.1.tar.gz` :
+`agreste_1.2.0.tar.gz` :
 
 ``` r
-remotes::install_local("C:/Users/killian.steunou/Downloads/chemin/agreste_1.1.1.tar.gz")
+remotes::install_local("C:/Users/killian.steunou/Downloads/chemin/agreste_1.2.0.tar.gz")
 ```
 
 ## Utilisation

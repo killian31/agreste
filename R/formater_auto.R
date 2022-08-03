@@ -46,6 +46,7 @@ formater <- function(classeur,
                      liste_lignes_precision_3,
                      liste_lignes_precision_4,
                      liste_lignes_total,
+                     liste_lignes_italique,
                      liste_unif_unites,
                      liste_cellules_fusion,
                      format,
@@ -71,6 +72,8 @@ formater <- function(classeur,
   style_precision_3 <- styles$precision_texte_3
   style_precision_4 <- styles$precision_texte_4
   i <- 0
+  print("Formatage...")
+  pb_format <- txtProgressBar(min = 0, max = length(names(classeur)), style = 3)
   for (feuille in names(classeur)) {
     i <- i + 1
     max_ligne_titre <- max(liste_lignes_titre[[i]])
@@ -106,7 +109,6 @@ formater <- function(classeur,
              stack = TRUE)
     }
     
-  
     for (num_col in col_debut:(nb_col + col_debut - 1)) {
       j <- num_col - col_debut + 1
   
@@ -118,6 +120,11 @@ formater <- function(classeur,
         "numerique" = styles$numerique,
         "decimal" = styles$decimal
       )
+      style_data_italique <- switch (liste_type_donnees[[i]][j],
+         "texte" = styles$texte_italique,
+         "numerique" = styles$numerique_italique,
+         "decimal" = styles$decimal_italique
+      )
       style_sous_total <- switch (liste_type_donnees[[i]][j],
         "texte" = styles$texte_sous_total,
         "numerique" = styles$numerique_sous_total,
@@ -128,13 +135,18 @@ formater <- function(classeur,
         "numerique" = styles$numerique_total,
         "decimal" = styles$decimal_total
       )
+      
+      
       r <- 0
+      
       col_data = readWorkbook(xlsxFile = classeur,
                               sheet = feuille,
-                              rows = (start_row_tabs + max_ligne_titre + shift_rows):eff_last_row,
-                              cols = num_col, 
-                              colNames = FALSE)$X1
-      for (row in (start_row_tabs + max_ligne_titre + shift_rows):eff_last_row) {
+                              rows = (start_row_tabs + max_ligne_titre + shift_rows - 1):eff_last_row,
+                              cols = num_col,
+                              colNames = FALSE,
+                              skipEmptyRows = FALSE)$X1
+
+      for (row in (start_row_tabs + max_ligne_titre + shift_rows - 1):eff_last_row) {
         r <- r + 1
         if (liste_type_donnees[[i]][j] %in% c("numerique", "decimal")) {
           if (class(col_data[r]) != "numeric") {
@@ -156,6 +168,14 @@ formater <- function(classeur,
                rows = ((start_row_tabs + max_ligne_titre + shift_rows):eff_last_row),
                cols = num_col,
                stack = TRUE)
+      if (!(0 %in% liste_lignes_italique[[i]])) {
+        addStyle(wb = classeur,
+                 sheet = feuille,
+                 style = style_data_italique,
+                 rows = liste_lignes_italique[[i]] + start_row_tabs + shift_rows,
+                 cols = num_col,
+                 stack = TRUE)
+      }
       if (!(0 %in% liste_lignes_sous_total[[i]])) {
         addStyle(wb = classeur,
                sheet = feuille,
@@ -273,8 +293,9 @@ formater <- function(classeur,
                  rows = rows)
       }
     }
-    
-    }
+    setTxtProgressBar(pb_format, i)
+  }
+  close(pb_format)
 }
 
 #' Formater un classeur entier
@@ -430,6 +451,7 @@ formater <- function(classeur,
 #'               liste_lignes_precision_4 = list(c(0), c(0)),
 #'               liste_lignes_total = list(c(150),
 #'                                         c(100)),
+#'               liste_lignes_italique = list(c(), c()),
 #'               liste_unif_unites = c(TRUE, TRUE),
 #'               liste_cellules_fusion = list(c(0), c(0)),
 #'               col_debut = 2,
@@ -453,6 +475,7 @@ formater_auto <- function(classeur,
                           liste_lignes_precision_3,
                           liste_lignes_precision_4,
                           liste_lignes_total,
+                          liste_lignes_italique,
                           liste_unif_unites,
                           liste_cellules_fusion,
                           col_debut = 2,
@@ -529,6 +552,7 @@ formater_auto <- function(classeur,
            liste_lignes_precision_3 = liste_lignes_precision_3,
            liste_lignes_precision_4 = liste_lignes_precision_4,
            liste_lignes_total = liste_lignes_total,
+           liste_lignes_italique = liste_lignes_italique,
            liste_unif_unites = liste_unif_unites,
            liste_cellules_fusion = liste_cellules_fusion,
            col_debut = col_debut,

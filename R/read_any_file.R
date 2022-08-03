@@ -9,6 +9,7 @@
 #' @importFrom reader get.ext
 #' @importFrom openxlsx read.xlsx
 #' @importFrom arrow read_parquet
+#' @importFrom readODS read_ods
 #'
 #' @export
 #' 
@@ -25,6 +26,9 @@ read_any_file <- function(filename,
                           sep = ",",
                           decimal_mark = ".",
                           sheet = 1) {
+  if (isFALSE(file.exists(filename))) {
+    stop(paste("Le fichier", filename, "n'existe pas."))
+  }
   extension <- get.ext(filename)
   data = switch (extension,
     "csv" = read.csv(file = filename,
@@ -42,17 +46,19 @@ read_any_file <- function(filename,
     "xlsx" = read.xlsx(xlsxFile = filename,
                        sheet = sheet, 
                        check.names = FALSE,
-                       colNames = TRUE,
+                       colNames = header,
                        sep.names = " ",
                        skipEmptyRows = FALSE,
                        skipEmptyCols = FALSE),
-    "rds" = readRDS(file = filename),
-    "Rds" = readRDS(file = filename),
-    "RDS" = readRDS(file = filename),
+    "rds" = as.data.frame(readRDS(file = filename)),
+    "Rds" = as.data.frame(readRDS(file = filename)),
+    "RDS" = as.data.frame(readRDS(file = filename)),
     "parquet" = read_parquet(file = filename,
                              as_data_frame = TRUE),
-    "feather" = read_feather(path = filename),
-    "dataframe" = eval(parse(text = unlist(strsplit(filename, "\\."))[1]))
+    "feather" = as.data.frame(read_feather(path = filename)),
+    "dataframe" = eval(parse(text = unlist(strsplit(filename, "\\."))[1])),
+    "ods" = read_ods(path = filename, sheet = 1, col_names = header,
+                     formula_as_formula = FALSE, row_names = FALSE)
   )
   return(data)
   

@@ -163,7 +163,7 @@ ajouter_titre_tableau <- function(classeur,
   assert_that(class(fusion) == "logical",
               msg = "Le param\u00e8tre fusion doit \u00eatre TRUE ou FALSE.")
   
-  liste_style = agreste::creer_liste_style_excel(format = format)
+  liste_style = creer_liste_style_excel(format = format)
   style_titre = liste_style$titre
   
   nb_col = ncol(readWorkbook(classeur, sheet = nom_feuille))
@@ -177,5 +177,9 @@ ajouter_titre_tableau <- function(classeur,
   }
   writeData(classeur, nom_feuille, titre, startCol = col_debut, startRow = write_row)
   addStyle(wb = classeur, sheet = nom_feuille, style = style_titre, rows = write_row, cols = col_debut)
+  setRowHeights(wb = classeur,
+                sheet = nom_feuille,
+                rows = write_row,
+                heights = (1 + nchar(titre)%/%100)*15)
 }
 

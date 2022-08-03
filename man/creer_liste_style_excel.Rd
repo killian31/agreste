@@ -15,3 +15,12 @@ une liste avec tous les styles disponibles (objets openxls)
 \description{
 Cette fonction permet de créer une liste avec tous les styles utiles aux publications Agreste xlsx
 }
+\examples{
+library(agreste)
+mes_styles <- creer_liste_style_excel(format = "chiffres_et_donnees")
+
+#exemples
+mes_styles$ligne_titre
+mes_styles$numerique
+
+}

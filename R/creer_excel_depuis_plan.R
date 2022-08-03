@@ -2,16 +2,24 @@
 
 #' Crée un classeur et le formate
 #'
-#' Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan. Les fichiers indiqués dans le plan doivent être dans le répertoire de travail.
+#' Cette fonction permet de formater tous les tableaux d'un classeur selon le
+#' type de publication choisi, simplement à partir d'un plan. Les fichiers
+#' indiqués dans le plan doivent être dans le répertoire de travail.
 #'
-#' @param plan fichier .xlsx ou data frame contenant les détails pour chaque tableau 
-#' @param format CHAR le type de publication : "chiffres_et_donnees" ou "primeur"
-#' @param datadir CHAR le chemin vers le dossier contenant les données. Dossier de travail actif si non spécifié.
+#' @param plan fichier .xlsx ou data frame contenant les détails pour chaque
+#' tableau 
+#' @param format CHAR le type de publication : "chiffres_et_donnees"
+#' ou "primeur"
+#' @param col_debut NUM la colonne à laquelle les tableaux démarrent, NULL pour 
+#' automatiquement déterminée selon le format
+#' @param datadir CHAR le chemin vers le dossier contenant les données. Dossier
+#' de travail actif si non spécifié.
 #' @param sep CHAR le caractère utilisé pour séparer les colonnes des fichiers
 #' @param type_virgule CHAR le type de séparation décimale utilisée : "." ou ","
-#' @param col_debut NUM la colonne à laquelle les tableaux démarrent
 #' @param save LGL TRUE si export du classeur au format xlsx
 #' @param path CHAR chemin vers le tableau à sauvegarder
+#' @param largeur_max LGL si le classeur doit respecter la largeur maximale des 
+#' règles de diffusion (83 pour un chiffres et données)
 #'
 #' @return un objet de type workbook formaté
 #' 
@@ -50,28 +58,29 @@
 #' agreste::resultat_3 %>%
 #'   write.csv(file = "resultat_3.csv", row.names = FALSE)
 #' agreste::lait_vache %>%
-#'   write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
+#'   write.csv(file = "lait_vache.csv", row.names = FALSE)
 #' agreste::scieries2020 %>%
-#'   write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
+#'   write.csv(file = "scieries2020.csv", row.names = FALSE)
 #' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 #' 
 #' ### Formatage
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-#'                                     datadir = selectDirectory(),
-#'                                     format = "primeur",
-#'                                     col_debut = 2,
+#'                                     datadir = choose.dir(),
+#'                                     format = "chiffres_et_donnees",
+#'                                     col_debut = 1,
 #'                                     save = TRUE,
 #'                                     path = "document_a_envoyer.xlsx",
-#'                                     type_virgule = ".")
+#'                                     type_virgule = ",")
 #' 
 creer_excel_depuis_plan <- function(plan,
                                     format,
-                                    datadir = "",
+                                    col_debut = NULL,
+                                    datadir = NULL,
                                     sep = ",",
                                     type_virgule = ",",
-                                    col_debut,
                                     save = TRUE,
-                                    path = "tableau1.xlsx") {
+                                    path = "tableau1.xlsx",
+                                    utiliser_largeur_max = TRUE) {
   
   assert_that(class(plan) %in% c("character", "data.frame"),
               msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
@@ -79,10 +88,16 @@ creer_excel_depuis_plan <- function(plan,
               msg = 'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
   assert_that(type_virgule %in% c(",", "."),
               msg = 'Le type de virgule doit \u00eatre "." ou ","')
-  assert_that(is.numeric(col_debut),
+  assert_that(is.numeric(col_debut) | is.null(col_debut),
+              msg = "La colonne de d\u00e9but doit \u00eatre NULL ou bien un entier positif.")
+  assert_that(col_debut > 0 | is.null(col_debut),
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
-  assert_that(col_debut > 0,
-              msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
+  assert_that(class(datadir) == "character" | is.null("datadir"),
+              msg = "Le dossier contenant les donn\u00e9es doit \u00eatre une cha\u00eene de caract\u00e8res ou NULL.")
+  assert_that(sep %in% c(",", ";", "\t"),
+              msg = 'Le s\u00e9parateur doit \u00eatre parmi ",", ";" et "\t".')
+  assert_that(type_virgule %in% c(",", "."),
+              msg = 'Le s\u00e9parateur d\u00e9cimal doit \u00eatre "," ou ".".')
   assert_that(class(save) == "logical",
               msg = "save doit \u00eatre TRUE ou FALSE")
   assert_that(class(path) == "character",
@@ -92,6 +107,12 @@ creer_excel_depuis_plan <- function(plan,
     plan = read.xlsx(plan,
                      colNames = TRUE,
                      rowNames = FALSE)
+  }
+  if (is.null(col_debut)) {
+    col_debut <- switch (format,
+      "chiffres_et_donnees" = 1,
+      "primeur" = 2
+    )
   }
   i <- 0
   for (liste in plan$Type_colonnes) {
@@ -104,8 +125,9 @@ creer_excel_depuis_plan <- function(plan,
     }
   }
   
-  plan[,14:22][is.na(plan[,14:22])] <- 0
   
+  plan[,14:23][is.na(plan[,14:23])] <- 0
+  plan[,1:13][is.na(plan[,1:13])] <- ""
   nb_tab = nrow(plan)
   
   ligne_debut <- 3 + row_to_add_format(format = format)
@@ -121,6 +143,7 @@ creer_excel_depuis_plan <- function(plan,
   liste_lignes_precision_4 <- list()
   liste_lignes_total <- list()
   liste_col_widths <- list()
+  liste_lignes_italique <- list()
   liste_unif_unites <- c()
   liste_cells_to_merge <- list()
   
@@ -133,16 +156,20 @@ creer_excel_depuis_plan <- function(plan,
         "chiffres_et_donnees" = 1,
         "primeur" = 0
       )
+  
+  print("Ecriture...")
+  pb_ecriture <- txtProgressBar(min = 0, max = nb_tab, style = 3)
   for (tab in 1:nb_tab) {
     filename <- paste(plan$Nom_fichier[tab],
                       plan$Type[tab],
                       sep = ".")
-    if (datadir == "") {
+    if (datadir == "" | is.null(datadir)) {
       datadir <- getwd()
     }
     complete_filename <- paste(datadir, filename, sep = "/")
     data <- read_any_file(filename = complete_filename,
                           header = TRUE,
+                          sep = sep,
                           decimal_mark = type_virgule)
     feuille <- plan$Nom_feuille[tab]
     titre <- plan$Titre[tab]
@@ -178,13 +205,19 @@ creer_excel_depuis_plan <- function(plan,
                                  list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_precision_4[tab]), split = ", ")))))
     liste_lignes_total <- append(liste_lignes_total,
                                  list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_total[tab]), split = ", ")))))
-    liste_unites <- unlist(strsplit(str_trim(plan$Liste_unites[tab]), split = ", "))
+    liste_lignes_italique <- append(liste_lignes_italique,
+                                 list(as.numeric(unlist(strsplit(str_trim(plan$Lignes_italique[tab]), split = ", ")))))
+    liste_unites <- unlist(strsplit(plan$Liste_unites[tab], split = ","))
+    
     liste_cells_to_merge <- append(liste_cells_to_merge,
-                                   strsplit(plan$Cellules_a_fusionner[tab], ", "))
+                                   strsplit(as.character(plan$Cellules_a_fusionner[tab]), ", "))
     
     if (length(liste_unites) > 1) {
       max_ligne_titre <- max(liste_lignes_titre[[tab]])
       liste_unif_unites <- append(liste_unif_unites, FALSE)
+      if (length(liste_unites) != ncol(data)) {
+        liste_unites <- c(liste_unites, " ")
+      }
       data[seq(max_ligne_titre + 1,nrow(data)+1),] <- 
         data[seq(max_ligne_titre,nrow(data)),]
       data[max_ligne_titre,] <- liste_unites
@@ -247,7 +280,10 @@ creer_excel_depuis_plan <- function(plan,
                            champ = champ,
                            col_debut = col_debut,
                            format = format)
+    
+    setTxtProgressBar(pb_ecriture, tab)
   }
+  close(pb_ecriture)
   if (format == "primeur") {
       ajouter_titre_primeur(classeur = wb,
                                      titre = titre_doc,
@@ -255,26 +291,28 @@ creer_excel_depuis_plan <- function(plan,
                                      fusion = TRUE)
   }
   taille_colonnes(classeur = wb,
-                          liste_type_donnees = liste_data_types,
-                          largeurs = liste_col_widths,
-                          format = format,
-                          col_debut = col_debut)
+                  liste_type_donnees = liste_data_types,
+                  largeurs = liste_col_widths,
+                  format = format,
+                  col_debut = col_debut,
+                  largeur_max = utiliser_largeur_max)
   formater_auto(wb,
-                         format = format,
-                         liste_feuilles_avec_note = liste_feuilles_note,
-                         liste_type_donnees = liste_data_types,
-                         liste_lignes_titre = liste_lignes_titre,
-                         liste_lignes_section = liste_lignes_section,
-                         liste_lignes_sous_total = liste_lignes_sous_total,
-                         liste_lignes_precision_1 = liste_lignes_precision_1,
-                         liste_lignes_precision_2 = liste_lignes_precision_2,
-                         liste_lignes_precision_3 = liste_lignes_precision_3,
-                         liste_lignes_precision_4 = liste_lignes_precision_4,
-                         liste_lignes_total = liste_lignes_total,
-                         liste_unif_unites = liste_unif_unites,
-                         liste_cellules_fusion = liste_cells_to_merge,
-                         col_debut = col_debut,
-                         avec_titre = TRUE)
+                format = format,
+                liste_feuilles_avec_note = liste_feuilles_note,
+                liste_type_donnees = liste_data_types,
+                liste_lignes_titre = liste_lignes_titre,
+                liste_lignes_section = liste_lignes_section,
+                liste_lignes_sous_total = liste_lignes_sous_total,
+                liste_lignes_precision_1 = liste_lignes_precision_1,
+                liste_lignes_precision_2 = liste_lignes_precision_2,
+                liste_lignes_precision_3 = liste_lignes_precision_3,
+                liste_lignes_precision_4 = liste_lignes_precision_4,
+                liste_lignes_total = liste_lignes_total,
+                liste_lignes_italique = liste_lignes_italique,
+                liste_unif_unites = liste_unif_unites,
+                liste_cellules_fusion = liste_cells_to_merge,
+                col_debut = col_debut,
+                avec_titre = TRUE)
   tab <- 0
   for (feuille in names(wb)) {
     tab <- tab + 1
@@ -325,6 +363,10 @@ creer_excel_depuis_plan <- function(plan,
     if (plan$Chapitre[i] != "") {
       writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$Chapitre[i],
                 startCol = col_sommaire, startRow = ligne_actuelle)
+      setRowHeights(wb = wb,
+                sheet = nom_feuille_sommaire,
+                rows = ligne_actuelle,
+                heights = (1 + nchar(plan$Chapitre[i])%/%100)*15)
       addStyle(wb = wb, sheet = nom_feuille_sommaire,
                style = styles$sommaire_chapitre,
                rows = ligne_actuelle, cols = col_sommaire)
@@ -333,6 +375,10 @@ creer_excel_depuis_plan <- function(plan,
       if (plan$`Sous-chapitre`[i] != "") {
         writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$`Sous-chapitre`[i],
                 startCol = col_sommaire, startRow = ligne_actuelle)
+        setRowHeights(wb = wb,
+                      sheet = nom_feuille_sommaire,
+                      rows = ligne_actuelle,
+                      heights = (1 + nchar(plan$`Sous-chapitre`[i])%/%100)*15)
         addStyle(wb = wb, sheet = nom_feuille_sommaire,
                  style = styles$sommaire_sous_chapitre,
                  rows = ligne_actuelle, cols = col_sommaire)
@@ -342,6 +388,10 @@ creer_excel_depuis_plan <- function(plan,
     } else if (plan$`Sous-chapitre`[i] != "") {
       writeData(wb = wb, sheet = nom_feuille_sommaire, x = plan$`Sous-chapitre`[i],
                 startCol = col_sommaire, startRow = ligne_actuelle)
+      setRowHeights(wb = wb,
+                sheet = nom_feuille_sommaire,
+                rows = ligne_actuelle,
+                heights = (1 + nchar(plan$`Sous-chapitre`[i])%/%100)*15)
       addStyle(wb = wb, sheet = nom_feuille_sommaire,
                style = styles$sommaire_sous_chapitre,
                rows = ligne_actuelle, cols = col_sommaire)
@@ -355,6 +405,11 @@ creer_excel_depuis_plan <- function(plan,
                                            col = 1), 
                    startCol = col_sommaire,
                    startRow = ligne_actuelle)
+      
+      setRowHeights(wb = wb,
+                sheet = nom_feuille_sommaire,
+                rows = ligne_actuelle,
+                heights = (1 + nchar(plan$Titre[i])%/%100)*15)
                 
       addStyle(wb = wb, sheet = nom_feuille_sommaire,
                style = styles$sommaire_lien,
@@ -372,6 +427,10 @@ creer_excel_depuis_plan <- function(plan,
                                            col = 1), 
                    startCol = col_sommaire,
                    startRow = ligne_actuelle)
+      setRowHeights(wb = wb,
+                sheet = nom_feuille_sommaire,
+                rows = ligne_actuelle,
+                heights = (1 + nchar(plan$Titre[i])%/%100)*15)
       addStyle(wb = wb, sheet = nom_feuille_sommaire,
                style = styles$sommaire_lien,
                rows = ligne_actuelle, cols = col_sommaire)

@@ -3,44 +3,44 @@
 test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il le faut", {
   mon_classeur <- openxlsx::createWorkbook()
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = iris,
                       nom_feuille = "iris",
                       col_debut = 2)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "iris",
                         titre = "Données fleurs iris",
                         col_debut = 2)
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
                  source = "Ceci est une source quelconque",
                  col_debut = 2,
                  avec_note = FALSE)
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "iris",
                 champ = "France métropolitaine",
                 col_debut = 2)
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                         tableau = airquality,
                         nom_feuille = "airquality",
                         col_debut = 2)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "airquality",
                         titre = "Données qualité de l'air",
                         col_debut = 2)
-  agreste::ajouter_note_lecture(classeur = mon_classeur,
+  ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "airquality",
                        note = "blablabla",
                        col_debut = 2)
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "airquality",
                  source = "Eurostat",
                  col_debut = 2,
                  avec_note = TRUE)
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "airquality",
                 champ = "Daily air quality measurements in New York, May to September 1973.",
                 col_debut = 2)
@@ -72,6 +72,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0))),
                "Classeur doit \u00eatre un workbook. Lancer un createWorkbook avant de lancer l'ajout de tableau.")
@@ -101,6 +102,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0))),
                'Le format doit \u00eatre "chiffres_et_donnees" ou "primeur".')
@@ -130,6 +132,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0))),
                "La liste des feuilles contenant une note de lecture doit \u00eatre un vecteur contenant des cha\u00eenes de caract\u00e8res.")
@@ -159,6 +162,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0))),
                "La feuille feuille 1 n'est pas une feuille existante.")
@@ -182,6 +186,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0))),
                "La liste des types de donn\u00e9es doit \u00eatre de type list.")
@@ -211,6 +216,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0)),
                              col_debut = "2"),
@@ -241,6 +247,7 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
                              liste_lignes_precision_4 = list(c(0), c(0)),
                              liste_lignes_total = list(c(150),
                                                         c(100)),
+                             liste_lignes_italique = list(c(), c()),
                              liste_unif_unites = c(TRUE, TRUE),
                              liste_cellules_fusion = list(c(0), c(0)),
                              col_debut = 2,
@@ -252,44 +259,44 @@ test_that("mon_classeur fonctionne correctement et renvoie une erreur quand il l
 test_that("Le classeur est bien modifié pour un c&d", {
   mon_classeur <- openxlsx::createWorkbook()
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = iris,
                       nom_feuille = "iris",
                       col_debut = 2)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "iris",
                         titre = "Données fleurs iris",
                         col_debut = 2)
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
                  source = "Ceci est une source quelconque",
                  col_debut = 2,
                  avec_note = FALSE)
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "iris",
                 champ = "France métropolitaine",
                 col_debut = 2)
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                         tableau = airquality,
                         nom_feuille = "airquality",
                         col_debut = 2)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "airquality",
                         titre = "Données qualité de l'air",
                         col_debut = 2)
-  agreste::ajouter_note_lecture(classeur = mon_classeur,
+  ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "airquality",
                        note = "blablabla",
                        col_debut = 2)
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "airquality",
                  source = "Eurostat",
                  col_debut = 2,
                  avec_note = TRUE)
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "airquality",
                 champ = "Daily air quality measurements in New York, May to September 1973.",
                 col_debut = 2)
@@ -322,6 +329,7 @@ test_that("Le classeur est bien modifié pour un c&d", {
                  liste_lignes_precision_4 = list(c(0), c(0)),
                  liste_lignes_total = list(c(150),
                                             c(100)),
+                liste_lignes_italique = list(c(), c()),
                  liste_unif_unites = c(TRUE, TRUE),
                  liste_cellules_fusion = list(c(0), c(0)))
   expect_equal(length(openxlsx::getStyles(mon_classeur)), 76)
@@ -330,59 +338,59 @@ test_that("Le classeur est bien modifié pour un c&d", {
 test_that("Le classeur est bien modifié pour un primeur", {
   mon_classeur <- openxlsx::createWorkbook()
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                       tableau = iris,
                       nom_feuille = "iris",
                       col_debut = 2,
                       ligne_debut = 5)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "iris",
                         titre = "Données fleurs iris",
                         col_debut = 2,
                         format = "primeur")
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "iris",
                  source = "Ceci est une source quelconque",
                  col_debut = 2,
                  avec_note = FALSE,
                  format = "primeur",
                  avec_titre = FALSE)
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "iris",
                 champ = "France métropolitaine",
                 col_debut = 2,
                 format = "primeur",
                 avec_titre = FALSE)
 
-  agreste::ajouter_tableau_excel(classeur = mon_classeur,
+  ajouter_tableau_excel(classeur = mon_classeur,
                         tableau = airquality,
                         nom_feuille = "airquality",
                         col_debut = 2,
                         ligne_debut = 5)
 
-  agreste::ajouter_titre_tableau(classeur = mon_classeur,
+  ajouter_titre_tableau(classeur = mon_classeur,
                         nom_feuille = "airquality",
                         titre = "Données qualité de l'air",
                         col_debut = 2,
                         format = "primeur")
-  agreste::ajouter_note_lecture(classeur = mon_classeur,
+  ajouter_note_lecture(classeur = mon_classeur,
                        nom_feuille = "airquality",
                        note = "blablabla",
                        col_debut = 2,
                        format = "primeur")
-  agreste::ajouter_source(classeur = mon_classeur,
+  ajouter_source(classeur = mon_classeur,
                  nom_feuille = "airquality",
                  source = "Eurostat",
                  col_debut = 2,
                  avec_note = TRUE,
                  format = "primeur")
-  agreste::ajouter_champ(classeur = mon_classeur,
+  ajouter_champ(classeur = mon_classeur,
                 nom_feuille = "airquality",
                 champ = "Daily air quality measurements in New York, May to September 1973.",
                 col_debut = 2,
                 format = "primeur")
-  agreste::ajouter_titre_primeur(classeur = mon_classeur,
+  ajouter_titre_primeur(classeur = mon_classeur,
                                  titre = "Exemple")
   
   expect_equal(length(openxlsx::getStyles(mon_classeur)), 9)
@@ -413,6 +421,7 @@ test_that("Le classeur est bien modifié pour un primeur", {
                  liste_lignes_precision_4 = list(c(0), c(0)),
                  liste_lignes_total = list(c(150),
                                             c(100)),
+                liste_lignes_italique = list(c(), c()),
                  liste_unif_unites = c(TRUE, TRUE),
                  liste_cellules_fusion = list(c(0), c(0)))
   expect_equal(length(openxlsx::getStyles(mon_classeur)), 76)

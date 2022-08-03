@@ -7,36 +7,46 @@
 creer_excel_depuis_plan(
   plan,
   format,
-  datadir = "",
+  col_debut = NULL,
+  datadir = NULL,
   sep = ",",
   type_virgule = ",",
-  col_debut,
   save = TRUE,
-  path = "tableau1.xlsx"
+  path = "tableau1.xlsx",
+  utiliser_largeur_max = TRUE
 )
 }
 \arguments{
-\item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque tableau}
+\item{plan}{fichier .xlsx ou data frame contenant les détails pour chaque
+tableau}
 
-\item{format}{CHAR le type de publication : "chiffres_et_donnees" ou "primeur"}
+\item{format}{CHAR le type de publication : "chiffres_et_donnees"
+ou "primeur"}
 
-\item{datadir}{CHAR le chemin vers le dossier contenant les données. Dossier de travail actif si non spécifié.}
+\item{col_debut}{NUM la colonne à laquelle les tableaux démarrent, NULL pour
+automatiquement déterminée selon le format}
+
+\item{datadir}{CHAR le chemin vers le dossier contenant les données. Dossier
+de travail actif si non spécifié.}
 
 \item{sep}{CHAR le caractère utilisé pour séparer les colonnes des fichiers}
 
 \item{type_virgule}{CHAR le type de séparation décimale utilisée : "." ou ","}
 
-\item{col_debut}{NUM la colonne à laquelle les tableaux démarrent}
-
 \item{save}{LGL TRUE si export du classeur au format xlsx}
 
 \item{path}{CHAR chemin vers le tableau à sauvegarder}
+
+\item{largeur_max}{LGL si le classeur doit respecter la largeur maximale des
+règles de diffusion (83 pour un chiffres et données)}
 }
 \value{
 un objet de type workbook formaté
 }
 \description{
-Cette fonction permet de formater tous les tableaux d'un classeur selon le type de publication choisi, simplement à partir d'un plan. Les fichiers indiqués dans le plan doivent être dans le répertoire de travail.
+Cette fonction permet de formater tous les tableaux d'un classeur selon le
+type de publication choisi, simplement à partir d'un plan. Les fichiers
+indiqués dans le plan doivent être dans le répertoire de travail.
 }
 \examples{
 library(agreste)
@@ -54,18 +64,18 @@ agreste::resultat_2 \%>\%
 agreste::resultat_3 \%>\%
   write.csv(file = "resultat_3.csv", row.names = FALSE)
 agreste::lait_vache \%>\%
-  write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
+  write.csv(file = "lait_vache.csv", row.names = FALSE)
 agreste::scieries2020 \%>\%
-  write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
+  write.csv(file = "scieries2020.csv", row.names = FALSE)
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 
 ### Formatage
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-                                    datadir = selectDirectory(),
-                                    format = "primeur",
-                                    col_debut = 2,
+                                    datadir = choose.dir(),
+                                    format = "chiffres_et_donnees",
+                                    col_debut = 1,
                                     save = TRUE,
                                     path = "document_a_envoyer.xlsx",
-                                    type_virgule = ".")
+                                    type_virgule = ",")
 
 }
