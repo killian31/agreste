@@ -58,30 +58,35 @@
 #' agreste::resultat_3 %>%
 #'   write.csv(file = "resultat_3.csv", row.names = FALSE)
 #' agreste::lait_vache %>%
-#'   write.csv(file = "lait_vache.csv", row.names = FALSE)
+#'   write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
 #' agreste::scieries2020 %>%
-#'   write.csv(file = "scieries2020.csv", row.names = FALSE)
+#'   write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 #' write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 #' 
 #' ### Formatage
+#' \dontrun{
 #' workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-#'                                     datadir = choose.dir(),
-#'                                     format = "chiffres_et_donnees",
-#'                                     col_debut = 1,
+#'                                     format = "primeur",
+#'                                     col_debut = 2,
 #'                                     save = TRUE,
 #'                                     path = "document_a_envoyer.xlsx",
 #'                                     type_virgule = ",")
-#' 
+#' }
 creer_excel_depuis_plan <- function(plan,
                                     format,
                                     col_debut = NULL,
-                                    datadir = NULL,
+                                    datadir = "",
                                     sep = ",",
                                     type_virgule = ",",
                                     save = TRUE,
                                     path = "tableau1.xlsx",
                                     utiliser_largeur_max = TRUE) {
-  
+  if (is.null(col_debut)) {
+    col_debut <- switch (format,
+      "chiffres_et_donnees" = 1,
+      "primeur" = 2
+    )
+  }
   assert_that(class(plan) %in% c("character", "data.frame"),
               msg = "Le plan doit \u00eatre une cha\u00eene de caract\u00e8res ou un data frame.")
   assert_that(format %in% c("chiffres_et_donnees", "primeur"),
@@ -90,7 +95,7 @@ creer_excel_depuis_plan <- function(plan,
               msg = 'Le type de virgule doit \u00eatre "." ou ","')
   assert_that(is.numeric(col_debut) | is.null(col_debut),
               msg = "La colonne de d\u00e9but doit \u00eatre NULL ou bien un entier positif.")
-  assert_that(col_debut > 0 | is.null(col_debut),
+  assert_that(col_debut > 0,
               msg = "La colonne de d\u00e9but doit \u00eatre un entier positif.")
   assert_that(class(datadir) == "character" | is.null(datadir),
               msg = "Le dossier contenant les donn\u00e9es doit \u00eatre une cha\u00eene de caract\u00e8res ou NULL.")
@@ -107,12 +112,6 @@ creer_excel_depuis_plan <- function(plan,
     plan = read.xlsx(plan,
                      colNames = TRUE,
                      rowNames = FALSE)
-  }
-  if (is.null(col_debut)) {
-    col_debut <- switch (format,
-      "chiffres_et_donnees" = 1,
-      "primeur" = 2
-    )
   }
   i <- 0
   for (liste in plan$Type_colonnes) {
@@ -163,7 +162,9 @@ creer_excel_depuis_plan <- function(plan,
     filename <- paste(plan$Nom_fichier[tab],
                       plan$Type[tab],
                       sep = ".")
-    if (datadir == "" | is.null(datadir)) {
+    if (is.null(datadir)) {
+      datadir <- getwd()
+    } else if (datadir == ""){
       datadir <- getwd()
     }
     complete_filename <- paste(datadir, filename, sep = "/")
@@ -328,7 +329,8 @@ creer_excel_depuis_plan <- function(plan,
                cols = col_debut:(nb_col + col_debut - 1))
     }
   }
-  
+  print("Création du sommaire...")
+  pb_sommaire <- txtProgressBar(min = 0, max = nb_tab, style = 3)
   nom_feuille_sommaire <- "Sommaire"
   col_sommaire <- 1
   plan[,4:5][is.na(plan[,4:5])] <- ""
@@ -437,8 +439,13 @@ creer_excel_depuis_plan <- function(plan,
       titre_ecrit <- TRUE
       ligne_actuelle <- ligne_actuelle + 1
     }
+    setTxtProgressBar(pb_sommaire, ligne_actuelle - 3)
   }
+  close(pb_sommaire)
   
+  print("Création du bouton Retour Sommaire...")
+  pb_bouton <- txtProgressBar(min = 0, max = nb_tab, style = 3)
+  to_update <- 0
   for (nom_feuille in names(wb)) {
     if (nom_feuille != nom_feuille_sommaire) {
       cols <- ncol(readWorkbook(wb, sheet = nom_feuille)) + col_debut + 1
@@ -454,17 +461,20 @@ creer_excel_depuis_plan <- function(plan,
                rows = 1, cols = cols)
       mergeCells(wb = wb, sheet = nom_feuille, cols = cols:(cols+2), rows = 1:2)
     }
-    
+    to_update <- to_update + 1
+    setTxtProgressBar(pb_bouton, value = to_update)
   }
+  close(pb_bouton)
   
   ord <- c(nb_tab + 1, 1:nb_tab)
   worksheetOrder(wb = wb) <- ord
   
   if (isTRUE(save)) {
+    print("Enregistrement...")
     saveWorkbook(wb, file = path, overwrite = TRUE)
     browseURL(url = path)
   }
-  
+  print("Terminé.")
   return(wb)
 }
 

@@ -969,7 +969,7 @@ app_formatage <- function() {
           shinyalert(paste("Veuillez vérifier les colonnes et les unités du tableau", i), type = "error")
         } else {
           shinyalert(title = "Formatage en cours...",
-                     text = "Vos tableaux sont en cours de formatage, vous pouvez vous rendre dans la console de RStudio pour suivre l'avancement du traitement. Votre tableau Excel formaté téléchargé directement dans votre navigateur.",
+                     text = "Vos tableaux sont en cours de formatage, vous pouvez vous rendre dans la console de RStudio pour suivre l'avancement du traitement. Votre tableau Excel formaté sera téléchargé directement dans votre navigateur.",
                      type = "info",
                      closeOnClickOutside = TRUE,
                      animation = "slide-from-bottom",
