@@ -8,7 +8,7 @@ creer_excel_depuis_plan(
   plan,
   format,
   col_debut = NULL,
-  datadir = NULL,
+  datadir = "",
   sep = ",",
   type_virgule = ",",
   save = TRUE,
@@ -64,18 +64,18 @@ agreste::resultat_2 \%>\%
 agreste::resultat_3 \%>\%
   write.csv(file = "resultat_3.csv", row.names = FALSE)
 agreste::lait_vache \%>\%
-  write.csv(file = "lait_vache.csv", row.names = FALSE)
+  write.xlsx(file = "lait_vache.xlsx", row.names = FALSE)
 agreste::scieries2020 \%>\%
-  write.csv(file = "scieries2020.csv", row.names = FALSE)
+  write.xlsx(file = "scieries2020.xlsx", row.names = FALSE)
 write.xlsx(plan, "plan.xlsx", row.names = FALSE)
 
 ### Formatage
+\dontrun{
 workbook <- creer_excel_depuis_plan(plan = "plan.xlsx",
-                                    datadir = choose.dir(),
-                                    format = "chiffres_et_donnees",
-                                    col_debut = 1,
+                                    format = "primeur",
+                                    col_debut = 2,
                                     save = TRUE,
                                     path = "document_a_envoyer.xlsx",
                                     type_virgule = ",")
-
+}
 }

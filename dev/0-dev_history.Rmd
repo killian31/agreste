@@ -48,8 +48,6 @@ covr::report()
 # Share the package
 
 ```{r}
-# set and try pkgdown documentation website
-usethis::use_pkgdown()
 
 detach("package:agreste", unload = TRUE)
 

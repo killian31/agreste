@@ -63,7 +63,7 @@ indiqués dans le plan doivent être dans le répertoire de travail.</p>
 <span>  <span class="va">plan</span>,</span>
 <span>  <span class="va">format</span>,</span>
 <span>  col_debut <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  datadir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  datadir <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  sep <span class="op">=</span> <span class="st">","</span>,</span>
 <span>  type_virgule <span class="op">=</span> <span class="st">","</span>,</span>
 <span>  save <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -139,20 +139,20 @@ règles de diffusion (83 pour un chiffres et données)</p></dd>
 <span><span class="fu">agreste</span><span class="fu">::</span><span class="va">resultat_3</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"resultat_3.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">agreste</span><span class="fu">::</span><span class="va">lait_vache</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"lait_vache.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/write.xlsx.html" class="external-link">write.xlsx</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"lait_vache.xlsx"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">agreste</span><span class="fu">::</span><span class="va">scieries2020</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"scieries2020.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/write.xlsx.html" class="external-link">write.xlsx</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"scieries2020.xlsx"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/write.xlsx.html" class="external-link">write.xlsx</a></span><span class="op">(</span><span class="va">plan</span>, <span class="st">"plan.xlsx"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">### Formatage</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span><span class="va">workbook</span> <span class="op">&lt;-</span> <span class="fu">creer_excel_depuis_plan</span><span class="op">(</span>plan <span class="op">=</span> <span class="st">"plan.xlsx"</span>,</span>
-<span>                                    datadir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/choose.dir.html" class="external-link">choose.dir</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>                                    format <span class="op">=</span> <span class="st">"chiffres_et_donnees"</span>,</span>
-<span>                                    col_debut <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                    format <span class="op">=</span> <span class="st">"primeur"</span>,</span>
+<span>                                    col_debut <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                                    save <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                    path <span class="op">=</span> <span class="st">"document_a_envoyer.xlsx"</span>,</span>
 <span>                                    type_virgule <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
-<span></span></code></pre></div>
+<span><span class="op">}</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
